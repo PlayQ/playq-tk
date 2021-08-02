@@ -27,13 +27,13 @@ object S3BucketId {
     *
     *   - a 'generated' name – composed of `AwsNamespace` + `ServiceId`,
     *
-    *   - or, if [[config.S3Config.S3BucketConfig.overrideName]] is specified in config,
+    *   - or, if net.playq.tk.aws.s3.config.S3Config.S3BucketConfig.overrideName is specified in config,
     *     this will be the name used for the bucket.
     *
     * Services own `GenWithOverride `buckets. Service will create these buckets when it starts. update tags and perform health checks.
     *
-    * There is one exception — if [[config.S3Config.S3BucketConfig.overrideName]] is specified
-    * and [[config.S3Config.S3BucketConfig.serviceCreatesBucket]] is `false`,
+    * There is one exception — if net.playq.tk.aws.s3.config.S3Config.S3BucketConfig.overrideName is specified
+    * and net.playq.tk.aws.s3.config.S3Config.S3BucketConfig.serviceCreatesBucket is `false`,
     * then service will not try to create or check the bucket – it will behave same as a [[Static]] bucket.
     */
   abstract class GenWithOverride(
