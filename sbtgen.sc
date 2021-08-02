@@ -241,7 +241,7 @@ object ProjectBuilder {
           Developer(id = "playq", name = "PlayQ", url = url("https://github.com/PlayQ"), email = "platform-team@playq.net"),
         )""".raw,
 
-      "scmInfo" in SettingScope.Build := """Some(ScmInfo(url("https://github.com/PlayQ/d4s"), "scm:git:https://github.com/PlayQ/d4s.git"))""".raw,
+      "scmInfo" in SettingScope.Build := """Some(ScmInfo(url("https://github.com/PlayQ/playq-tk"), "scm:git:https://github.com/PlayQ/playq-tk.git"))""".raw,
       "scalacOptions" in SettingScope.Build += s"""${"\"" * 3}-Xmacro-settings:scalatest-version=${Version.VExpr("V.scalatest")}${"\"" * 3}""".raw,
 
       "scalacOptions" in SettingScope.Build ++= Seq(

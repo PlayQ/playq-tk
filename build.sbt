@@ -2357,7 +2357,7 @@ lazy val `playq-tk` = (project in file("."))
     ThisBuild / developers := List(
               Developer(id = "playq", name = "PlayQ", url = url("https://github.com/PlayQ"), email = "platform-team@playq.net"),
             ),
-    ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/PlayQ/d4s"), "scm:git:https://github.com/PlayQ/d4s.git")),
+    ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/PlayQ/playq-tk"), "scm:git:https://github.com/PlayQ/playq-tk.git")),
     ThisBuild / scalacOptions += """-Xmacro-settings:scalatest-version=VExpr(V.scalatest)""",
     ThisBuild / scalacOptions ++= Seq(
       s"-Xmacro-settings:product-name=playq-tk",
