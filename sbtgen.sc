@@ -280,6 +280,8 @@ object ProjectBuilder {
       "testOptions" in SettingScope.Test += """Tests.Argument("-oDF")""".raw,
       "logBuffered" in SettingScope.Test := true,
 
+      "testOptions" in SettingScope.Test += """Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit")""".raw,
+
       "resolvers" += "DefaultMavenRepository".raw,
       "resolvers" += "Opts.resolver.sonatypeSnapshots".raw,
     )

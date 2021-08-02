@@ -70,6 +70,7 @@ lazy val `tk-metrics-macro` = project.in(file("./tk-metrics-macro"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -158,6 +159,7 @@ lazy val `tk-metrics-api` = project.in(file("./tk-metrics-api"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -245,6 +247,7 @@ lazy val `tk-util` = project.in(file("./tk-util"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -342,6 +345,7 @@ lazy val `tk-postgres` = project.in(file("./tk-postgres"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -431,6 +435,7 @@ lazy val `tk-launcher-core` = project.in(file("./tk-launcher-core"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -522,6 +527,7 @@ lazy val `tk-http-core` = project.in(file("./tk-http-core"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -612,6 +618,7 @@ lazy val `tk-implicits` = project.in(file("./tk-implicits"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -696,6 +703,7 @@ lazy val `tk-aws` = project.in(file("./tk-aws"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -788,6 +796,7 @@ lazy val `tk-aws-s3` = project.in(file("./tk-aws-s3"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -874,6 +883,7 @@ lazy val `tk-aws-sts` = project.in(file("./tk-aws-sts"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -965,6 +975,7 @@ lazy val `tk-aws-ses` = project.in(file("./tk-aws-ses"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1059,6 +1070,7 @@ lazy val `tk-aws-sqs` = project.in(file("./tk-aws-sqs"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1147,6 +1159,7 @@ lazy val `tk-aws-cost` = project.in(file("./tk-aws-cost"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1235,6 +1248,7 @@ lazy val `tk-aws-lambda` = project.in(file("./tk-aws-lambda"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1321,6 +1335,7 @@ lazy val `tk-aws-sagemaker` = project.in(file("./tk-aws-sagemaker"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1408,6 +1423,7 @@ lazy val `tk-auth-tools` = project.in(file("./tk-auth-tools"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1495,6 +1511,7 @@ lazy val `tk-loadtool` = project.in(file("./tk-loadtool"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1591,6 +1608,7 @@ lazy val `tk-test` = project.in(file("./tk-test"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1678,6 +1696,7 @@ lazy val `tk-docker` = project.in(file("./tk-docker"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1766,6 +1785,7 @@ lazy val `fs2-kafka-client` = project.in(file("./fs2-kafka-client"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1854,6 +1874,7 @@ lazy val `tk-kafka` = project.in(file("./tk-kafka"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -1944,6 +1965,7 @@ lazy val `tk-zookeeper` = project.in(file("./tk-zookeeper"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -2030,6 +2052,7 @@ lazy val `tk-cache-guava` = project.in(file("./tk-cache-guava"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -2117,6 +2140,7 @@ lazy val `tk-redis` = project.in(file("./tk-redis"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
@@ -2201,6 +2225,7 @@ lazy val `tk-health` = project.in(file("./tk-health"))
     Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
     Test / testOptions += Tests.Argument("-oDF"),
     Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
     resolvers += DefaultMavenRepository,
     resolvers += Opts.resolver.sonatypeSnapshots,
     Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
