@@ -195,7 +195,7 @@ lazy val `tk-util` = project.in(file("./tk-util"))
       compilerPlugin("org.typelevel" % "kind-projector" % V.kind_projector cross CrossVersion.constant("2.13.5")),
       "io.7mind.izumi" %% "distage-extension-plugins" % V.izumi_version,
       "io.7mind.izumi" %% "distage-framework" % V.izumi_version,
-      "dev.zio" %% "zio" % V.zio
+      "dev.zio" %% "zio" % Izumi.Deps.fundamentals_bioJVM.dev_zio_zio_version
     )
   )
   .settings(
@@ -560,10 +560,10 @@ lazy val `tk-implicits` = project.in(file("./tk-implicits"))
       compilerPlugin("org.typelevel" % "kind-projector" % V.kind_projector cross CrossVersion.constant("2.13.5")),
       "io.7mind.izumi" %% "distage-extension-plugins" % V.izumi_version,
       "io.7mind.izumi" %% "distage-framework" % V.izumi_version,
-      "org.typelevel" %% "cats-effect" % V.cats_effect,
-      "org.typelevel" %% "cats-core" % V.cats,
-      "dev.zio" %% "zio-interop-cats" % V.zio_interop_cats,
-      "dev.zio" %% "zio" % V.zio,
+      "org.typelevel" %% "cats-effect" % Izumi.Deps.fundamentals_bioJVM.org_typelevel_cats_effect_version,
+      "org.typelevel" %% "cats-core" % Izumi.Deps.fundamentals_bioJVM.org_typelevel_cats_core_version,
+      "dev.zio" %% "zio-interop-cats" % Izumi.Deps.fundamentals_bioJVM.dev_zio_zio_interop_cats_version,
+      "dev.zio" %% "zio" % Izumi.Deps.fundamentals_bioJVM.dev_zio_zio_version,
       "io.7mind.izumi" %% "logstage-core" % V.izumi_version,
       "co.fs2" %% "fs2-io" % V.fs2,
       "com.propensive" %% "magnolia" % V.magnolia
@@ -1017,8 +1017,8 @@ lazy val `tk-aws-sqs` = project.in(file("./tk-aws-sqs"))
       compilerPlugin("org.typelevel" % "kind-projector" % V.kind_projector cross CrossVersion.constant("2.13.5")),
       "software.amazon.awssdk" % "sqs" % V.aws_java_sdk exclude ("log4j", "log4j"),
       "co.fs2" %% "fs2-io" % V.fs2,
-      "org.typelevel" %% "cats-core" % V.cats,
-      "org.typelevel" %% "cats-effect" % V.cats_effect
+      "org.typelevel" %% "cats-core" % Izumi.Deps.fundamentals_bioJVM.org_typelevel_cats_core_version,
+      "org.typelevel" %% "cats-effect" % Izumi.Deps.fundamentals_bioJVM.org_typelevel_cats_effect_version
     )
   )
   .settings(
@@ -1732,8 +1732,8 @@ lazy val `fs2-kafka-client` = project.in(file("./fs2-kafka-client"))
       compilerPlugin("org.typelevel" % "kind-projector" % V.kind_projector cross CrossVersion.constant("2.13.5")),
       "org.apache.kafka" % "kafka-clients" % V.kafka exclude ("org.slf4j", "log4j-over-slf4j") exclude ("javax.jms", "jms") exclude ("com.sun.jdmk", "jmxtools") exclude ("com.sun.jmx", "jmxri") exclude ("log4j", "log4j"),
       "co.fs2" %% "fs2-io" % V.fs2,
-      "org.typelevel" %% "cats-core" % V.cats,
-      "org.typelevel" %% "cats-effect" % V.cats_effect
+      "org.typelevel" %% "cats-core" % Izumi.Deps.fundamentals_bioJVM.org_typelevel_cats_core_version,
+      "org.typelevel" %% "cats-effect" % Izumi.Deps.fundamentals_bioJVM.org_typelevel_cats_effect_version
     )
   )
   .settings(

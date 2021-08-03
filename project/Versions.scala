@@ -59,12 +59,6 @@ object V {
   val circe_pointer        = "0.14.1"
   val circe_derivation     = "0.13.0-M5"
 
-  val cats        = "2.6.1"
-  val cats_effect = "2.4.0"
-
-  val zio              = "1.0.9"
-  val zio_interop_cats = "2.5.1.0"
-
   val scalatest                = "3.2.9"
   val scalatestplus_scalacheck = "3.2.9.0"
 }
