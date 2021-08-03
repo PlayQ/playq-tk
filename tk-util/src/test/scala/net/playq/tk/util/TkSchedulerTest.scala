@@ -12,13 +12,13 @@ import zio.IO
 import java.time.ZonedDateTime
 import scala.concurrent.duration._
 
-final class TkSchedulerTest extends TGSchedulerTestBase[IO] with WithDummy
+final class TkSchedulerTest extends TkSchedulerTestBase[IO] with WithDummy
 
 object TkSchedulerTest {
   final case class Ctx[F[+_, +_]]()(implicit val scheduler: TkScheduler[F], val T: Temporal2[F], val TestClock: Clock2[F])
 }
 
-abstract class TGSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] {
+abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] {
   "Scheduler" should {
 
     "recur N times" in scopeIO {

@@ -3,7 +3,7 @@ package net.playq.tk.tmp
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
-import izumi.functional.bio.{IO2, F}
+import izumi.functional.bio.{F, IO2}
 
 trait CompressionIO2[F[+_, +_]] {
   def deflate(bytes: Array[Byte]): F[Throwable, Array[Byte]]

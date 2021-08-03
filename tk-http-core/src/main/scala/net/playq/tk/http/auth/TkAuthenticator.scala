@@ -7,7 +7,7 @@ import org.http4s.server.AuthMiddleware
 import net.playq.tk.quantified.SyncThrowable
 
 abstract class TkAuthenticator[F[+_, +_]: IO2: SyncThrowable, BasicContext] {
-  /** should be similar to org.http4s.server.AuthMiddleware.apply **/
+  /** should be similar to org.http4s.server.AuthMiddleware.apply * */
   final val authenticator: AuthMiddleware[F[Throwable, ?], BasicContext] = {
     (routes: AuthedRoutes[BasicContext, F[Throwable, ?]]) =>
       Kleisli {

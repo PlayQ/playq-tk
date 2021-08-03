@@ -12,7 +12,7 @@ import net.playq.tk.postgres.ddl.DDLComponent
 import net.playq.tk.postgres.ddl.DDLComponent.DDLUpComponent
 import net.playq.tk.postgres.healthcheck.{PostgresCheckTable, PostgresHealthChecker}
 import net.playq.tk.postgres.partitioning.Partitioning
-import net.playq.tk.postgres.syntax.TgDoobieLogHandler
+import net.playq.tk.postgres.syntax.TkDoobieLogHandler
 import net.playq.tk.postgres.{PostgresConnector, PostgresDataSource}
 import net.playq.tk.quantified.AsyncThrowable
 import zio.IO
@@ -25,7 +25,7 @@ object PostgresPlugin extends PluginDef {
     tag(Repo.Prod)
 
     make[PostgresConnector[IO]].from[PostgresConnector.Impl[IO]]
-    make[TgDoobieLogHandler]
+    make[TkDoobieLogHandler]
     make[PostgresHealthChecker[IO]]
 
     make[HikariDataSource].fromResource[PostgresDataSource[IO]]

@@ -7,15 +7,15 @@ import izumi.fundamentals.platform.language.open
   healthCheckers: Set[HealthChecker[F]]
 ) {
 
-  def allHealthChecks(): F[Throwable, Vector[TgHealthCheckStatus]] = {
+  def allHealthChecks(): F[Throwable, Vector[TkHealthCheckStatus]] = {
     F.parTraverse(healthCheckers)(_.healthCheck()).map(_.flatten.toVector)
   }
 
-  def withOverall(overallName: Option[String] = None): F[Throwable, List[TgHealthCheckStatus]] = {
+  def withOverall(overallName: Option[String] = None): F[Throwable, List[TkHealthCheckStatus]] = {
     for {
       all          <- allHealthChecks()
       overallStatus = HealthCheckService.healthSummary(all)
-      res           = all :+ TgHealthCheckStatus(overallName.getOrElse(HealthCheckService.overallHealthLabel), overallStatus)
+      res           = all :+ TkHealthCheckStatus(overallName.getOrElse(HealthCheckService.overallHealthLabel), overallStatus)
     } yield res.toList
   }
 }
@@ -23,13 +23,13 @@ import izumi.fundamentals.platform.language.open
 object HealthCheckService {
   private final val overallHealthLabel = "overall_health"
 
-  def healthSummary(health: Seq[TgHealthCheckStatus]): TgHealthState = {
-    if (health.forall(_.status == TgHealthState.OK)) {
-      TgHealthState.OK
-    } else if (health.exists(_.status == TgHealthState.DEFUNCT)) {
-      TgHealthState.DEFUNCT
+  def healthSummary(health: Seq[TkHealthCheckStatus]): TkHealthState = {
+    if (health.forall(_.status == TkHealthState.OK)) {
+      TkHealthState.OK
+    } else if (health.exists(_.status == TkHealthState.DEFUNCT)) {
+      TkHealthState.DEFUNCT
     } else {
-      TgHealthState.UNKNOWN
+      TkHealthState.UNKNOWN
     }
   }
 }

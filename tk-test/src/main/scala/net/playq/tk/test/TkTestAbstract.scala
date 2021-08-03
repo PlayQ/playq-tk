@@ -32,8 +32,8 @@ abstract class TkTestAbstract[F[+_, +_]: TagKK: DefaultModule2]
        })
 
     TestConfig(
-      pluginConfig          = PluginConfig.cached(Seq("net.playq.tg.plugins", "net.playq.tk.plugins")),
-      bootstrapPluginConfig = PluginConfig.cached(Seq("net.playq.tg.bootstrap", "net.playq.tk.bootstrap")),
+      pluginConfig          = PluginConfig.cached(Seq("net.playq.tk.plugins")),
+      bootstrapPluginConfig = PluginConfig.cached(Seq("net.playq.tk.bootstrap")),
       activation            = activation,
       memoizationRoots      = memoizationRoots,
       forcedRoots           = forcedRoots,

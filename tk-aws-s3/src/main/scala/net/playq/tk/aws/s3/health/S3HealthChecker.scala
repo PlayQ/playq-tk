@@ -4,7 +4,7 @@ import izumi.functional.bio.Exit.{Error, Interruption, Termination}
 import izumi.functional.bio.{F, Panic2}
 import logstage.LogIO2
 import net.playq.tk.aws.s3.{S3BucketId, S3Component}
-import net.playq.tk.health.{HealthChecker, TgHealthCheckStatus, TgHealthState}
+import net.playq.tk.health.{HealthChecker, TkHealthCheckStatus, TkHealthState}
 import software.amazon.awssdk.services.s3.model.GetBucketLocationRequest
 
 final class S3HealthChecker[F[+_, +_]: Panic2](
@@ -17,7 +17,7 @@ final class S3HealthChecker[F[+_, +_]: Panic2](
     buckets.collect { case f: S3BucketId.GenWithOverride if f.serviceCreatesBucket => f }
   }
 
-  private[this] def sandboxRequest[A](name: String)(f: F[Throwable, A]): F[Throwable, TgHealthCheckStatus] = {
+  private[this] def sandboxRequest[A](name: String)(f: F[Throwable, A]): F[Throwable, TkHealthCheckStatus] = {
     f.sandbox.tapError {
       case Termination(exception, allExceptions, trace) =>
         logger.crit(s"Error while health checking AWS with exception: $exception, other exceptions: $allExceptions, trace: $trace")
@@ -26,17 +26,17 @@ final class S3HealthChecker[F[+_, +_]: Panic2](
       case Interruption(compoundException, trace) =>
         logger.crit(s"Interrupted while health checking AWS with exception: $compoundException, trace: $trace")
     }
-      .catchAll(_ => F.pure(TgHealthState.DEFUNCT))
-      .as(TgHealthCheckStatus(s"aws-$name", TgHealthState.OK))
+      .catchAll(_ => F.pure(TkHealthState.DEFUNCT))
+      .as(TkHealthCheckStatus(s"aws-$name", TkHealthState.OK))
   }
 
-  private[this] def bucketHealth(bucket: S3BucketId): F[Throwable, TgHealthCheckStatus] = {
+  private[this] def bucketHealth(bucket: S3BucketId): F[Throwable, TkHealthCheckStatus] = {
     sandboxRequest(s"s3-${bucket.bucketName}") {
       client.rawRequest("health-probe")(_.getBucketLocation(GetBucketLocationRequest.builder.bucket(bucket.bucketName).build)).void
     }
   }
 
-  override def healthCheck(): F[Throwable, Set[TgHealthCheckStatus]] = {
+  override def healthCheck(): F[Throwable, Set[TkHealthCheckStatus]] = {
     F.traverse(bucketForHealth)(bucketHealth).map(_.toSet)
   }
 }

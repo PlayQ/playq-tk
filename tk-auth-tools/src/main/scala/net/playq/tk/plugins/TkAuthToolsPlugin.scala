@@ -5,8 +5,8 @@ import distage.{ModuleDef, TagKK}
 import net.playq.tk.authtolls.{AppleIdAuth, GoogleAuthorizationService, GoogleOAuth, OTPTools}
 import zio.IO
 
-object TgAuthToolsPlugin extends PluginDef {
-  include(TgAuthToolsPlugin.module[IO])
+object TkAuthToolsPlugin extends PluginDef {
+  include(TkAuthToolsPlugin.module[IO])
 
   def module[F[+_, +_]: TagKK]: ModuleDef = new ModuleDef {
     make[AppleIdAuth[F]]

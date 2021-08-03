@@ -25,7 +25,7 @@ object GoogleAuthorizationService {
   ) extends GoogleAuthorizationService[F] {
     import clientDsl._
 
-    private[this] val cache                                                                          = new java.util.concurrent.ConcurrentHashMap[String, ExpiringAccessToken]()
+    private[this] val cache = new java.util.concurrent.ConcurrentHashMap[String, ExpiringAccessToken]()
     private[this] implicit val accessTokenDecoder: EntityDecoder[F[Throwable, ?], GoogleAccessToken] = jsonOf[F[Throwable, ?], GoogleAccessToken]
 
     def invalidateToken(key: String): F[Nothing, Unit] = F.sync(cache.remove(key)).void

@@ -5,7 +5,7 @@ import doobie.hikari.HikariTransactor
 import doobie.implicits._
 import izumi.functional.bio.{F, Panic2}
 import net.playq.tk.health
-import net.playq.tk.health.{HealthChecker, TgHealthCheckStatus, TgHealthState}
+import net.playq.tk.health.{HealthChecker, TkHealthCheckStatus, TkHealthState}
 import net.playq.tk.postgres.healthcheck.PostgresHealthChecker._
 import net.playq.tk.postgres.partitioning.model.TableName
 import net.playq.tk.quantified.BracketThrowable
@@ -21,7 +21,7 @@ final class PostgresHealthChecker[F[+_, +_]: Panic2: BracketThrowable](
   tablesChecks: Set[PostgresCheckTable],
 ) extends HealthChecker[F] {
 
-  override def healthCheck(): F[Throwable, Set[TgHealthCheckStatus]] = {
+  override def healthCheck(): F[Throwable, Set[TkHealthCheckStatus]] = {
     for {
       s <- sessionHealthCheck
       t <- tablesHealthCheck
@@ -43,26 +43,26 @@ final class PostgresHealthChecker[F[+_, +_]: Panic2: BracketThrowable](
       NameQuery(name, q)
   }
 
-  private[this] def tablesHealthCheck: F[Throwable, Set[TgHealthCheckStatus]] = {
+  private[this] def tablesHealthCheck: F[Throwable, Set[TkHealthCheckStatus]] = {
     F.traverse(queries) {
       q =>
-        status(q.query).map(health.TgHealthCheckStatus(q.name, _))
+        status(q.query).map(health.TkHealthCheckStatus(q.name, _))
     }.map(_.toSet)
   }
 
-  private[this] def sessionHealthCheck: F[Throwable, Set[TgHealthCheckStatus]] = {
+  private[this] def sessionHealthCheck: F[Throwable, Set[TkHealthCheckStatus]] = {
     status(PostgresHealthChecker.schemaExsistsStmt).map {
       st =>
-        Set(health.TgHealthCheckStatus("postgres.session", st))
+        Set(health.TkHealthCheckStatus("postgres.session", st))
     }
   }
 
-  private[this] def status(query: Query0[Res]): F[Nothing, TgHealthState] = {
+  private[this] def status(query: Query0[Res]): F[Nothing, TkHealthState] = {
     query.nel.map(_.head).transact(transactor).sandbox.attempt.map {
       case Right(PostgresHealthChecker.Res(true)) =>
-        TgHealthState.OK
+        TkHealthState.OK
       case _ =>
-        TgHealthState.DEFUNCT
+        TkHealthState.DEFUNCT
     }
   }
 }

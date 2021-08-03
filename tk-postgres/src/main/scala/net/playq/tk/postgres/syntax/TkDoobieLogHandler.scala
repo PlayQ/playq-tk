@@ -12,7 +12,7 @@ import java.util.UUID
 import scala.collection.mutable
 import scala.util.Try
 
-final class TgDoobieLogHandler(
+final class TkDoobieLogHandler(
   logger: IzLogger
 ) {
   implicit val logHandler: LogHandler = LogHandler(handleLogEvent)

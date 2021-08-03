@@ -5,7 +5,7 @@ import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{F, IO2}
 import izumi.fundamentals.platform.strings.IzString._
 import logstage.LogIO2
-import TkHttp4sServerResource.TgHttp4sServer
+import TkHttp4sServerResource.TkHttp4sServer
 import org.http4s.HttpApp
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.{Router, Server}
@@ -20,8 +20,8 @@ final class TkHttp4sServerResource[F[+_, +_]: IO2: ConcurrentEffect2: TimerThrow
   restServices: Set[TkHttp4sService[F, BaseContext]],
   logger: LogIO2[F],
   globalExecutionContext: ExecutionContext @Id("global"),
-) extends Lifecycle.Of[F[Throwable, ?], TgHttp4sServer[F, BaseContext, FullContext]]({
-    def resource: Lifecycle[F[Throwable, ?], TgHttp4sServer[F, BaseContext, FullContext]] = {
+) extends Lifecycle.Of[F[Throwable, ?], TkHttp4sServer[F, BaseContext, FullContext]]({
+    def resource: Lifecycle[F[Throwable, ?], TkHttp4sServer[F, BaseContext, FullContext]] = {
       BlazeServerBuilder[F[Throwable, ?]](globalExecutionContext)
         .bindHttp(interface.port, interface.bindingHost)
         .withHttpApp(routes)
@@ -29,7 +29,7 @@ final class TkHttp4sServerResource[F[+_, +_]: IO2: ConcurrentEffect2: TimerThrow
         .resource
         .pipe(Lifecycle.fromCats(_))
         .pipe(withLog(interface))
-        .map(TgHttp4sServer[F, BaseContext, FullContext])
+        .map(TkHttp4sServer[F, BaseContext, FullContext])
     }
 
     def routes: HttpApp[F[Throwable, ?]] = {
@@ -61,5 +61,5 @@ final class TkHttp4sServerResource[F[+_, +_]: IO2: ConcurrentEffect2: TimerThrow
   })
 
 object TkHttp4sServerResource {
-  final case class TgHttp4sServer[F[_, _], BaseContext, FullContext](server: Server[F[Throwable, ?]])
+  final case class TkHttp4sServer[F[_, _], BaseContext, FullContext](server: Server[F[Throwable, ?]])
 }

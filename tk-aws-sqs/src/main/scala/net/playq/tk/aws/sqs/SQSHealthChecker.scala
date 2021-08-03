@@ -3,7 +3,7 @@ package net.playq.tk.aws.sqs
 import izumi.functional.bio.Exit.{Error, Interruption, Termination}
 import izumi.functional.bio.{F, IO2}
 import logstage.LogIO2
-import net.playq.tk.health.{HealthChecker, TgHealthCheckStatus, TgHealthState}
+import net.playq.tk.health.{HealthChecker, TkHealthCheckStatus, TkHealthState}
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest
 
 final class SQSHealthChecker[F[+_, +_]: IO2](
@@ -14,28 +14,28 @@ final class SQSHealthChecker[F[+_, +_]: IO2](
 
   private[this] val queuesWithStaticRegions: Set[SQSQueueId] = queues.filterNot(_.dynamicRegion)
 
-  private[this] def sandboxRequest[A](name: String)(f: => F[Throwable, A]): F[Throwable, TgHealthCheckStatus] = {
-    f.as(TgHealthState.OK)
+  private[this] def sandboxRequest[A](name: String)(f: => F[Throwable, A]): F[Throwable, TkHealthCheckStatus] = {
+    f.as(TkHealthState.OK)
       .sandbox.catchAll {
         case Error(error, trace) =>
           log.error(s"Error while health checking AWS with exception: $error $trace") *>
-          F.pure(TgHealthState.DEFUNCT)
+          F.pure(TkHealthState.DEFUNCT)
         case Termination(compoundException, allExceptions, trace) =>
           log.crit(s"Error while health checking AWS with exception: $compoundException, other exceptions: $allExceptions, trace: $trace") *>
-          F.pure(TgHealthState.DEFUNCT)
+          F.pure(TkHealthState.DEFUNCT)
         case Interruption(compoundException, trace) =>
           log.crit(s"Error while health checking AWS with interruption: $compoundException, trace: $trace") *>
-          F.pure(TgHealthState.DEFUNCT)
-      }.map(TgHealthCheckStatus(s"aws-$name", _))
+          F.pure(TkHealthState.DEFUNCT)
+      }.map(TkHealthCheckStatus(s"aws-$name", _))
   }
 
-  private[this] def queueHealthCheck(queueId: SQSQueueId): F[Throwable, TgHealthCheckStatus] = {
+  private[this] def queueHealthCheck(queueId: SQSQueueId): F[Throwable, TkHealthCheckStatus] = {
     sandboxRequest(s"sqs-${queueId.queueName}") {
       sqsComponent.rawClientRequest("health")(_.getQueueUrl(GetQueueUrlRequest.builder.queueName(queueId.queueName).build))
     }
   }
 
-  override def healthCheck(): F[Throwable, Set[TgHealthCheckStatus]] = {
+  override def healthCheck(): F[Throwable, Set[TkHealthCheckStatus]] = {
     F.traverse(queuesWithStaticRegions)(queueHealthCheck).map(_.toSet)
   }
 }

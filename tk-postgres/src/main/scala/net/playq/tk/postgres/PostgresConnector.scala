@@ -12,7 +12,7 @@ import net.playq.tk.metrics.{MacroMetricPostgresMeterException, MacroMetricPostg
 import net.playq.tk.postgres.config.PostgresConfig
 import net.playq.tk.postgres.exceptions.{SQLConnectorException, SQLQueryException, SQLTimeoutException}
 import net.playq.tk.postgres.healthcheck.PostgresHealthChecker
-import net.playq.tk.postgres.syntax.TgDoobieLogHandler
+import net.playq.tk.postgres.syntax.TkDoobieLogHandler
 import net.playq.tk.quantified.BracketThrowable
 
 import java.net.URI
@@ -52,7 +52,7 @@ object PostgresConnector {
     @unused postgresHealthChecker: PostgresHealthChecker[F],
     log: LogIO2[F],
     metrics: Metrics[F],
-    tgDoobieLogHandler: TgDoobieLogHandler,
+    tkDoobieLogHandler: TkDoobieLogHandler,
   ) extends PostgresConnector[F] {
 
     private val cc = new AtomicInteger(0)
@@ -73,7 +73,7 @@ object PostgresConnector {
       }
     }
 
-    override val logHandler: LogHandler = tgDoobieLogHandler.logHandler
+    override val logHandler: LogHandler = tkDoobieLogHandler.logHandler
 
     override def query[T](
       metaName: String

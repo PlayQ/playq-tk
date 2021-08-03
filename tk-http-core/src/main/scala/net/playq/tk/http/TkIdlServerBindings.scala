@@ -8,7 +8,7 @@ import izumi.idealingua.runtime.rpc._
 import izumi.idealingua.runtime.rpc.http4s._
 import izumi.logstage.api.IzLogger
 import logstage.LogIO2
-import TkIdlServerBindings.TgMetricLabels
+import TkIdlServerBindings.TkMetricLabels
 import net.playq.metrics._
 import net.playq.metrics.base.MetricDef
 import net.playq.metrics.base.MetricDef.{MetricCounter, MetricTimer}
@@ -74,16 +74,16 @@ final class TkIdlServerBindings[F[+_, +_]: IO2, BaseContext, FullContext, Client
         for {
           now    <- clock.now()
           curTime = (now.toEpochSecond - requestTime.toEpochSecond) / 2
-          _      <- metrics.timerUpdate(TgMetricLabels.wsLatency, FiniteDuration(curTime, TimeUnit.SECONDS))
+          _      <- metrics.timerUpdate(TkMetricLabels.wsLatency, FiniteDuration(curTime, TimeUnit.SECONDS))
         } yield ()
       }
 
       override protected def onWsClosed(): c.MonoIO[Unit] = {
-        metrics.dec(TgMetricLabels.activeUsers)
+        metrics.dec(TkMetricLabels.activeUsers)
       }
 
       override protected def onWsOpened(): c.MonoIO[Unit] = {
-        metrics.inc(TgMetricLabels.activeUsers)
+        metrics.inc(TkMetricLabels.activeUsers)
       }
 
       override protected def onWsUpdate(maybeNewId: Option[ClientId], old: WsClientId[ClientId]): c.MonoIO[Unit] = F.unit
@@ -113,12 +113,12 @@ final class TkIdlServerBindings[F[+_, +_]: IO2, BaseContext, FullContext, Client
 
 object TkIdlServerBindings {
 
-  object TgMetricLabels {
+  object TkMetricLabels {
     final val activeUsers = "websocket/users/online"
     final val wsLatency   = "websocket/latency"
   }
 
-  def tgMetrics(roleId: String): List[MetricDef] = {
-    List(MetricTimer(roleId, TgMetricLabels.wsLatency, 0.0), MetricCounter(MacroMetricSaver.defaultMetricRole, TgMetricLabels.activeUsers, 0))
+  def tkMetrics(roleId: String): List[MetricDef] = {
+    List(MetricTimer(roleId, TkMetricLabels.wsLatency, 0.0), MetricCounter(MacroMetricSaver.defaultMetricRole, TkMetricLabels.activeUsers, 0))
   }
 }
