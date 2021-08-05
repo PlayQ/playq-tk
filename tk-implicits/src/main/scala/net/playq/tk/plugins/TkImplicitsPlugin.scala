@@ -21,7 +21,7 @@ import zio.{Has, IO, Runtime}
 import java.util.concurrent.{ScheduledExecutorService, ThreadFactory, ThreadPoolExecutor}
 import scala.concurrent.ExecutionContext
 
-object TgImplicitsPlugin extends PluginDef with IO2ImplicitsModule with ZIORuntimeModule
+object TkImplicitsPlugin extends PluginDef with IO2ImplicitsModule with ZIORuntimeModule
 
 private[plugins] trait IO2ImplicitsModule extends ModuleDef {
   make[LogIO2[IO]]

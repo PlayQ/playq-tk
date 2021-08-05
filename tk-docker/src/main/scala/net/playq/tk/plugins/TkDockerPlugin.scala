@@ -6,8 +6,8 @@ import izumi.distage.plugins.PluginDef
 import net.playq.tk.docker.TkDefaultNetwork
 import zio.Task
 
-object TgDockerPlugin extends PluginDef {
-  include(TgDockerPlugin.module[Task])
+object TkDockerPlugin extends PluginDef {
+  include(TkDockerPlugin.module[Task])
 
   def module[F[_]: TagK]: ModuleDef = new ModuleDef {
     include(DockerSupportModule[F])
