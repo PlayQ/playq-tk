@@ -18,7 +18,7 @@ object TkBasicHttpPlugin extends PluginDef {
   include(config)
 
   def module[F[+_, +_]: TagKK]: ModuleDef = new ModuleDef {
-    make[TkHttp4sClient.Impl[F]].from[TkHttp4sClient.Impl[F]]
+    make[TkHttp4sClient[F]].from[TkHttp4sClient.Impl[F]]
 
     make[Printer].fromValue(Printer.noSpaces.copy(dropNullValues = true))
     make[IRTClientMultiplexor[F]].from[IRTClientMultiplexorImpl[F]]
