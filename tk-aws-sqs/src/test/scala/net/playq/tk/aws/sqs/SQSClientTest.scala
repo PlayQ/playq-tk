@@ -21,7 +21,7 @@ import zio.IO
 import java.util.UUID
 import scala.collection.mutable
 
-final class SQSClientTest extends SQSClientTestBase[IO] with SQSTestEnv
+final class SQSClientTest extends SQSClientTestBase[IO] with SQSTestEnv[IO]
 
 object SQSClientTest {
 

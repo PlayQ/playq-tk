@@ -10,7 +10,7 @@ import net.playq.tk.envs.ShiftedClockEnv
 import net.playq.tk.test.{TkTestBaseCtx, WithDummy}
 import zio.IO
 
-final class ClockShiftTest extends ClockShiftTestBase[IO] with ShiftedClockEnv with WithDummy
+final class ClockShiftTest extends ClockShiftTestBase[IO] with ShiftedClockEnv[IO] with WithDummy
 
 abstract class ClockShiftTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, ClockShiftTest.Ctx[F]] {
   "Closk shifter" must {

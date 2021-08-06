@@ -1,17 +1,17 @@
 package net.playq.tk.envs
 
+import distage.TagKK
 import izumi.distage.model.definition.{Module, ModuleDef}
-import izumi.fundamentals.platform.build.ExposedTestScope
-import izumi.fundamentals.platform.functional.Identity
 import izumi.functional.mono.Clock
+import izumi.fundamentals.platform.functional.Identity
 import net.playq.tk.clock.{ClockShifter, ShiftedClock}
 import net.playq.tk.test.ModuleOverrides
-import zio.IO
 
-@ExposedTestScope
-trait ShiftedClockEnv extends ModuleOverrides {
+trait ShiftedClockEnv[F[+_, +_]] extends ModuleOverrides {
+  implicit val tagBIO: TagKK[F]
+
   override def moduleOverrides: Module = super.moduleOverrides ++ new ModuleDef {
-    make[ClockShifter[IO]]
-    make[Clock[Identity]].from[ShiftedClock[IO]]
+    make[ClockShifter[F]]
+    make[Clock[Identity]].from[ShiftedClock[F]]
   }
 }

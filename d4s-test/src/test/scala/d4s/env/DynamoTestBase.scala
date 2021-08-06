@@ -17,7 +17,7 @@ abstract class DynamoTestBase[Ctx](implicit val ctor: ClassConstructor[Ctx]) ext
 
   protected[d4s] final def scopeZIO[R: HasConstructor](f: Ctx => ZIO[R, _, _]): Functoid[IO[_, Unit]] = ctor.provider.map2(HasConstructor[R])(f(_).unit.provide(_))
 
-  override def moduleOverrides: distage.Module = (super.moduleOverrides ++ D4SModule[IO]) overriddenBy new ModuleDef {
+  override def moduleOverrides: distage.Module = super.moduleOverrides overriddenBy new ModuleDef {
     make[DynamoMeta].from {
       namespace: AwsNameSpace =>
         val cfgDefault: ProvisionedThroughputConfig = ProvisionedThroughputConfig.minimal

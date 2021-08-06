@@ -16,7 +16,7 @@ import PostgresDDLTest.Ctx
 import net.playq.tk.test.TkTestBaseCtx
 import zio.IO
 
-final class PostgresDDLTest extends PostgresTestBase[IO] with PostgresTestEnv
+final class PostgresDDLTest extends PostgresTestBase[IO] with PostgresTestEnv[IO]
 
 object PostgresDDLTest {
   final case class Ctx[F[+_, +_]](

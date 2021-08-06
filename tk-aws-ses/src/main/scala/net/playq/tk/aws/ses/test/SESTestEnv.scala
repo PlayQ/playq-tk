@@ -10,9 +10,9 @@ import zio.IO
 
 trait SESTestEnv extends MemoizationRoots with ForcedRoots with WithProduction {
 
-  override def memoizationRoots: PriorAxisDIKeys =
+  abstract override def memoizationRoots: PriorAxisDIKeys =
     super.memoizationRoots ++ Map(0 -> Map(Scene.Managed -> Set(DIKey[SESConfig]))) + (1 -> DIKey[SESClient[IO]])
 
-  override protected def forcedRoots: AxisDIKeys =
+  abstract override def forcedRoots: AxisDIKeys =
     super.forcedRoots ++ Set(DIKey[SESClient[IO]])
 }

@@ -12,6 +12,12 @@ trait StringFieldOps extends StringFieldOpsLowPriority {
   @inline implicit final def pathToFieldOps(path: List[String]): PathBasedFieldOpsCtor                                          = new PathBasedFieldOpsCtor(path)
   @inline implicit final def genericTypedFieldOps[T](t: TypedFieldOps[T]): GenericTypedFieldsOps[T]                             = new GenericTypedFieldsOps(t)
   @inline implicit final def iterableTypedFieldOps[T, C[t] <: Iterable[t]](t: TypedFieldOps[C[T]]): IterableTypedFieldOps[T, C] = new IterableTypedFieldOps(t)
+  @inline implicit final def fieldToGenericTypedFieldOps[T](field: DynamoField[T]): GenericTypedFieldsOps[T] = {
+    new GenericTypedFieldsOps(new TypedFieldOps[T](List(field.name)))
+  }
+  @inline implicit final def fieldToIterableTypedFieldOps[T, C[t] <: Iterable[t]](field: DynamoField[T]): IterableTypedFieldOps[T, C] = {
+    new IterableTypedFieldOps[T, C](new TypedFieldOps[C[T]](List(field.name)))
+  }
 }
 
 object StringFieldOps {

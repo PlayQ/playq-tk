@@ -1,7 +1,8 @@
 package d4s.test.envs
 
-import d4s.DynamoDDLService
+import d4s.config.DynamoConfig
 import d4s.test.envs.DynamoTestEnv.DDLDown
+import d4s.{DynamoDDLService, DynamoTablesService}
 import distage.{DIKey, ModuleDef, TagKK}
 import izumi.distage.model.definition.Lifecycle
 import izumi.distage.model.definition.StandardAxis.Scene
@@ -11,17 +12,20 @@ import logstage.LogIO2
 import net.playq.tk.test.{ForcedRoots, MemoizationRoots, ModuleOverrides, WithProduction}
 
 trait DynamoTestEnv[F[+_, +_]] extends MemoizationRoots with ModuleOverrides with ForcedRoots with WithProduction {
-  implicit def tagBIO: TagKK[F]
+  implicit val tagBIO: TagKK[F]
 
-  override protected def memoizationRoots: TestConfig.PriorAxisDIKeys = super.memoizationRoots ++ Map(
-    Set(Scene.Managed) -> Set(DIKey[DDLDown[F]])
-  )
+  abstract override def memoizationRoots: TestConfig.PriorAxisDIKeys =
+    super.memoizationRoots ++
+    Map(0 -> Map(Scene.Managed -> Set(DIKey[DynamoConfig]))) +
+    (1 -> DIKey[DDLDown[F]])
 
-  override def moduleOverrides: distage.Module = super.moduleOverrides ++ new ModuleDef {
+  abstract override def moduleOverrides: distage.Module = super.moduleOverrides ++ new ModuleDef {
     make[DDLDown[F]]
+    make[DynamoTablesService.Memo[F]]
+    make[DynamoTablesService[F]].using[DynamoTablesService.Memo[F]]
   }
 
-  override protected def forcedRoots: TestConfig.AxisDIKeys = super.forcedRoots ++ Map(
+  abstract override def forcedRoots: TestConfig.AxisDIKeys = super.forcedRoots ++ Map(
     Set(Scene.Managed) -> Set(DIKey[DDLDown[F]])
   )
 }

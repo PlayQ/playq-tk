@@ -13,7 +13,7 @@ import PostgresTest.Ctx
 import net.playq.tk.test.TkTestBaseCtx
 import zio.IO
 
-final class PostgresTest extends PostgresTestBase[IO] with PostgresTestEnv
+final class PostgresTest extends PostgresTestBase[IO] with PostgresTestEnv[IO]
 
 object PostgresTest {
   final class Ctx[F[+_, +_]](implicit val postgresConnector: PostgresConnector[F])

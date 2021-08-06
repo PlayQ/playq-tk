@@ -1,11 +1,13 @@
 package net.playq.tk.kafka.test
 
+import distage.TagKK
 import izumi.distage.model.definition.{Module, ModuleDef}
 import net.playq.tk.test.ModuleOverrides
-import zio.IO
 
-trait TestStreamsEnv extends ModuleOverrides {
+trait TestStreamsEnv[F[+_, +_]] extends ModuleOverrides {
+  implicit val tagBIO: TagKK[F]
+
   abstract override def moduleOverrides: Module = super.moduleOverrides ++ new ModuleDef {
-    make[TestStreams[IO]].from[TestStreams.Impl[IO]]
+    make[TestStreams[F]].from[TestStreams.Impl[F]]
   }
 }
