@@ -1,6 +1,6 @@
 # **D4S**  - *"Dynamo DB Database Done Scala-way"*
 <p align="center">
-<img width="40%" src=".d4s/vuepress/docs/.vuepress/public/D4S_logo.svg" alt="Logo"/>
+<img width="40%" src="./vuepress/docs/.vuepress/public/D4S_logo.svg" alt="Logo"/>
 </p>
 
 What is it?  ![Build](https://github.com/PlayQ/playq-tk/workflows/Build/badge.svg)
