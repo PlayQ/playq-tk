@@ -2,7 +2,7 @@ package net.playq.tk.aws.cost
 
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{BlockingIO2, IO2}
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.aws.cost.config.CostConfig
 import net.playq.tk.quantified.SyncThrowable
 import net.playq.tk.util.retry.TkScheduler

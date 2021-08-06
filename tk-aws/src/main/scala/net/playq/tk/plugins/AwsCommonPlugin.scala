@@ -1,7 +1,6 @@
 package net.playq.tk.plugins
 
 import izumi.distage.plugins.PluginDef
-import net.playq.aws.tagging.modules.AwsTagsModule
 import net.playq.tk.aws.config.LocalTestCredentials
 
 object AwsCommonPlugin extends PluginDef {

@@ -7,7 +7,7 @@ import doobie.util.log.LogHandler
 import izumi.functional.bio.Exit.{Error, Interruption, Termination}
 import izumi.functional.bio.{F, Panic2, Temporal2}
 import logstage.LogIO2
-import net.playq.metrics._
+import net.playq.tk.metrics._
 import net.playq.tk.metrics.{MacroMetricPostgresMeterException, MacroMetricPostgresMeterTimeout, MacroMetricPostgresTimer}
 import net.playq.tk.postgres.config.PostgresConfig
 import net.playq.tk.postgres.exceptions.{SQLConnectorException, SQLQueryException, SQLTimeoutException}

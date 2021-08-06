@@ -1,6 +1,6 @@
 package net.playq.tk.metrics
 
-import net.playq.metrics.base.MetricDef
+import net.playq.tk.metrics.base.MetricDef
 
 abstract class AdditionalMetricsList {
   val metrics: List[MetricDef]

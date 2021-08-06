@@ -4,7 +4,7 @@ import izumi.distage.framework.model.IntegrationCheck
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{BlockingIO2, F, IO2}
 import izumi.fundamentals.platform.integration.{PortCheck, ResourceCheck}
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.metrics.{MacroMetricRedisMeter, MacroMetricRedisTimer}
 import net.playq.tk.redis.config.RedisConfig
 import redis.clients.jedis.{Jedis, JedisPool}

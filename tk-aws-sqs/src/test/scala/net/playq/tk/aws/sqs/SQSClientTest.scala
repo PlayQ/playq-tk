@@ -10,7 +10,7 @@ import izumi.fundamentals.platform.functional.Identity
 import izumi.idealingua.runtime.circe.IRTWithCirce
 import net.playq.tk.aws.common.ServiceName
 import SQSClientTest.{Ctx, TestData, TestQueueId}
-import net.playq.aws.tagging.AwsNameSpace
+import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.aws.sqs.clients.SQSClient
 import net.playq.tk.aws.sqs.config.SQSConfig
 import net.playq.tk.aws.sqs.test.SQSTestEnv

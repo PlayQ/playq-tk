@@ -9,11 +9,11 @@ import izumi.idealingua.runtime.rpc.http4s._
 import izumi.logstage.api.IzLogger
 import logstage.LogIO2
 import TkIdlServerBindings.TkMetricLabels
-import net.playq.metrics._
-import net.playq.metrics.base.MetricDef
-import net.playq.metrics.base.MetricDef.{MetricCounter, MetricTimer}
-import net.playq.metrics.macrodefs.MacroMetricBase.discarded._
-import net.playq.metrics.macrodefs.MacroMetricSaver
+import net.playq.tk.metrics._
+import net.playq.tk.metrics.base.MetricDef
+import net.playq.tk.metrics.base.MetricDef.{MetricCounter, MetricTimer}
+import net.playq.tk.metrics.macrodefs.MacroMetricBase.discarded._
+import net.playq.tk.metrics.macrodefs.MacroMetricSaver
 import net.playq.tk.metrics.MetricsSupport
 import net.playq.tk.http.auth.TkAuthenticator
 import net.playq.tk.http.config.HttpInterfaceConfig

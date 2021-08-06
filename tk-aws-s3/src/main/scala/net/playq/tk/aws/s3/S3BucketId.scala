@@ -1,7 +1,7 @@
 package net.playq.tk.aws.s3
 
 import net.playq.tk.aws.common.ServiceName
-import net.playq.aws.tagging.AwsNameSpace
+import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.aws.common.TagsConfigOps._
 import net.playq.tk.aws.s3.config.S3Config
 

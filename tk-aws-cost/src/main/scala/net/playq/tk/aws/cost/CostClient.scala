@@ -3,7 +3,7 @@ package net.playq.tk.aws.cost
 import cats.effect.concurrent.Ref
 import cats.syntax.list._
 import izumi.functional.bio.{BlockingIO2, F, IO2, Temporal2}
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.metrics.{MacroMetricCostMeter, MacroMetricCostTimer}
 import net.playq.tk.quantified.SyncThrowable
 import net.playq.tk.util.retry.{RetryPolicy, TkScheduler}

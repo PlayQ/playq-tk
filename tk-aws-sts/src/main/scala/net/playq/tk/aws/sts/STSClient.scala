@@ -2,7 +2,7 @@ package net.playq.tk.aws.sts
 
 import izumi.functional.bio.{BlockingIO2, Error2, F, IO2}
 import logstage.LogIO2
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.aws.sts.config.STSConfig
 import net.playq.tk.metrics.{MacroMetricSTSMeter, MacroMetricSTSTimer}
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials

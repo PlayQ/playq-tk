@@ -6,7 +6,7 @@ import izumi.distage.modules.DefaultModule2
 import izumi.distage.testkit.TestConfig
 import izumi.functional.bio.catz._
 import izumi.functional.bio.{F, IO2, Parallel2, Primitives2}
-import net.playq.aws.tagging.AwsNameSpace
+import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.aws.common.ServiceName
 import net.playq.tk.aws.s3.S3BaseTest.{Ctx, TestBucketId}
 import net.playq.tk.aws.s3.config.S3Config

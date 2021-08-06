@@ -3,9 +3,8 @@ object V {
 
   val izumi_version            = "1.0.8"
   val izumi_idealingua_version = "1.0.8"
-  val d4s_version              = "1.0.23"
 
-  // SDK Deps
+  // ToolKit Deps
 
   // compiler
   val kind_projector = "0.11.3"

@@ -5,7 +5,7 @@ import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{BlockingIO2, F, IO2}
 import izumi.fundamentals.platform.integration.{PortCheck, ResourceCheck}
 import logstage.LogIO2
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.aws.config.LocalTestCredentials
 import net.playq.tk.aws.sts.config.STSConfig
 import software.amazon.awssdk.regions.Region

@@ -3,7 +3,7 @@ package net.playq.tk.aws.lambda
 import izumi.functional.bio.IO2
 import logstage.LogIO2
 import net.playq.tk.aws.common.ServiceName
-import net.playq.aws.tagging.AwsNameSpace
+import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.aws.lambda.config.LambdaConfig
 
 trait LambdaClientFactory[F[_, _]] {

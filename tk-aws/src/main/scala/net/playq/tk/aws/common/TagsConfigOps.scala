@@ -1,6 +1,6 @@
 package net.playq.tk.aws.common
 
-import net.playq.aws.tagging.TagsConfig
+import net.playq.tk.aws.tagging.TagsConfig
 
 object TagsConfigOps {
   implicit final class TagService(private val cfg: TagsConfig) extends AnyVal {

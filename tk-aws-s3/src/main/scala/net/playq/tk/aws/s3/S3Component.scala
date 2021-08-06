@@ -1,7 +1,7 @@
 package net.playq.tk.aws.s3
 
 import izumi.functional.bio.{BlockingIO2, F, IO2, Panic2}
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.metrics.{MacroMetricS3Meter, MacroMetricS3Timer}
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client

@@ -16,7 +16,6 @@ val settings = GlobalSettings(
 def entrypoint(args: String*) = Entrypoint.main(ProjectBuilder.root, settings, Seq("-o", ".") ++ args)
 
 object Targets {
-//  final val scala212 = ScalaVersion(getScalaVersion("212"))
   final val scala213 = ScalaVersion(getScalaVersion("213"))
 
   private def getScalaVersion(v: String): String = {
@@ -26,28 +25,9 @@ object Targets {
       ).map(_.group(1)).getOrElse(throw new RuntimeException(s"Couldn't get `scala_$v` version from project/Versions.scala"))
   }
   val targetScala = Seq(scala213)
-  //  val targetScala = Seq(scala213, scala212)
-  //  val targetScala = Seq(scala212, scala213)
   private val jvmPlatform = PlatformEnv(
     platform = Platform.Jvm,
     language = targetScala,
-//    settings = Seq(
-//      "scalacOptions" ++= Seq(
-//        SettingKey(Some(scala212), None) := Defaults.Scala212Options,
-//        SettingKey(Some(scala213), None) := Defaults.Scala213Options,
-//        SettingKey.Default := Const.EmptySeq,
-//      ),
-//      "scalacOptions" ++= Seq(
-//        SettingKey(Some(scala212), Some(true)) := Seq(
-//          "-opt:l:inline",
-//          "-opt-inline-from:net.playq.**",
-//        ),
-//        SettingKey(Some(scala213), Some(true)) := Seq(
-//          "-opt:l:inline",
-//          "-opt-inline-from:net.playq.**",
-//        ),
-//        SettingKey.Default := Const.EmptySeq
-//      )
     settings = Seq(
       "scalacOptions" ++= Defaults.Scala213Options.filterNot(Set[Const]("-Xsource:3", "-P:kind-projector:underscore-placeholders")),
       "scalacOptions" ++= Seq(
@@ -122,9 +102,6 @@ object ProjectBuilder {
     final val logstage_rendering_circe = Library("io.7mind.izumi", "logstage-rendering-circe", V.izumi, LibraryType.Auto)
     final val logstage_adapter_slf4j   = Library("io.7mind.izumi", "logstage-adapter-slf4j", V.izumi, LibraryType.Auto)
     final val logstage_core            = Library("io.7mind.izumi", "logstage-core", V.izumi, LibraryType.Auto)
-
-    final val d4s_tagging = Library("net.playq", "aws-common", V.d4s, LibraryType.Auto).more(LibSetting.Raw("""excludeAll("io.7mind.izumi")"""))
-    final val d4s_metrics = Library("net.playq", "metrics", V.d4s, LibraryType.Auto).more(LibSetting.Raw("""excludeAll("io.7mind.izumi")"""))
 
     final val cats_core   = Library("org.typelevel", "cats-core", V.cats, LibraryType.Auto)
     final val cats_effect = Library("org.typelevel", "cats-effect", V.cats_effect, LibraryType.Auto)
@@ -299,7 +276,6 @@ object ProjectBuilder {
   }
 
   object lib {
-    final val tkMetricsApi   = ArtifactId("tk-metrics-api")
     final val tkLauncherCore = ArtifactId("tk-launcher-core")
     final val tkHttpCore     = ArtifactId("tk-http-core")
     final val tkLoadtool     = ArtifactId("tk-loadtool")
@@ -317,7 +293,16 @@ object ProjectBuilder {
     final val tkAwsLambda    = ArtifactId("tk-aws-lambda")
     final val tkAwsSagemaker = ArtifactId("tk-aws-sagemaker")
 
-    final val tkKafka      = ArtifactId("tk-kafka")
+    final val d4s      = ArtifactId("d4s")
+    final val d4s_test = ArtifactId("d4s-test")
+    final val d4s_circe = ArtifactId("d4s-circe")
+
+    final val tkMetrics      = ArtifactId("tk-metrics")
+    final val tkMetricsApi   = ArtifactId("tk-metrics-api")
+
+    final val tkKafka        = ArtifactId("tk-kafka")
+    final val fs2KafkaClient = ArtifactId("fs2-kafka-client")
+
     final val tkRedis      = ArtifactId("tk-redis")
     final val tkZookeeper  = ArtifactId("tk-zookeeper")
     final val tkPostgres   = ArtifactId("tk-postgres")
@@ -325,16 +310,23 @@ object ProjectBuilder {
     final val tkDocker     = ArtifactId("tk-docker")
 
     final val tkImplicits    = ArtifactId("tk-implicits")
-    final val tkMetricsMacro = ArtifactId("tk-metrics-macro")
-    final val fs2KafkaClient = ArtifactId("fs2-kafka-client")
   }
 
   final lazy val playq_tk_agg = Aggregate(
     name = ArtifactId("tk"),
     artifacts = Seq(
       Artifact(
-        name    = lib.tkMetricsMacro,
-        libs    = Seq(scala_reflect) ++ circe.map(_ in Scope.Compile.all) ++ Seq(d4s_metrics in Scope.Compile.all),
+        name = lib.tkMetrics,
+        libs = Seq(
+          distage_framework,
+        ).map(_ in Scope.Compile.all) ++
+          Seq(scala_reflect) ++
+          circe.map(_ in Scope.Optional.all) ++
+          Seq(
+          scalatest,
+          scalatestplus_scalacheck,
+          scalacheck_shapeless
+        ).map(_ in Scope.Test.all),
         depends = Seq.empty,
       ),
       Artifact(
@@ -342,7 +334,7 @@ object ProjectBuilder {
         libs = Seq(distage_plugins, distage_framework, idealingua_v1_runtime_rpc_http4s)
           .map(_ in Scope.Compile.all),
         depends = Seq(
-          lib.tkMetricsMacro,
+          lib.tkMetrics,
           lib.tkImplicits,
         ).map(_ in Scope.Compile.all),
       ),
@@ -414,7 +406,6 @@ object ProjectBuilder {
         name = lib.tkAws,
         libs = Seq(
           aws_sts,
-          d4s_tagging,
           distage_framework,
         ),
         depends = Seq.empty,
@@ -548,11 +539,12 @@ object ProjectBuilder {
       ),
       Artifact(
         name = lib.tkKafka,
-        libs = Seq(kafka_client, d4s_metrics).map(_ in Scope.Compile.all),
+        libs = Seq(kafka_client).map(_ in Scope.Compile.all),
         depends = Seq(
           lib.fs2KafkaClient,
           lib.tkZookeeper,
           lib.tkDocker,
+          lib.tkMetrics,
         ),
       ),
       Artifact(
@@ -586,6 +578,39 @@ object ProjectBuilder {
           lib.tkImplicits
         ).map(_ in Scope.Compile.all),
       ),
+      Artifact(
+        name = lib.d4s,
+        libs = Seq(
+          aws_dynamo,
+          aws_impl_apache,
+          magnolia,
+        ).map(_ in Scope.Compile.all) ++
+          Seq(scala_reflect),
+        depends = Seq(
+          lib.tkAws,
+          lib.tkHealth,
+          lib.tkImplicits,
+          lib.tkDocker,
+          lib.tkMetrics,
+        ).map(_ in Scope.Compile.all) ++ Seq(lib.tkTest in Scope.Test.all),
+      ),
+      Artifact(
+        name = lib.d4s_test,
+        libs = Seq.empty,
+        depends = Seq(
+          lib.d4s,
+          lib.tkTest,
+          lib.tkImplicits,
+        ).map(_ in Scope.Compile.all),
+      ),
+      Artifact(
+        name = lib.d4s_circe,
+        libs = circe.map(_ in Scope.Compile.all),
+        depends = Seq(
+          lib.d4s in Scope.Compile.all,
+          lib.tkTest in Scope.Test.all,
+        ),
+      )
     ),
     pathPrefix       = Seq("."),
     groups           = Set(Group("tk")),

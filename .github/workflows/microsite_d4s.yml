@@ -1,0 +1,36 @@
+name: Build D4S Microsite
+on:
+  pull_request:
+    paths:
+      - 'vuepress/**'
+  push:
+    branches:
+      - develop
+    paths:
+      - 'vuepress/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          cd vuepress
+          yarn install
+          yarn docs:build
+          cd ..
+          rm -rf docs
+          cp -r vuepress/docs/.vuepress/dist docs
+      - name: Deploy docs
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run:  |
+            if [[ "$GITHUB_REF" == refs/heads/develop ]] ; then
+              git config --local user.email "platform-team@playq.net"
+              git config --local user.name "PlayQPlatformTeam"
+              git add docs
+              git commit -m 'Update D4S docs.'
+              remote_repo="https://PlayQPlatformTeam:${BOT_TOKEN}@github.com/PlayQ/playq-tk.git"
+              git push "${remote_repo}"
+            fi

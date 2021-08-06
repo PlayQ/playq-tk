@@ -2,7 +2,7 @@ package net.playq.tk.aws.sqs
 
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{BlockingIO2, F, IO2}
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.metrics.{MacroMetricSQSMeter, MacroMetricSQSTimer}
 import net.playq.tk.aws.config.LocalTestCredentials
 import net.playq.tk.aws.sqs.config.SQSConfig

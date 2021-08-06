@@ -5,7 +5,7 @@ import izumi.distage.model.definition.{Lifecycle, Lifecycle2}
 import izumi.functional.bio.{Error2, F, IO2}
 import izumi.fundamentals.platform.language.unused
 import logstage.LogIO2
-import net.playq.aws.tagging.SharedTags
+import net.playq.tk.aws.tagging.SharedTags
 import net.playq.tk.aws.s3.config.S3Config
 import net.playq.tk.aws.s3.health.S3HealthChecker
 import net.playq.tk.aws.s3.models._

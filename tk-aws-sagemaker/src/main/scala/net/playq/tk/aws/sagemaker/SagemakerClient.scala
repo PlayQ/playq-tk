@@ -9,7 +9,7 @@ import izumi.fundamentals.collections.nonempty.NonEmptyList
 import izumi.fundamentals.platform.language.Quirks.Discarder
 import logstage.LogIO2
 import logstage.LogIO2.log
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.aws.s3.S3Bucket
 import net.playq.tk.aws.s3.models.S3FileFormat.TARGZIP
 import net.playq.tk.aws.s3.models.{S3File, S3FileFormat, S3Record, S3UploadContent}

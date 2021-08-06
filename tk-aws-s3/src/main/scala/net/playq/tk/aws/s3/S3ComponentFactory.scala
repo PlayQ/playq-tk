@@ -5,7 +5,7 @@ import izumi.distage.framework.model.IntegrationCheck
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{BlockingIO2, F, IO2, Panic2}
 import izumi.fundamentals.platform.integration.{PortCheck, ResourceCheck}
-import net.playq.metrics.Metrics
+import net.playq.tk.metrics.Metrics
 import net.playq.tk.aws.config.LocalTestCredentials
 import net.playq.tk.aws.s3.config.S3Config
 import software.amazon.awssdk.auth.credentials.{AwsCredentials, StaticCredentialsProvider}

@@ -1,8 +1,8 @@
 package net.playq.tk.aws.s3.config
 
 import net.playq.tk.aws.common.ServiceName
-import S3Config.S3BucketConfig
-import net.playq.aws.tagging.AwsNameSpace
+import net.playq.tk.aws.s3.config.S3Config.S3BucketConfig
+import net.playq.tk.aws.tagging.AwsNameSpace
 
 import scala.concurrent.duration.FiniteDuration
 

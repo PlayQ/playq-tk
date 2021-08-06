@@ -5,7 +5,7 @@ import izumi.functional.bio.{F, IO2}
 import logstage.LogIO2
 import net.playq.tk.aws.common.ServiceName
 import LambdaClient.LambdaFunctionConfig
-import net.playq.aws.tagging.AwsNameSpace
+import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.util.ManagedFile
 import net.playq.tk.aws.lambda.config.LambdaConfig
 import software.amazon.awssdk.core.SdkBytes

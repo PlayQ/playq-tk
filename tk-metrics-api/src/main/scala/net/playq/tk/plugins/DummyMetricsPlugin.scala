@@ -3,8 +3,8 @@ package net.playq.tk.plugins
 import izumi.distage.model.definition.ModuleDef
 import izumi.distage.model.definition.StandardAxis.Mode
 import izumi.distage.plugins.PluginDef
-import net.playq.metrics.MetricsExtractor
-import net.playq.metrics.modules.DummyMetricsModule
+import net.playq.tk.metrics.MetricsExtractor
+import net.playq.tk.metrics.modules.DummyMetricsModule
 import net.playq.tk.metrics.{MetricRegistryWrapper, MetricsReportingComponent}
 import zio.IO
 
