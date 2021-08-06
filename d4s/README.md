@@ -14,4 +14,4 @@ include the following components:
 2. _d4s-circe_ – provides circe codecs to encode the data.
 3. _d4s-test_ - provides test environment and docker containers via DIstage TestKit.
 
-Please proceed to the [microsite](https://playq.github.io/playq-tk/) for more information.   
+Please proceed to the [microsite](https://playq.github.io/playq-tk/d4s/about) for more information.   
