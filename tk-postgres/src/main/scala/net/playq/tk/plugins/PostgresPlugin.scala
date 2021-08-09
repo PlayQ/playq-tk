@@ -7,6 +7,7 @@ import doobie.hikari.HikariTransactor
 import izumi.distage.config.ConfigModuleDef
 import izumi.distage.model.definition.ModuleDef
 import izumi.distage.model.definition.StandardAxis.Repo
+import net.playq.tk.health.HealthChecker
 import net.playq.tk.postgres.config.PostgresNamespaceConfig
 import net.playq.tk.postgres.ddl.DDLComponent
 import net.playq.tk.postgres.ddl.DDLComponent.DDLUpComponent
@@ -27,6 +28,7 @@ object PostgresPlugin extends PluginDef {
     make[PostgresConnector[IO]].from[PostgresConnector.Impl[IO]]
     make[TkDoobieLogHandler]
     make[PostgresHealthChecker[IO]]
+    many[HealthChecker[IO]].weak[PostgresHealthChecker[IO]]
 
     make[HikariDataSource].fromResource[PostgresDataSource[IO]]
     make[HikariTransactor[IO[Throwable, ?]]].from {
