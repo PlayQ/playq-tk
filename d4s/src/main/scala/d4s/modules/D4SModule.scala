@@ -9,7 +9,6 @@ import distage.config.ConfigModuleDef
 import distage.{ModuleDef, TagK, TagKK}
 import izumi.fundamentals.platform.integration.PortCheck
 import net.playq.tk.aws.tagging.AwsNameSpace
-import net.playq.tk.health.HealthChecker
 
 import scala.concurrent.duration._
 
@@ -28,7 +27,6 @@ object D4SModule {
     make[DynamoTablesService[F]].from[DynamoTablesService.Impl[F]]
 
     make[DynamoDBHealthChecker[F]]
-    many[HealthChecker[F]].weak[DynamoDBHealthChecker[F]]
     make[DynamoDDLService[F]].fromResource[DynamoDDLService[F]]
     make[DynamoComponent].fromResource[DynamoComponent.Impl[F]]
 

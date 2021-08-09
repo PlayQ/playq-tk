@@ -5,7 +5,6 @@ import izumi.distage.config.ConfigModuleDef
 import izumi.distage.plugins.PluginDef
 import net.playq.tk.aws.sqs.docker.SQSDocker
 import net.playq.tk.aws.sqs.{SQSComponent, SQSComponentFactory, SQSHealthChecker, SQSQueuesManager}
-import net.playq.tk.health.HealthChecker
 import zio.IO
 
 object AwsSQSPlugin extends PluginDef {
@@ -17,7 +16,6 @@ object AwsSQSPlugin extends PluginDef {
 
     make[SQSQueuesManager[F]].from[SQSQueuesManager.SQSQueuesManagerImpl[F]]
     make[SQSHealthChecker[F]]
-    many[HealthChecker[F]].weak[SQSHealthChecker[F]]
 
     include(SQSDocker.module[F[Throwable, ?]]("aws.sqs"))
   }

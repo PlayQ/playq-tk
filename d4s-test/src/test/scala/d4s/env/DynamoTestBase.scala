@@ -3,6 +3,7 @@ package d4s.env
 import d4s.config.{DynamoMeta, ProvisionedThroughputConfig, ProvisioningConfig, TableProvisionedThroughputConfig}
 import d4s.env.Models._
 import d4s.models.table.TableDef
+import d4s.modules.D4SModule
 import d4s.test.envs.DynamoTestEnv
 import distage.ModuleDef
 import izumi.distage.constructors.{ClassConstructor, HasConstructor}
