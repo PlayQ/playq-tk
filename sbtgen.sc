@@ -188,6 +188,7 @@ object ProjectBuilder {
     final val tfa = Library("com.j256.two-factor-auth", "two-factor-auth", Version.VExpr("V.tfa"), LibraryType.Invariant)
 
     final val log4j_to_slf4j   = Library("org.apache.logging.log4j", "log4j-to-slf4j", Version.VExpr("V.log4j_to_slf4j"), LibraryType.Invariant)
+    final val rocksdb = Library("org.rocksdb", "rocksdbjni", Version.VExpr("V.rocksdb"), LibraryType.Invariant)
   }
 
   object ProjectSettings {
@@ -308,6 +309,7 @@ object ProjectBuilder {
     final val tkPostgres   = ArtifactId("tk-postgres")
     final val tkCacheGuava = ArtifactId("tk-cache-guava")
     final val tkDocker     = ArtifactId("tk-docker")
+    final val tkRocksDB    = ArtifactId("tk-rocksdb")
 
     final val tkImplicits    = ArtifactId("tk-implicits")
   }
@@ -610,7 +612,16 @@ object ProjectBuilder {
           lib.d4s in Scope.Compile.all,
           lib.tkTest in Scope.Test.all,
         ),
-      )
+      ),
+      Artifact(
+        name = lib.tkRocksDB,
+        libs = Seq(rocksdb, distage_framework).map(_ in Scope.Compile.all),
+        depends = Seq(
+          lib.tkTest,
+          lib.tkImplicits,
+          lib.tkDocker,
+        ).map(_ in Scope.Compile.all),
+      ),
     ),
     pathPrefix       = Seq("."),
     groups           = Set(Group("tk")),

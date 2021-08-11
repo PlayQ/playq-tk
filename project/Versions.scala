@@ -35,6 +35,8 @@ object V {
 
   val tfa = "1.3"
 
+  val rocksdb = "6.20.3"
+
   // scala
   val jwt_scala    = "5.0.0"
   val bouncycastle = "1.69"

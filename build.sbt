@@ -2529,6 +2529,95 @@ lazy val `d4s-circe` = project.in(file("./d4s-circe"))
   )
   .enablePlugins(IzumiPublishingPlugin, IzumiResolverPlugin)
 
+lazy val `tk-rocksdb` = project.in(file("./tk-rocksdb"))
+  .dependsOn(
+    `tk-test` % "test->compile;compile->compile",
+    `tk-implicits` % "test->compile;compile->compile",
+    `tk-docker` % "test->compile;compile->compile"
+  )
+  .settings(
+    libraryDependencies ++= Seq(
+      compilerPlugin("org.typelevel" % "kind-projector" % V.kind_projector cross CrossVersion.constant("2.13.5")),
+      "org.rocksdb" % "rocksdbjni" % V.rocksdb,
+      "io.7mind.izumi" %% "distage-framework" % V.izumi_version
+    )
+  )
+  .settings(
+    crossScalaVersions := Seq(
+      "2.13.6"
+    ),
+    scalaVersion := crossScalaVersions.value.head,
+    scalacOptions ++= Seq(
+      "-Wconf:msg=package.object.inheritance:silent",
+      if (insideCI.value) "-Wconf:any:error" else "-Wconf:any:warning",
+      "-Wconf:cat=optimizer:warning",
+      "-Wconf:cat=other-match-analysis:error",
+      "-Vimplicits",
+      "-Vtype-diffs",
+      "-Ybackend-parallelism",
+      math.min(16, math.max(1, sys.runtime.availableProcessors() - 1)).toString,
+      "-Wdead-code",
+      "-Wextra-implicit",
+      "-Wnumeric-widen",
+      "-Woctal-literal",
+      "-Wvalue-discard",
+      "-Wunused:_",
+      "-Wmacros:after",
+      "-Ycache-plugin-class-loader:always",
+      "-Ycache-macro-class-loader:last-modified"
+    ),
+    scalacOptions ++= Seq(
+      "-Wconf:msg=kind-projector:silent",
+      "-Wconf:msg=will.be.interpreted.as.a.wildcard.in.the.future:silent"
+    ),
+    scalacOptions ++= { (isSnapshot.value, scalaVersion.value) match {
+      case (false, _) => Seq(
+        "-opt:l:inline",
+        "-opt-inline-from:izumi.**",
+        "-opt-inline-from:net.playq.**"
+      )
+      case (_, _) => Seq.empty
+    } },
+    organization := "net.playq",
+    Compile / unmanagedSourceDirectories += baseDirectory.value / ".jvm/src/main/scala" ,
+    Compile / unmanagedResourceDirectories += baseDirectory.value / ".jvm/src/main/resources" ,
+    Test / unmanagedSourceDirectories += baseDirectory.value / ".jvm/src/test/scala" ,
+    Test / unmanagedResourceDirectories += baseDirectory.value / ".jvm/src/test/resources" ,
+    Compile / scalacOptions += s"-Xmacro-settings:metricsDir=${(Compile / classDirectory).value}",
+    Test / scalacOptions += s"-Xmacro-settings:metricsDir=${(Compile / classDirectory).value}",
+    Test / scalacOptions += s"-Xmacro-settings:metricsDir=${(Test / classDirectory).value}",
+    Compile / scalacOptions += s"-Xmacro-settings:metricsRole=${(Compile / name).value};${(Compile / moduleName).value}",
+    Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Compile / name).value};${(Compile / moduleName).value}",
+    Test / scalacOptions += s"-Xmacro-settings:metricsRole=${(Test / name).value};${(Test / moduleName).value}",
+    Test / testOptions += Tests.Argument("-oDF"),
+    Test / logBuffered := true,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", s"${(Compile / target).value.toPath.toAbsolutePath}/test-reports/junit"),
+    resolvers += DefaultMavenRepository,
+    resolvers += Opts.resolver.sonatypeSnapshots,
+    Compile / unmanagedSourceDirectories ++= (Compile / unmanagedSourceDirectories).value.flatMap {
+      dir =>
+       val partialVersion = CrossVersion.partialVersion(scalaVersion.value)
+       def scalaDir(s: String) = file(dir.getPath + s)
+       (partialVersion match {
+         case Some((2, n)) => Seq(scalaDir("_2"), scalaDir("_2." + n.toString))
+         case Some((x, n)) => Seq(scalaDir("_3"), scalaDir("_" + x.toString + "." + n.toString))
+         case None         => Seq.empty
+       })
+    },
+    Test / unmanagedSourceDirectories ++= (Test / unmanagedSourceDirectories).value.flatMap {
+      dir =>
+       val partialVersion = CrossVersion.partialVersion(scalaVersion.value)
+       def scalaDir(s: String) = file(dir.getPath + s)
+       (partialVersion match {
+         case Some((2, n)) => Seq(scalaDir("_2"), scalaDir("_2." + n.toString))
+         case Some((x, n)) => Seq(scalaDir("_3"), scalaDir("_" + x.toString + "." + n.toString))
+         case None         => Seq.empty
+       })
+    },
+    Compile / scalacOptions += "-Xmacro-settings:metricsRole=default"
+  )
+  .enablePlugins(IzumiPublishingPlugin, IzumiResolverPlugin)
+
 lazy val `tk` = (project in file(".agg/.-tk"))
   .settings(
     publish / skip := true,
@@ -2563,7 +2652,8 @@ lazy val `tk` = (project in file(".agg/.-tk"))
     `tk-health`,
     `d4s`,
     `d4s-test`,
-    `d4s-circe`
+    `d4s-circe`,
+    `tk-rocksdb`
   )
 
 lazy val `tk-jvm` = (project in file(".agg/.-tk-jvm"))
@@ -2599,7 +2689,8 @@ lazy val `tk-jvm` = (project in file(".agg/.-tk-jvm"))
     `tk-health`,
     `d4s`,
     `d4s-test`,
-    `d4s-circe`
+    `d4s-circe`,
+    `tk-rocksdb`
   )
 
 lazy val `playq-tk-jvm` = (project in file(".agg/.agg-jvm"))
