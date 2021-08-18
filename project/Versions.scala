@@ -35,7 +35,7 @@ object V {
 
   val tfa = "1.3"
 
-  val rocksdb = "6.20.3"
+  val rocksdb = "6.22.1.1"
 
   // scala
   val jwt_scala    = "5.0.0"
