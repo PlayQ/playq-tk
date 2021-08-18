@@ -32,13 +32,14 @@ private[codecs] abstract class GenericD4SEncoder(dropNulls: Boolean) {
   private[GenericD4SEncoder] type Typeclass[T] = D4SAttributeEncoder[T]
 
   def combine[T](ctx: ReadOnlyCaseClass[D4SAttributeEncoder, T]): D4SEncoder[T] = {
-    item => {
-      val result = ctx.parameters.map {
-        p =>
-          p.label -> p.typeclass.encode(p.dereference(item))
-      }.toMap
-      if (dropNulls) result.view.filter { case (_, v) => !v.nul() }.toMap else result
-    }
+    item =>
+      {
+        val result = ctx.parameters.map {
+          p =>
+            p.label -> p.typeclass.encode(p.dereference(item))
+        }.toMap
+        if (dropNulls) result.view.filter { case (_, v) => !v.nul() }.toMap else result
+      }
   }
 
   def dispatch[T](ctx: SealedTrait[D4SAttributeEncoder, T]): D4SEncoder[T] = {

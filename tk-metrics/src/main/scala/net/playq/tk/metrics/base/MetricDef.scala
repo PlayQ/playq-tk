@@ -72,13 +72,13 @@ private[metrics] sealed trait LowPriorityInstances {
     }
 
     io.circe.Encoder.AsObject
-      .instance[MetricDef]({
+      .instance[MetricDef] {
         case MetricDef.MetricCounter(role, label, initial)   => io.circe.JsonObject.fromMap(Map("counter" -> encodeMetricDef(role, label, initial)))
         case MetricDef.MetricHistogram(role, label, initial) => io.circe.JsonObject.fromMap(Map("histogram" -> encodeMetricDef(role, label, initial)))
         case MetricDef.MetricTimer(role, label, initial)     => io.circe.JsonObject.fromMap(Map("timer" -> encodeMetricDef(role, label, initial)))
         case MetricDef.MetricMeter(role, label, initial)     => io.circe.JsonObject.fromMap(Map("meter" -> encodeMetricDef(role, label, initial)))
         case MetricDef.MetricGauge(role, label, initial)     => io.circe.JsonObject.fromMap(Map("gauge" -> encodeMetricDef(role, label, initial)))
-      }).asInstanceOf[R[MetricDef]]
+      }.asInstanceOf[R[MetricDef]]
   }
 
   /**

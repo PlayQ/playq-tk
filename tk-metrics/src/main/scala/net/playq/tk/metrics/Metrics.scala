@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.MILLIS
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-import izumi.functional.bio.{Applicative2, Monad2, Clock2, F}
+import izumi.functional.bio.{Applicative2, Clock2, F, Monad2}
 
 import scala.concurrent.duration.FiniteDuration
 

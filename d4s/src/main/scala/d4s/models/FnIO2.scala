@@ -1,6 +1,6 @@
 package d4s.models
 
-import izumi.functional.bio.{IO2, F}
+import izumi.functional.bio.{F, IO2}
 
 trait FnIO2[-A, +B] {
   self =>

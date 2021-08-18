@@ -27,7 +27,7 @@ object RocksBaseFactory {
         private[this] val base = Paths.get(baseId.base)
         private[this] val dbp  = base.resolve(baseId.dpb)
         base.toFile.mkdirs()
-        private[this] val db   = RocksDB.open(config.getOptions(), dbp.toString)
+        private[this] val db = RocksDB.open(config.getOptions(), dbp.toString)
 
         override def put[K: RocksDBEncoder, V: RocksDBEncoder](key: K, value: V): F[Throwable, Unit] = {
           F.syncThrowable(db.put(RocksDBEncoder.toBytes(key), RocksDBEncoder.toBytes(value)))

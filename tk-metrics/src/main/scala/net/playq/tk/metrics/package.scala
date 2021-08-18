@@ -1,6 +1,6 @@
 package net.playq.tk
 
-import net.playq.tk.metrics.domain.{MacroMetricsCost, MacroMetricsDynamo, MacroMetricsRest, MacroMetricsPostgres, MacroMetricsRedis, MacroMetricsS3, MacroMetricsSQS, MacroMetricsSTS, MacroMetricsSagemaker}
+import net.playq.tk.metrics.domain.{MacroMetricsCost, MacroMetricsDynamo, MacroMetricsPostgres, MacroMetricsRedis, MacroMetricsRest, MacroMetricsS3, MacroMetricsSQS, MacroMetricsSTS, MacroMetricsSagemaker}
 import net.playq.tk.metrics.macrodefs.MacroMetricBase
 
 package object metrics {

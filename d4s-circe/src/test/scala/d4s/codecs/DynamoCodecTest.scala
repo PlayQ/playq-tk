@@ -17,10 +17,10 @@ final class DynamoCodecTest extends AnyWordSpec with Checkers {
 
   "encode options" in {
     case class TestNullable(str: Option[String])
-    val encoder  = D4SEncoder.derived[TestNullable]
-    val encoderWithoutNulls    = D4SEncoder.WithoutNulls.derived[TestNullable]
+    val encoder             = D4SEncoder.derived[TestNullable]
+    val encoderWithoutNulls = D4SEncoder.WithoutNulls.derived[TestNullable]
 
-    val encoded = encoder.encodeObject(TestNullable(None))
+    val encoded  = encoder.encodeObject(TestNullable(None))
     val encoded2 = encoder.encodeObject(TestNullable(Some("test")))
     val encoded3 = encoderWithoutNulls.encodeObject(TestNullable(None))
     val encoded4 = encoderWithoutNulls.encodeObject(TestNullable(Some("test")))
