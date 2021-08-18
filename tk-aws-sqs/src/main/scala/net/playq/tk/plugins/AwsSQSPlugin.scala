@@ -4,12 +4,13 @@ import distage.{TagK, TagKK}
 import izumi.distage.config.ConfigModuleDef
 import izumi.distage.plugins.PluginDef
 import net.playq.tk.aws.sqs.docker.SQSDocker
-import net.playq.tk.aws.sqs.{SQSComponent, SQSComponentFactory, SQSHealthChecker, SQSQueuesManager}
+import net.playq.tk.aws.sqs._
 import net.playq.tk.health.HealthChecker
 import zio.IO
 
 object AwsSQSPlugin extends PluginDef {
   include(module[IO])
+  many[SQSQueueId]
 
   def module[F[+_, +_]: TagKK](implicit T: TagK[F[Throwable, ?]]): ConfigModuleDef = new ConfigModuleDef {
     make[SQSComponent[F]].fromResource((_: SQSComponentFactory[F]).mkClient(None))
