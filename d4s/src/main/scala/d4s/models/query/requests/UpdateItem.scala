@@ -68,7 +68,7 @@ final case class UpdateItem(
           updateExpression
       }
     }
-    val condExpr = condition.eval
+    val condExpr = condition.eval().condition
 
     UpdateItemRequest
       .builder()

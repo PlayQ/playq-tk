@@ -267,7 +267,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
         val complexCondition = "field2".of[Int] < 5 && (!(!"field3".existsField) && "field4".notExists) && !("field3".of[String] < "f12")
 
-        println(complexCondition.eval.conditionExpression)
+        println(complexCondition.eval().condition.conditionExpression)
 
         for {
           _ <- connector.runUnrecorded(table.putItem(payload))

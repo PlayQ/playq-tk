@@ -36,7 +36,7 @@ final case class PutItem(
   override def withAttributeValues(f: Map[String, AttributeValue] => Map[String, AttributeValue]): PutItem = copy(attributeValues = f(attributeValues))
 
   override def toAmz: PutItemRequest = {
-    val result = conditionExpression.eval
+    val result = conditionExpression.eval().condition
 
     PutItemRequest
       .builder()

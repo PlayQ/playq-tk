@@ -1,7 +1,7 @@
 package d4s.models.conditions
 
 import d4s.codecs.D4SAttributeEncoder
-import d4s.models.conditions.Condition.{FinalCondition, and, not, or}
+import d4s.models.conditions.Condition.{ConditionEvaluated, and, not, or}
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
 import scala.jdk.CollectionConverters._
@@ -15,12 +15,14 @@ trait Condition {
 
   final def unary_! : Condition.not = not(this)
 
-  final def eval: FinalCondition = evalRecursive(0)._2
+  final def eval(prev: Option[ConditionEvaluated] = None): ConditionEvaluated = evalRecursive(prev.map(_.nested + 1).getOrElse(0))
 
-  protected def evalRecursive(nesting: Int): (Int, FinalCondition)
+  protected def evalRecursive(nesting: Int): ConditionEvaluated
 }
 
 object Condition {
+  final case class ConditionEvaluated(nested: Int, condition: FinalCondition)
+
   def createAlias(path: List[String]): (String, Map[String, String]) = {
     val aliasToPart = path.map(s => s"#${s.replaceAll("\\.", "")}" -> s).toMap
     val fullPath    = aliasToPart.keys.mkString(".")
@@ -41,26 +43,26 @@ object Condition {
   trait Direct extends Condition {
     protected def eval(nesting: Int): FinalCondition
 
-    override protected final def evalRecursive(nesting: Int): (Int, FinalCondition) = {
-      (nesting, eval(nesting))
+    override protected final def evalRecursive(nesting: Int): ConditionEvaluated = {
+      ConditionEvaluated(nesting, eval(nesting))
     }
   }
 
   final case class and(left: Condition, right: Condition) extends Condition {
-    override protected def evalRecursive(nesting: Int): (Int, FinalCondition) =
+    override protected def evalRecursive(nesting: Int): ConditionEvaluated =
       evalBinary("AND")(nesting, left, right)
   }
 
   final case class or(left: Condition, right: Condition) extends Condition {
-    override protected def evalRecursive(nesting: Int): (Int, FinalCondition) =
+    override protected def evalRecursive(nesting: Int): ConditionEvaluated =
       evalBinary("OR")(nesting, left, right)
   }
 
   final case class not(cond: Condition) extends Condition {
-    override protected def evalRecursive(nesting: Int): (Int, FinalCondition) = {
-      val (updatedCounter, result) = cond.evalRecursive(nesting + 1)
-      val condExpr                 = result.conditionExpression.map(s => s"NOT $s")
-      updatedCounter -> FinalCondition(result.attrValues, result.aliases, condExpr)
+    override protected def evalRecursive(nesting: Int): ConditionEvaluated = {
+      val ConditionEvaluated(updatedCounter, result) = cond.evalRecursive(nesting + 1)
+      val condExpr                                   = result.conditionExpression.map(s => s"NOT $s")
+      ConditionEvaluated(updatedCounter, FinalCondition(result.attrValues, result.aliases, condExpr))
     }
   }
 
@@ -173,10 +175,10 @@ object Condition {
     override protected def eval(nesting: Int): FinalCondition = empty
   }
 
-  private[this] def evalBinary(operation: String)(nesting: Int, left: Condition, right: Condition): (Int, FinalCondition) = {
-    val (updatedCounter, leftRes) = left.evalRecursive(nesting + 1)
-    val (finalCounter, rightRes)  = right.evalRecursive(updatedCounter + 1)
-    (finalCounter, combineWith(leftRes, rightRes, operation))
+  private[this] def evalBinary(operation: String)(nesting: Int, left: Condition, right: Condition): ConditionEvaluated = {
+    val ConditionEvaluated(updatedCounter, leftRes) = left.evalRecursive(nesting + 1)
+    val ConditionEvaluated(finalCounter, rightRes)  = right.evalRecursive(updatedCounter + 1)
+    ConditionEvaluated(finalCounter, combineWith(leftRes, rightRes, operation))
   }
 
   private[this] def combineWith(cond: FinalCondition, cond2: FinalCondition, operation: String): FinalCondition = {

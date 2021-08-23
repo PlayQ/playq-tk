@@ -59,7 +59,7 @@ final case class Scan(
   override def withLimit(l: Int): Scan = copy(limit = Some(l))
 
   override def toAmz: ScanRequest = {
-    val evaluatedFilter = filterExpression.eval
+    val evaluatedFilter = filterExpression.eval().condition
 
     ScanRequest
       .builder()

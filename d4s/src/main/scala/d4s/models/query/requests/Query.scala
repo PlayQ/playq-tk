@@ -1,7 +1,5 @@
 package d4s.models.query.requests
 
-import java.util
-
 import d4s.models.conditions.Condition._
 import d4s.models.conditions.{Condition, LogicalOperator}
 import d4s.models.query.DynamoRequest
@@ -10,6 +8,7 @@ import d4s.models.table.TableReference
 import d4s.models.table.index.TableIndex
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, QueryRequest, QueryResponse, Select}
 
+import java.util
 import scala.util.chaining._
 
 final case class Query(
@@ -72,20 +71,18 @@ final case class Query(
 
   override def toAmz: QueryRequest = {
     val evaluatedCondition =
-      (condition :: keyConditionAttributeValues.toList.map {
-        case (k, v) =>
-          logical(List(k), LogicalOperator.==, v)
-      }).foldLeft[Condition](ZeroCondition)(and).eval
+      (condition :: keyConditionAttributeValues.toList.map { case (k, v) => logical(List(k), LogicalOperator.==, v) })
+        .foldLeft[Condition](ZeroCondition)(and).eval()
 
-    val evaluatedFilter = filterExpression.eval
+    val evaluatedFilter = filterExpression.eval(Some(evaluatedCondition)).condition
 
     QueryRequest
       .builder()
       .tableName(table.fullName)
-      .keyConditionExpression(evaluatedCondition.conditionExpression.orNull)
+      .keyConditionExpression(evaluatedCondition.condition.conditionExpression.orNull)
       .filterExpression(evaluatedFilter.conditionExpression.orNull)
-      .expressionAttributeValues(evaluatedCondition.withAttributes(evaluatedFilter.attrValues ++ attributeValues))
-      .expressionAttributeNames(evaluatedCondition.withAliases(evaluatedFilter.aliases ++ attributeNames))
+      .expressionAttributeValues(evaluatedCondition.condition.withAttributes(evaluatedFilter.attrValues ++ attributeValues))
+      .expressionAttributeNames(evaluatedCondition.condition.withAliases(evaluatedFilter.aliases ++ attributeNames))
       .scanIndexForward(scanIndexForward)
       .pipe(b => index.fold(b)(b.indexName))
       .pipe(b => projectionExpression.fold(b)(b.projectionExpression))

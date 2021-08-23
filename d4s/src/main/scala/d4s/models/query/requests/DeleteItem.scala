@@ -36,7 +36,7 @@ final case class DeleteItem(
   override def withAttributeValues(f: Map[String, AttributeValue] => Map[String, AttributeValue]): DeleteItem = copy(attributeValues = f(attributeValues))
 
   override def toAmz: DeleteItemRequest = {
-    val evaluatedCondition = conditionExpression.eval
+    val evaluatedCondition = conditionExpression.eval().condition
 
     DeleteItemRequest
       .builder()
