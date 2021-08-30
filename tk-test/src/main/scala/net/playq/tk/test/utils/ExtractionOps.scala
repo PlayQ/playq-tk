@@ -1,7 +1,7 @@
 package net.playq.tk.test.utils
 
 import org.scalactic.source.Position
-import org.scalatest._
+import org.scalatest.*
 
 import scala.reflect.{ClassTag, classTag}
 

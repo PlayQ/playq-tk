@@ -15,21 +15,21 @@ final class ScenarioRunner[F[-_, +_, +_]: Async3: Primitives3: Local3](
   logger: LogIO3[F],
   clock: Clock3[F],
   scenarioGenProvider: ScenarioGenProvider,
-  scenarioIO2Syntax: ScenarioIO2SyntaxAux[F[Any, +?, +?], F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, ?, ?]]], +?, +?]],
+  scenarioIO2Syntax: ScenarioIO2SyntaxAux[F[Any, +_, +_], F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, _, _]]], +_, +_]],
 )(implicit
   t1: Tag[Ref3[F, ScenarioScope]],
-  t2: Tag[ScenarioContext[F[Any, ?, ?]]],
-  sc: TkScheduler[F[Any, +?, +?]],
+  t2: Tag[ScenarioContext[F[Any, _, _]]],
+  sc: TkScheduler[F[Any, +_, +_]],
 ) {
 
   private[this] def execute[E, A](
-    effect: F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, ?, ?]]], E, A],
-    ctx: ScenarioContext[F[Any, ?, ?]],
+    effect: F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, _, _]]], E, A],
+    ctx: ScenarioContext[F[Any, _, _]],
   ): F[Any, E, A] = {
-    F.mkRef(ScenarioScope.empty).flatMap(scope => effect.provide(Has.allOf[Ref3[F, ScenarioScope], ScenarioContext[F[Any, ?, ?]]](scope, ctx)))
+    F.mkRef(ScenarioScope.empty).flatMap(scope => effect.provide(Has.allOf[Ref3[F, ScenarioScope], ScenarioContext[F[Any, _, _]]](scope, ctx)))
   }
 
-  def run[E, A](scenario: Scenario[F[Any, +?, +?], E, A], config: ScenarioConfig): F[Any, E, ScenarioWithReport] = {
+  def run[E, A](scenario: Scenario[F[Any, +_, +_], E, A], config: ScenarioConfig): F[Any, E, ScenarioWithReport] = {
     val resource = scenario.mkScenario(scenarioIO2Syntax)
     for {
       context <- ScenarioContext(logger("scenario_id" -> scenario.id), clock, scenarioGenProvider)
@@ -73,7 +73,7 @@ final class ScenarioRunner[F[-_, +_, +_]: Async3: Primitives3: Local3](
                       }
                     _ <- context.executed
                   } yield ()
-                }(RetryPolicy.spaced[F[Any, +?, +?]](config.pauseForUser) && RetryPolicy.recurs[F[Any, +?, +?]](config.userScenarioRepeat)).void: F[Any, Nothing, Unit]
+                }(RetryPolicy.spaced[F[Any, +_, +_]](config.pauseForUser) && RetryPolicy.recurs[F[Any, +_, +_]](config.userScenarioRepeat)).void: F[Any, Nothing, Unit]
             }
         }
       }

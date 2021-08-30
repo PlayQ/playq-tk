@@ -6,7 +6,7 @@ import logstage.LogIO2
 import java.io.File
 import java.nio.channels.{AsynchronousFileChannel, CompletionHandler, FileLock, OverlappingFileLockException}
 import java.nio.file.StandardOpenOption
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 object FileLockMutex {
 

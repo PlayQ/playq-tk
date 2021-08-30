@@ -6,7 +6,7 @@ import izumi.functional.bio.{F, IO2}
 import logstage.LogIO2
 import net.playq.tk.http.config.HttpInterfaceConfig
 
-import java.net._
+import java.net.*
 
 trait TkHttpInterface {
   def bindingHost: String
@@ -24,8 +24,8 @@ object TkHttpInterface {
   final class Resource[F[+_, +_]: IO2](
     cfg: HttpInterfaceConfig,
     logger: LogIO2[F],
-  ) extends Lifecycle.Of[F[Throwable, ?], TkHttpInterface]({
-      def identifyExternalAddress: Lifecycle[F[Throwable, *], InetAddress] = Lifecycle.liftF[F[Throwable, ?], InetAddress] {
+  ) extends Lifecycle.Of[F[Throwable, _], TkHttpInterface]({
+      def identifyExternalAddress: Lifecycle[F[Throwable, _], InetAddress] = Lifecycle.liftF[F[Throwable, _], InetAddress] {
         F.syncThrowable(new Socket()).bracketAuto {
             socket =>
               F.syncThrowable {
@@ -37,8 +37,8 @@ object TkHttpInterface {
           }
       }
 
-      def findPort: Lifecycle[F[Throwable, *], ServerSocket] = {
-        import izumi.functional.bio.catz._
+      def findPort: Lifecycle[F[Throwable, _], ServerSocket] = {
+        import izumi.functional.bio.catz.*
         val shuffledList = cfg.portRange.toShuffledList
         Lifecycle.liftF {
           Foldable[List]

@@ -2,7 +2,7 @@ package net.playq.tk.concurrent
 
 import izumi.functional.bio.Fiber2
 import FiberWatchdog.FiberTracker
-import zio._
+import zio.*
 
 import java.lang.ref.WeakReference
 

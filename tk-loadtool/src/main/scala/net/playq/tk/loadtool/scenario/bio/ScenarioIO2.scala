@@ -11,7 +11,7 @@ import scala.language.implicitConversions
 
 object ScenarioIO2 {
   private type Ref[F[-_, +_, +_]] = Ref3[F, ScenarioScope]
-  private type Ctx[F[-_, +_, +_]] = ScenarioContext[F[Any, ?, ?]]
+  private type Ctx[F[-_, +_, +_]] = ScenarioContext[F[Any, _, _]]
 
   private sealed trait ScopeAccess[+F[-_, +_, +_], +E, +A]
   private final case class ScopeEffect[F[-_, +_, +_], E, A](fun: Functoid[F[Any, E, A]]) extends ScopeAccess[F, E, A]
@@ -25,10 +25,10 @@ object ScenarioIO2 {
     def Panic2: Panic2[ScenarioF]
 
     /** Bind new [[ScenarioGen]] into current interpreter scope. For the end of the scenario block or till [[newScope]] is called. */
-    def bind(generators: ScenarioGen[_]*): ScenarioF[Nothing, Unit]
+    def bind(generators: ScenarioGen[?]*): ScenarioF[Nothing, Unit]
 
     /** Create empty scope */
-    def newScope(generators: ScenarioGen[_]*): ScenarioF[Nothing, Unit]
+    def newScope(generators: ScenarioGen[?]*): ScenarioF[Nothing, Unit]
 
     /** Create scenario step from pure value. */
     def pure[A](a: A): ScenarioF[Nothing, A]
@@ -68,20 +68,20 @@ object ScenarioIO2 {
 
   implicit def ScenarioIO2Syntax[F[_, _], SF[+_, +_], E, A](f: SF[E, A])(implicit SF: ScenarioIO2SyntaxAux[F, SF]): BIOPanicOps[SF, E, A] =
     new BIOPanicOps[SF, E, A](f)(SF.Panic2)
-  implicit def ScenarioIO2Syntax[F[_, _], SF[+_, +_], E](implicit SF: ScenarioIO2SyntaxAux[F, SF]): QuasiApplicative[SF[E, ?]] =
+  implicit def ScenarioIO2Syntax[F[_, _], SF[+_, +_], E](implicit SF: ScenarioIO2SyntaxAux[F, SF]): QuasiApplicative[SF[E, _]] =
     QuasiApplicative.fromBIO(SF.Panic2)
 
   final class Impl[F[-_, +_, +_]: IO3: Local3](
     implicit
     t1: Tag[Ref3[F, ScenarioScope]],
-    t2: Tag[ScenarioContext[F[Any, ?, ?]]],
-  ) extends ScenarioIO2SyntaxAux[F[Any, +?, +?], F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, ?, ?]]], +?, +?]] {
+    t2: Tag[ScenarioContext[F[Any, _, _]]],
+  ) extends ScenarioIO2SyntaxAux[F[Any, +_, +_], F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, _, _]]], +_, +_]] {
     override val Panic2: Panic2[ScenarioF] = implicitly
 
-    override def bind(generators: ScenarioGen[_]*): ScenarioF[Nothing, Unit] = {
+    override def bind(generators: ScenarioGen[?]*): ScenarioF[Nothing, Unit] = {
       modifyScope(_.add(generators.toSet))
     }
-    override def newScope(generators: ScenarioGen[_]*): ScenarioF[Nothing, Unit] = {
+    override def newScope(generators: ScenarioGen[?]*): ScenarioF[Nothing, Unit] = {
       modifyScope(_ => ScenarioScope(generators.toSet))
     }
     override def pure[A](a: A): ScenarioF[Nothing, A] = {

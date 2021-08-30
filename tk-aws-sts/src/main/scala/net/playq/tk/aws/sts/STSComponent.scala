@@ -12,10 +12,10 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sts.StsClient
 
 import java.net.URI
-import scala.util.chaining._
+import scala.util.chaining.*
 
 trait STSComponent[F[_, _]] {
-  def mkClient(region: Option[String]): Lifecycle[F[Throwable, ?], STSClient[F]]
+  def mkClient(region: Option[String]): Lifecycle[F[Throwable, _], STSClient[F]]
 }
 
 object STSComponent {
@@ -28,9 +28,9 @@ object STSComponent {
   )(implicit
     log: LogIO2[F]
   ) extends STSComponent[F]
-    with IntegrationCheck[F[Throwable, ?]] {
+    with IntegrationCheck[F[Throwable, _]] {
 
-    override def mkClient(region: Option[String]): Lifecycle[F[Throwable, ?], STSClient[F]] = {
+    override def mkClient(region: Option[String]): Lifecycle[F[Throwable, _], STSClient[F]] = {
       val configuredRegion = region.orElse(config.getRegion)
       Lifecycle
         .fromAutoCloseable(F.syncThrowable(makeClientSync(configuredRegion)))

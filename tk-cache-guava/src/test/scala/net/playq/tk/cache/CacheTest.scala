@@ -6,7 +6,7 @@ import izumi.distage.model.definition.Module
 import izumi.distage.modules.DefaultModule2
 import izumi.functional.bio.IO2
 import CacheTest.Ctx
-import SimpleCacheWithAssertions._
+import SimpleCacheWithAssertions.*
 import net.playq.tk.test.{TkTestBaseCtx, WithDummy}
 import zio.IO
 
@@ -23,7 +23,7 @@ abstract class CacheTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends TkTe
   "Cache" should {
     "perform base crud" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         for {
 

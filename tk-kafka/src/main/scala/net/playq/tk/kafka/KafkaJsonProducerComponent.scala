@@ -2,9 +2,9 @@ package net.playq.tk.kafka
 
 import net.playq.tk.fs2kafka.{stringProducerF, _}
 import io.circe.Encoder
-import io.circe.syntax._
+import io.circe.syntax.*
 import izumi.distage.model.definition.Lifecycle
-import izumi.functional.bio.catz._
+import izumi.functional.bio.catz.*
 import izumi.functional.bio.{Async2, Temporal2}
 import KafkaJsonProducerComponent.KafkaJsonProducer
 import net.playq.tk.kafka.config.KafkaPropsConfig

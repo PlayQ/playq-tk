@@ -1,6 +1,6 @@
 package d4s
 
-import izumi.fundamentals.platform.language.Quirks._
+import izumi.fundamentals.platform.language.Quirks.*
 import net.playq.tk.metrics.macrodefs.MacroMetricBase
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -13,8 +13,8 @@ final class MacroMetricSaverTest extends AnyWordSpec {
   }
 
   "print an error message if there is no implicit for mentioned metric" in {
-    shapeless.test.illTyped("implicitly[MacroMetricSaverTest.TestMetric.MetricBase[str.type, Nothing]]", ".*import Nothing.discarded._ to disable.*")
-    shapeless.test.illTyped("implicitly[net.playq.tk.metrics.MacroMetricDynamoMeter[str.type]]", ".*import.*MacroMetricsDynamo.discarded._.*")
+    shapeless.test.illTyped("implicitly[MacroMetricSaverTest.TestMetric.MetricBase[str.type, Nothing]]", ".*import Nothing.discarded.* to disable.*")
+    shapeless.test.illTyped("implicitly[net.playq.tk.metrics.MacroMetricDynamoMeter[str.type]]", ".*import.*MacroMetricsDynamo.discarded.*.*")
   }
 
 }

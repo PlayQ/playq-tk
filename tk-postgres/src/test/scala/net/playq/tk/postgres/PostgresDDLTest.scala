@@ -1,7 +1,7 @@
 package net.playq.tk.postgres
 
 import distage.{ModuleDef, TagK}
-import doobie.syntax.string._
+import doobie.syntax.string.*
 import izumi.distage.model.definition.Module
 import izumi.distage.modules.DefaultModule2
 import izumi.distage.testkit.TestConfig.PriorAxisDIKeys
@@ -25,7 +25,7 @@ object PostgresDDLTest {
   )
 }
 
-abstract class PostgresDDLTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2](implicit ev: TagK[F[Throwable, ?]]) extends TkTestBaseCtx[F, Ctx[F]] {
+abstract class PostgresDDLTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2](implicit ev: TagK[F[Throwable, _]]) extends TkTestBaseCtx[F, Ctx[F]] {
 
   // disable memoization to force component rerun
   override def memoizationRoots: PriorAxisDIKeys = Set.empty
@@ -43,7 +43,7 @@ abstract class PostgresDDLTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2](implic
           """
       }
     }
-    include(PostgresDockerDefault.module[F[Throwable, ?]]("postgres"))
+    include(PostgresDockerDefault.module[F[Throwable, _]]("postgres"))
   }
 
   "Postgres connector Plugin" should {

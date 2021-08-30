@@ -1,6 +1,6 @@
 package d4s.models.table
 
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
 trait HasBillingMode[A] {
   def billingMode(a: A, billingMode: BillingMode): A

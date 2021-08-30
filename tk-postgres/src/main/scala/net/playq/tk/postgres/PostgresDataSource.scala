@@ -16,8 +16,8 @@ final class PostgresDataSource[F[+_, +_]: IO2](
   portCheck: PortCheck,
   logger: IzLogger,
   metrics: MetricRegistryWrapper,
-) extends Lifecycle.Basic[F[Throwable, ?], HikariDataSource]
-  with IntegrationCheck[F[Throwable, ?]] {
+) extends Lifecycle.Basic[F[Throwable, _], HikariDataSource]
+  with IntegrationCheck[F[Throwable, _]] {
 
   override def acquire: F[Throwable, HikariDataSource] = IO2 {
     val config = cfg.hikariConfig
@@ -47,7 +47,7 @@ final class PostgresDataSource[F[+_, +_]: IO2](
   }
 
   private[this] def checkConfig(): ResourceCheck = {
-    import cfg._
+    import cfg.*
 
     val refused = user.isEmpty || url.isEmpty || password.isEmpty || jdbcDriver.isEmpty
 

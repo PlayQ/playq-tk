@@ -2,7 +2,7 @@ package d4s.keys
 
 import izumi.fundamentals.platform.time.IzTime.zonedDateTimeOrdering
 import net.playq.tk.test.rnd.TkRndBase
-import org.scalacheck.Prop._
+import org.scalacheck.Prop.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.Checkers
 

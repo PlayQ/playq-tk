@@ -1,8 +1,8 @@
 package d4s.models
 
 import d4s.codecs.{D4SAttributeEncoder, DynamoKeyAttribute}
-import d4s.models.StringFieldOps._
-import d4s.models.conditions._
+import d4s.models.StringFieldOps.*
+import d4s.models.conditions.*
 import d4s.models.table.DynamoField
 
 import scala.language.implicitConversions

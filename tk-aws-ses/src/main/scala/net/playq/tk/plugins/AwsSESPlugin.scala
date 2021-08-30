@@ -14,11 +14,11 @@ object AwsSESPlugin extends PluginDef {
 }
 
 object AwsSESPluginBase {
-  def prod[F[+_, +_]: TagKK](implicit T: TagK[F[Throwable, ?]]): ConfigModuleDef = new ConfigModuleDef {
+  def prod[F[+_, +_]: TagKK](implicit T: TagK[F[Throwable, _]]): ConfigModuleDef = new ConfigModuleDef {
     tag(Repo.Prod)
     make[SESComponent[F]].fromResource[SESResource[F]]
     make[SESClient[F]].from[SESClient.Impl[F]]
-    include(SESDocker.module[F[Throwable, ?]]("aws.ses"))
+    include(SESDocker.module[F[Throwable, _]]("aws.ses"))
   }
 
   def dummy[F[+_, +_]: TagKK]: ModuleDef = new ModuleDef {

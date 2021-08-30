@@ -29,11 +29,7 @@ object Targets {
     platform = Platform.Jvm,
     language = targetScala,
     settings = Seq(
-      "scalacOptions" ++= Defaults.Scala213Options.filterNot(Set[Const]("-Xsource:3", "-P:kind-projector:underscore-placeholders")),
-      "scalacOptions" ++= Seq(
-        "-Wconf:msg=kind-projector:silent",
-        "-Wconf:msg=will.be.interpreted.as.a.wildcard.in.the.future:silent",
-      ),
+      "scalacOptions" ++= Defaults.Scala213Options,
       "scalacOptions" ++= Seq(
         SettingKey(None, release = Some(true)) := Seq(
           "-opt:l:inline",

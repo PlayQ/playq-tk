@@ -8,23 +8,23 @@ import logstage.LogIO2
 import net.playq.tk.aws.tagging.SharedTags
 import net.playq.tk.aws.s3.config.S3Config
 import net.playq.tk.aws.s3.health.S3HealthChecker
-import net.playq.tk.aws.s3.models._
+import net.playq.tk.aws.s3.models.*
 import net.playq.tk.metrics.{MacroMetricS3Meter, MacroMetricS3Timer}
 import net.playq.tk.quantified.SyncThrowable
 import net.playq.tk.util.ManagedFile
 import org.apache.commons.compress.utils.IOUtils
 import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model._
+import software.amazon.awssdk.services.s3.model.*
 import software.amazon.awssdk.services.s3.presigner.model.{GetObjectPresignRequest, PutObjectPresignRequest}
 
 import java.net.{URL, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path, StandardCopyOption}
 import scala.collection.concurrent.TrieMap
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.util.Try
-import scala.util.chaining._
+import scala.util.chaining.*
 
 trait S3BucketFactory[F[+_, +_]] {
   def mkClient[BucketId <: S3BucketId](bucketId: BucketId): Lifecycle2[F, Throwable, S3Bucket[F, BucketId]]
@@ -34,7 +34,7 @@ trait S3BucketFactory[F[+_, +_]] {
 object S3BucketFactory {
 
   final class Dummy[F[+_, +_]: IO2: SyncThrowable] extends S3BucketFactory[F] {
-    private[this] val buckets = TrieMap.empty[String, S3Bucket[F, _]]
+    private[this] val buckets = TrieMap.empty[String, S3Bucket[F, ?]]
     override def mkClient[BucketId <: S3BucketId](bucketId: BucketId): Lifecycle2[F, Throwable, S3Bucket[F, BucketId]] = Lifecycle.liftF(F.sync {
       buckets.getOrElseUpdate(bucketId.bucketName, new S3Bucket.Dummy[F, BucketId](bucketId)).asInstanceOf[S3Bucket[F, BucketId]]
     })
@@ -229,7 +229,7 @@ object S3BucketFactory {
         objectOp("GetObject", key, "downloading")(downloadImpl(key))
       }
 
-      override def downloadToFile(key: String, path: Option[Path]): Lifecycle[F[Throwable, ?], ManagedFile] = {
+      override def downloadToFile(key: String, path: Option[Path]): Lifecycle[F[Throwable, _], ManagedFile] = {
         Lifecycle.fromAutoCloseable {
           objectOp("GetObject", key, "downloading")(downloadToFileImpl(key, path))
         }
@@ -269,11 +269,11 @@ object S3BucketFactory {
         copyObject(sourceKey, bucketName, targetKey)
       }
 
-      override def streamObjects(prefix: String): Stream[F[Throwable, ?], String] = {
+      override def streamObjects(prefix: String): Stream[F[Throwable, _], String] = {
         streamObjectsImpl(prefix, "list-bucket-prefix-ops")(_.key)
       }
 
-      override def streamObjectsMeta(prefix: String): Stream[F[Throwable, ?], S3ObjectMeta] = {
+      override def streamObjectsMeta(prefix: String): Stream[F[Throwable, _], S3ObjectMeta] = {
         streamObjectsImpl(prefix, "list-bucket-prefix-ops")(toMeta(bucketName))
       }
 
@@ -353,7 +353,7 @@ object S3BucketFactory {
       )(implicit
         saveCounter: MacroMetricS3Meter[metric.type],
         saveTimer: MacroMetricS3Timer[metric.type],
-      ): Stream[F[Throwable, ?], A] = {
+      ): Stream[F[Throwable, _], A] = {
         val request = ListObjectsRequest.builder().bucket(bucketName).prefix(prefix).build()
         Stream.eval {
           objectOp("List first page", prefix, metric) {

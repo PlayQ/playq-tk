@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 import software.amazon.awssdk.services.costexplorer.model.{Group, MetricValue, ResultByTime}
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final case class CostResponse(
   groupDefinitions: Seq[CostGroupDefinition],

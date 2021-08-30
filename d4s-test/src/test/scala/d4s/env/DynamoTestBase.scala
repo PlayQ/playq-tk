@@ -1,7 +1,7 @@
 package d4s.env
 
 import d4s.config.{DynamoMeta, ProvisionedThroughputConfig, ProvisioningConfig, TableProvisionedThroughputConfig}
-import d4s.env.Models._
+import d4s.env.Models.*
 import d4s.models.table.TableDef
 import d4s.test.envs.DynamoTestEnv
 import distage.ModuleDef
@@ -14,7 +14,7 @@ import zio.{IO, ZIO}
 
 abstract class DynamoTestBase[Ctx](implicit val ctor: ClassConstructor[Ctx]) extends TkTestBase[Ctx] with DynamoTestEnv[IO] {
 
-  protected[d4s] final def scopeZIO[R: HasConstructor](f: Ctx => ZIO[R, _, _]): Functoid[IO[_, Unit]] = ctor.provider.map2(HasConstructor[R])(f(_).unit.provide(_))
+  protected[d4s] final def scopeZIO[R: HasConstructor](f: Ctx => ZIO[R, ?, ?]): Functoid[IO[?, Unit]] = ctor.provider.map2(HasConstructor[R])(f(_).unit.provide(_))
 
   override def moduleOverrides: distage.Module = super.moduleOverrides overriddenBy new ModuleDef {
     make[DynamoMeta].from {

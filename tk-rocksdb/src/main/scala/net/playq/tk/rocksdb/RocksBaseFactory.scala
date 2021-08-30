@@ -13,7 +13,7 @@ trait RocksBaseFactory[F[+_, +_]] {
 
 object RocksBaseFactory {
   final class Dummy[F[+_, +_]: IO2] extends RocksBaseFactory[F] {
-    private[this] val bases = mutable.HashMap.empty[RocksBaseId, RocksBase[F, _]]
+    private[this] val bases = mutable.HashMap.empty[RocksBaseId, RocksBase[F, ?]]
     override def mkBase[RocksDBId <: RocksBaseId](baseId: RocksDBId): Lifecycle2[F, Throwable, RocksBase[F, RocksDBId]] = Lifecycle.liftF(F.sync {
       bases.getOrElseUpdate(baseId, new RocksBase.Dummy[F, RocksDBId]).asInstanceOf[RocksBase[F, RocksDBId]]
     })

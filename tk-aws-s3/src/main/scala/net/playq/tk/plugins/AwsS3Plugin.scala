@@ -18,7 +18,7 @@ object AwsS3Plugin extends PluginDef with ConfigModuleDef {
 
   makeConfig[S3BucketCached.CacheFilesTTL]("aws.s3.cache")
 
-  def prod[F[+_, +_]: TagKK](implicit T: TagK[F[Throwable, ?]]): ModuleDef = new ModuleDef {
+  def prod[F[+_, +_]: TagKK](implicit T: TagK[F[Throwable, _]]): ModuleDef = new ModuleDef {
     tag(Repo.Prod)
 
     make[S3BucketFactory[F]].from[S3BucketFactory.Impl[F]]
@@ -26,7 +26,7 @@ object AwsS3Plugin extends PluginDef with ConfigModuleDef {
     make[S3HealthChecker[F]]
     many[HealthChecker[F]].weak[S3HealthChecker[F]]
 
-    include(S3Docker.module[F[Throwable, ?]]("aws.s3"))
+    include(S3Docker.module[F[Throwable, _]]("aws.s3"))
   }
   def dummy[F[+_, +_]: TagKK]: ModuleDef = new ModuleDef {
     tag(Repo.Dummy)

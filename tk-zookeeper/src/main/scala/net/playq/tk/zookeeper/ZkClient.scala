@@ -1,10 +1,10 @@
 package net.playq.tk.zookeeper
 
-import izumi.fundamentals.platform.language.Quirks._
+import izumi.fundamentals.platform.language.Quirks.*
 import ZkClient.ZkClientOps
 
 import java.nio.charset.StandardCharsets.UTF_8
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 trait ZkClient[F[_, _]] {
   def getData(path: String): F[Throwable, String]

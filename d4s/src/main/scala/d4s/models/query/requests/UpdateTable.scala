@@ -5,15 +5,15 @@ import d4s.models.query.DynamoRequest
 import d4s.models.query.DynamoRequest.WithTableReference
 import d4s.models.table.TableReference
 import d4s.models.table.index.{GlobalIndexUpdate, ProvisionedGlobalIndex}
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
+import scala.jdk.CollectionConverters.*
+import scala.util.chaining.*
 
 final case class UpdateTable(
   table: TableReference,
   newProvisioning: Option[ProvisionedThroughputConfig] = None,
-  newGlobalIndex: Option[ProvisionedGlobalIndex[_, _]] = None,
+  newGlobalIndex: Option[ProvisionedGlobalIndex[?, ?]] = None,
   updateGlobalIndexes: Set[GlobalIndexUpdate]          = Set.empty,
   deleteGlobalIndex: Option[String]                    = None,
 ) extends DynamoRequest
@@ -26,7 +26,7 @@ final case class UpdateTable(
 
   def withNewProvisioning(provisioning: ProvisionedThroughputConfig): UpdateTable = copy(newProvisioning = Some(provisioning))
 
-  def withIndexToCreate(index: ProvisionedGlobalIndex[_, _]): UpdateTable = copy(newGlobalIndex = Some(index))
+  def withIndexToCreate(index: ProvisionedGlobalIndex[?, ?]): UpdateTable = copy(newGlobalIndex = Some(index))
 
   def withIndexesToUpdate(indexes: Set[GlobalIndexUpdate]): UpdateTable = copy(updateGlobalIndexes = indexes)
 

@@ -12,7 +12,7 @@ object DynamoClientTest {
 final class DynamoClientTest extends DynamoTestBase[Ctx] with TkRndBase {
   "list tables" in scopeIO {
     ctx =>
-      import ctx._
+      import ctx.*
       for {
         response <- dynamo.raw(_.listTables())
         _        <- assertIO(response != null)

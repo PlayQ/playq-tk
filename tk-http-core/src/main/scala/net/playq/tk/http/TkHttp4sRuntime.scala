@@ -2,7 +2,7 @@ package net.playq.tk.http
 
 import izumi.distage.model.definition.Id
 import izumi.functional.bio.{IO2, Temporal2, UnsafeRun2}
-import izumi.idealingua.runtime.rpc.http4s._
+import izumi.idealingua.runtime.rpc.http4s.*
 import net.playq.tk.quantified.{ConcurrentEffect2, TimerThrowable}
 
 import scala.concurrent.ExecutionContext

@@ -1,15 +1,15 @@
 package d4s.models.query.requests
 
-import d4s.models.conditions.Condition._
+import d4s.models.conditions.Condition.*
 import d4s.models.conditions.{Condition, LogicalOperator}
 import d4s.models.query.DynamoRequest
-import d4s.models.query.DynamoRequest._
+import d4s.models.query.DynamoRequest.*
 import d4s.models.table.TableReference
 import d4s.models.table.index.TableIndex
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, QueryRequest, QueryResponse, Select}
 
 import java.util
-import scala.util.chaining._
+import scala.util.chaining.*
 
 final case class Query(
   table: TableReference,
@@ -49,7 +49,7 @@ final case class Query(
 
   override def withScanIndexForward(sif: Boolean): Query = copy(scanIndexForward = sif)
 
-  override def withIndex(index: TableIndex[_, _]): Query = copy(index = Some(index.name))
+  override def withIndex(index: TableIndex[?, ?]): Query = copy(index = Some(index.name))
 
   override def withStartKeyMap(startKey: util.Map[String, AttributeValue]): Query = copy(startKey = Some(startKey))
 

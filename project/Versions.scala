@@ -7,7 +7,7 @@ object V {
   // ToolKit Deps
 
   // compiler
-  val kind_projector = "0.11.3"
+  val kind_projector = "0.13.1"
   val scapegoat      = "1.4.9"
 
   // java

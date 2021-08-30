@@ -1,7 +1,7 @@
 package net.playq.tk.postgres.ddl
 
 import doobie.hikari.HikariTransactor
-import doobie.syntax.connectionio._
+import doobie.syntax.connectionio.*
 import doobie.util.fragment.Fragment
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{Applicative2, F}
@@ -15,10 +15,10 @@ trait DDLComponent {
 object DDLComponent {
 
   final class DDLUpComponent[F[+_, +_]: Applicative2: BracketThrowable](
-    transactor: HikariTransactor[F[Throwable, ?]],
+    transactor: HikariTransactor[F[Throwable, _]],
     ddls: Set[DDLComponent],
     log: LogIO2[F],
-  ) extends Lifecycle.Self[F[Throwable, ?], DDLUpComponent[F]] {
+  ) extends Lifecycle.Self[F[Throwable, _], DDLUpComponent[F]] {
 
     override def acquire: F[Throwable, Unit] = {
       ddlUp *> log.info(s"DDL Up successful!")

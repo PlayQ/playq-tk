@@ -25,7 +25,7 @@ abstract class RocksDBTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends Tk
 
   "perform base operations" in scopeIO {
     ctx =>
-      import ctx._
+      import ctx.*
       val key   = "testKey"
       val value = "testValue"
       for {

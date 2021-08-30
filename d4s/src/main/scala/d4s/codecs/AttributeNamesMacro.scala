@@ -16,7 +16,7 @@ object AttributeNamesMacro {
   }
 
   def fetchValsMacro[T: c.WeakTypeTag](c: blackbox.Context)(checkReserved: Boolean): c.Expr[Set[String]] = {
-    import c.universe._
+    import c.universe.*
 
     val members = c.weakTypeOf[T].members.toList.collect {
       case m: TermSymbolApi if m.isVal => m.name.decodedName.toString.trim

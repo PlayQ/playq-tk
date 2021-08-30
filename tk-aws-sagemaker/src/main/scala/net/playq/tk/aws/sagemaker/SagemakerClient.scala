@@ -22,7 +22,7 @@ import net.playq.tk.metrics.{MacroMetricSagemakerMeter, MacroMetricSagemakerTime
 import net.playq.tk.util.ManagedFile
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sagemaker.SageMakerClient
-import software.amazon.awssdk.services.sagemaker.model._
+import software.amazon.awssdk.services.sagemaker.model.*
 
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
@@ -36,7 +36,7 @@ trait SagemakerClient[F[+_, +_]] {
     trainingScript: TrainingScript,
     trainingImage: TrainingImageURI,
     trainingHardware: TrainingHardware,
-    bucket: S3Bucket[F, _],
+    bucket: S3Bucket[F, ?],
     trainingFacts: Seq[Either[S3URI, File]],
   ): F[Throwable, TrainingJobName]
 
@@ -57,7 +57,7 @@ object SagemakerClient {
     metrics: Metrics[F],
     entropy: Entropy2[F],
     config: SagemakerConfig,
-  ) extends Lifecycle.Of[F[Throwable, ?], SagemakerClient[F]](inner = for {
+  ) extends Lifecycle.Of[F[Throwable, _], SagemakerClient[F]](inner = for {
       client <- Lifecycle.fromAutoCloseable(F.syncThrowable {
         SageMakerClient
           .builder()
@@ -70,7 +70,7 @@ object SagemakerClient {
         trainingScript: TrainingScript,
         trainingImage: TrainingImageURI,
         trainingHardware: TrainingHardware,
-        bucket: S3Bucket[F, _],
+        bucket: S3Bucket[F, ?],
         trainingFacts: Seq[Either[S3URI, File]],
       ): F[Throwable, TrainingJobName] = {
         for {
@@ -176,7 +176,7 @@ object SagemakerClient {
         }
       }
 
-      private[this] def uploadFacts(bucket: S3Bucket[F, _], trainingJobName: String)(facts: File): F[Throwable, Channel] = {
+      private[this] def uploadFacts(bucket: S3Bucket[F, ?], trainingJobName: String)(facts: File): F[Throwable, Channel] = {
         val outputFile = s"$trainingJobName/training/${facts.getName}"
         val s3File     = S3File(outputFile, S3FileFormat.ORC)
 
@@ -205,7 +205,7 @@ object SagemakerClient {
           .build()
       }
 
-      private[this] def uploadSources(bucket: S3Bucket[F, _], trainingJobName: String)(trainingScript: TrainingScript): F[Throwable, UploadedSources] = {
+      private[this] def uploadSources(bucket: S3Bucket[F, ?], trainingJobName: String)(trainingScript: TrainingScript): F[Throwable, UploadedSources] = {
         gzippedSourceArchive(trainingScript).use {
           case (tarFile, scriptFileName) =>
             val outputFile = s"$trainingJobName/source.tar.gz"
@@ -256,10 +256,10 @@ object SagemakerClient {
     override def toString: String = s3Uri
   }
   object S3URI {
-    def apply[F[_, _]](bucket: S3Bucket[F, _], key: String): S3URI = {
+    def apply[F[_, _]](bucket: S3Bucket[F, ?], key: String): S3URI = {
       S3URI(S3URI.format(bucket, key))
     }
-    def format[F[_, _]](bucket: S3Bucket[F, _], key: String): String = {
+    def format[F[_, _]](bucket: S3Bucket[F, ?], key: String): String = {
       s"s3://${bucket.name}/$key"
     }
   }

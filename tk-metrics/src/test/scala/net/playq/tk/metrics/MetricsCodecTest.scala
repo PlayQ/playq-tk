@@ -1,8 +1,8 @@
 package net.playq.tk.metrics
 
 import net.playq.tk.metrics.base.MetricDef
-import net.playq.tk.metrics.base.MetricDef._
-import org.scalacheck.ScalacheckShapeless._
+import net.playq.tk.metrics.base.MetricDef.*
+import org.scalacheck.ScalacheckShapeless.*
 import org.scalacheck.derive.MkArbitrary
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.wordspec.AnyWordSpec

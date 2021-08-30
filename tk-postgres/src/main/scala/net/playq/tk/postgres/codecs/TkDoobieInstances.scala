@@ -2,20 +2,20 @@ package net.playq.tk.postgres.codecs
 
 import cats.Show
 import cats.data.NonEmptyList
-import cats.implicits._
+import cats.implicits.*
 import doobie.enumerated.JdbcType
 import doobie.postgres.Instances
 import doobie.util.meta.Meta
 import doobie.util.{Get, Put}
 import io.circe.jawn.parse
-import io.circe.syntax._
+import io.circe.syntax.*
 import io.circe.{Decoder, Encoder, Json, Printer}
 import izumi.fundamentals.platform.time.IzTime
 import org.postgresql.util.PGobject
 import org.tpolecat.typename.TypeName
 
 import java.time.{LocalDateTime, OffsetDateTime, ZoneOffset, ZonedDateTime}
-import scala.util.chaining._
+import scala.util.chaining.*
 
 trait TkDoobieInstances {
   this: Instances =>

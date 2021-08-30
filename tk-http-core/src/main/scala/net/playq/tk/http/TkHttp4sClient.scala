@@ -3,15 +3,15 @@ package net.playq.tk.http
 import cats.effect.Resource
 import izumi.distage.model.definition.Id
 import net.playq.tk.quantified.ConcurrentEffect2
-import org.http4s._
+import org.http4s.*
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.FollowRedirect
 
 import javax.net.ssl.SSLContext
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration._
-import scala.util.chaining._
+import scala.concurrent.duration.*
+import scala.util.chaining.*
 
 trait TkHttp4sClient[F[_, _]] {
   private[http] type M[A] = F[Throwable, A]
@@ -27,7 +27,7 @@ object TkHttp4sClient {
 
   final case class HttpClientCfg(timeout: FiniteDuration)
 
-  def apply[F[+_, +_]: ConcurrentEffect2](client: Client[F[Throwable, ?]]): TkHttp4sClient[F] = {
+  def apply[F[+_, +_]: ConcurrentEffect2](client: Client[F[Throwable, _]]): TkHttp4sClient[F] = {
     new Impl[F](ExecutionContext.global, HttpClientCfg(20.seconds)) {
       override private[http] def newClient(sslContext: Option[SSLContext]): Resource[M, Client[M]] = {
         Resource.pure(client)
@@ -36,12 +36,12 @@ object TkHttp4sClient {
   }
 
   def of[F[+_, +_]](
-    pf: PartialFunction[Request[F[Throwable, ?]], F[Throwable, Response[F[Throwable, ?]]]]
+    pf: PartialFunction[Request[F[Throwable, _]], F[Throwable, Response[F[Throwable, _]]]]
   )(implicit F: ConcurrentEffect2[F]
   ): TkHttp4sClient[F] = {
     TkHttp4sClient[F](
       Client.fromHttpApp(
-        HttpApp[F[Throwable, ?]](request => pf.applyOrElse(request, (_: Request[F[Throwable, ?]]) => F.pure(Response.notFound)))
+        HttpApp[F[Throwable, _]](request => pf.applyOrElse(request, (_: Request[F[Throwable, _]]) => F.pure(Response.notFound)))
       )
     )
   }

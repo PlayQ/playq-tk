@@ -17,7 +17,7 @@ object S3ResourceSkipTest {
 
 abstract class S3ResourceSkipTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] {
   override def moduleOverrides: Module = super.moduleOverrides ++ new ModuleDef {
-    import scala.concurrent.duration._
+    import scala.concurrent.duration.*
     make[S3Config].from(S3Config(Some("asda_sadas"), None, 1000.seconds, Nil))
   }
 

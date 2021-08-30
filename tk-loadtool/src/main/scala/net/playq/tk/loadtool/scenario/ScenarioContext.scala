@@ -2,7 +2,7 @@ package net.playq.tk.loadtool.scenario
 
 import java.time.ZonedDateTime
 import izumi.functional.bio.{Clock2, Exit, F, IO2, Primitives2, Ref2}
-import izumi.fundamentals.platform.strings.IzString._
+import izumi.fundamentals.platform.strings.IzString.*
 import logstage.LogIO2
 import ScenarioContext.ExecutionReport
 import ScenarioContext.ExecutionReport.Stats

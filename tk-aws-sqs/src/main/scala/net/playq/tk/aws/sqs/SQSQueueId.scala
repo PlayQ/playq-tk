@@ -1,7 +1,7 @@
 package net.playq.tk.aws.sqs
 
 import net.playq.tk.aws.common.ServiceName
-import net.playq.tk.aws.common.TagsConfigOps._
+import net.playq.tk.aws.common.TagsConfigOps.*
 import net.playq.tk.aws.tagging.AwsNameSpace
 
 abstract class SQSQueueId(

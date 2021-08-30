@@ -27,7 +27,7 @@ object RedisComponent {
     redisConfig: RedisConfig,
     metrics: Metrics[F],
     portCheck: PortCheck,
-  ) extends Lifecycle.Of[F[Throwable, ?], RedisComponent[F]](for {
+  ) extends Lifecycle.Of[F[Throwable, _], RedisComponent[F]](for {
       jedisPool <- Lifecycle.fromAutoCloseable(F.syncThrowable(new JedisPool(URI.create(redisConfig.endpoint))))
     } yield new RedisComponent[F] {
       def rawRequest[A](
@@ -48,7 +48,7 @@ object RedisComponent {
         }
       }
     })
-    with IntegrationCheck[F[Throwable, ?]] {
+    with IntegrationCheck[F[Throwable, _]] {
     override def resourcesAvailable(): F[Throwable, ResourceCheck] = F.sync {
       if (redisConfig.integrationCheck) {
         portCheck.checkUri(URI.create(redisConfig.endpoint), 6379, "Redis connection.")

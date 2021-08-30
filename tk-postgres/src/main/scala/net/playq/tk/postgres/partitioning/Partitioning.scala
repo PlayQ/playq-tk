@@ -1,16 +1,16 @@
 package net.playq.tk.postgres.partitioning
 
-import cats.syntax.applicativeError._
-import cats.syntax.apply._
-import cats.syntax.foldable._
-import cats.syntax.functor._
+import cats.syntax.applicativeError.*
+import cats.syntax.apply.*
+import cats.syntax.foldable.*
+import cats.syntax.functor.*
 import com.zaxxer.hikari.pool.HikariProxyConnection
 import doobie.SqlState
 import doobie.free.connection.ConnectionIO
 import doobie.free.implicits.{AsyncConnectionIO => F}
 import doobie.free.{connection, preparedstatement}
 import doobie.postgres.sqlstate.class42.UNDEFINED_TABLE
-import doobie.syntax.string._
+import doobie.syntax.string.*
 import doobie.util.fragment.Fragment
 import doobie.util.update.Update
 import logstage.{IzLogger, LogIO}
@@ -69,7 +69,7 @@ final class Partitioning(
     }
   }
 
-  def partitionBatchWrite[T: ? <:< PartitionedWrite[K], K: PartitionKey](
+  def partitionBatchWrite[T: -_ <:< PartitionedWrite[K], K: PartitionKey](
     table: TableName,
     partitioner: CreatePartition[K],
     partitionPrimaryKeys: Set[ColumnName],

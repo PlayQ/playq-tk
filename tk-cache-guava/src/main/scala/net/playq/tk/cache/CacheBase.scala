@@ -4,7 +4,7 @@ import com.google.common.cache.{Cache, CacheBuilder}
 import izumi.functional.bio.{F, IO2}
 
 import java.util.concurrent.TimeUnit
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 @SuppressWarnings(Array("PointlessTypeBounds"))
 object CacheBase {

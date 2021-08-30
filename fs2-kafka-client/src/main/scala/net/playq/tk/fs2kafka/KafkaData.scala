@@ -1,7 +1,7 @@
 package net.playq.tk.fs2kafka
 
-import cats.syntax.functor._
-import cats.syntax.traverse._
+import cats.syntax.functor.*
+import cats.syntax.traverse.*
 import cats.{Applicative, Eval, Traverse}
 import fs2.Stream
 import org.apache.kafka.clients.consumer.{Consumer, ConsumerRecord}
@@ -14,7 +14,7 @@ final case class KafkaData[+A](topic: String, partition: Partition, offset: Offs
 }
 
 object KafkaData {
-  def apply[T](record: ConsumerRecord[_, T]): KafkaData[T] = {
+  def apply[T](record: ConsumerRecord[?, T]): KafkaData[T] = {
     KafkaData(record.topic, record.partition, record.offset, record.value)
   }
 

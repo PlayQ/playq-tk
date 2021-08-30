@@ -3,13 +3,13 @@ package d4s
 import d4s.DynamoInterpreterTest.Ctx
 import d4s.codecs.{AttributeNames, D4SAttributeEncoder, D4SCodec, WithD4S}
 import d4s.env.DynamoTestBase
-import d4s.env.Models._
-import d4s.implicits._
+import d4s.env.Models.*
+import d4s.implicits.*
 import d4s.models.query.DynamoRequest.BatchWriteEntity
 import d4s.models.query.{DynamoQuery, DynamoRequest}
 import d4s.models.{DynamoException, OffsetLimit}
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
-import zio.interop.catz._
+import zio.interop.catz.*
 import zio.{IO, Ref, Task, ZIO}
 
 import java.util.UUID
@@ -34,7 +34,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform put" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload = InterpreterTestPayload("perform put", 12, "f3", RandomPayload("f2"))
 
         for {
@@ -47,7 +47,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform delete" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload = InterpreterTestPayload("perform delete", 22, "f3", RandomPayload("f2"))
         for {
           _     <- connector.runUnrecorded(testTable.table.putItem(payload))
@@ -63,7 +63,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform update" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload1 = InterpreterTestPayload("perform update", 3, "f3", RandomPayload("f2"))
         val payload2 = InterpreterTestPayload("perform update", 3, "f33", RandomPayload("f5"))
         for {
@@ -81,7 +81,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform insert if not exists" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload1 = InterpreterTestPayload("perform insert if not exists", 4, "f3", RandomPayload("f2"))
         val payload2 = InterpreterTestPayload("perform insert if not exists", 4, "f33", RandomPayload("f5"))
         for {
@@ -101,7 +101,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform delete if exists" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload = InterpreterTestPayload("perform delete if exists", 5, "f3", RandomPayload("f2"))
         for {
           _     <- connector.runUnrecorded(testTable.table.putItem(payload))
@@ -121,7 +121,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform delete if attribute begins with some string" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         val payload = InterpreterTestPayload("perform delete if attribute begins with some string", 5, "prefix-f3", RandomPayload("f2"))
 
@@ -141,7 +141,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform put/get/delete batch " in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val randomPayload = RandomPayload("f2")
         val stressed = IO.foreach((1 to 200).toList) {
           indx =>
@@ -170,7 +170,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform update with condition" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload1         = InterpreterTestPayload("perform update with condition", 9, "f3", RandomPayload("f22"))
         val modifiedPayload1 = InterpreterTestPayload("perform update with condition", 9, "f33", RandomPayload("3123"))
         for {
@@ -188,7 +188,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform update with null and not null condition" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         final case class NullableField(field4: Option[String])
         object NullableField extends WithD4S[NullableField]
@@ -226,7 +226,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform update with complex condition" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         val payload1         = InterpreterTestPayload("perform update with complex condition", 3, "f3", RandomPayload("f22"))
         val modifiedPayload1 = InterpreterTestPayload("perform update with complex condition", 3, "f33", RandomPayload("3123"))
@@ -249,7 +249,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform update with updateExpression" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         import ctx.testTable.table
 
         final case class AdditionalFields(field4: String, field5: Int)
@@ -304,7 +304,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform ranges read" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val hash     = "ranges read-delete"
         val range1   = 111
         val range2   = 122
@@ -334,7 +334,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform queries on index" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload = InterpreterTestPayload("index_test", 333, "f3", RandomPayload("f2"))
         for {
           _ <- connector.runUnrecorded(testTable.table.putItem(payload))
@@ -351,7 +351,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform queries with conditions" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload = InterpreterTestPayload("query_conditions_test", 333, "f3", RandomPayload("f2"))
         for {
           _ <- connector.runUnrecorded(testTable.table.putItem(payload))
@@ -376,7 +376,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform paged execution" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload      = InterpreterTestPayload("paging_test", 333, "f3", RandomPayload("f2"))
         val prefix       = UUID.randomUUID()
         val put          = testTable.table.putItem.withPrefix(prefix)
@@ -399,7 +399,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform streamed execution" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload      = InterpreterTestPayload("streaming_test", 333, "f3", RandomPayload("f2"))
         val prefix       = UUID.randomUUID()
         val put          = testTable.table.putItem.withPrefix(prefix)
@@ -418,7 +418,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
           _ <-
             connector
               .runUnrecorded(get)
-              .evalMap[IO[Throwable, ?], Unit](res => ref.update(_ ++ res)).compile.drain
+              .evalMap[IO[Throwable, _], Unit](res => ref.update(_ ++ res)).compile.drain
           all <- ref.get
           _   <- assertIO(all.size == expectedSize)
 
@@ -435,7 +435,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform offset operations" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload      = InterpreterTestPayload("offset_test", 333, "f3", RandomPayload("f2"))
         val prefix       = UUID.randomUUID()
         val put          = testTable.table.putItem.withPrefix(prefix)
@@ -460,7 +460,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform batched operations execution" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload      = InterpreterTestPayload("batch_test", 333, "f3", RandomPayload("f2"))
         val prefix       = UUID.randomUUID()
         val expectedSize = 100
@@ -499,7 +499,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "describe/update tags" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         for {
           arn <- connector.runUnrecorded(testTable.table.describe).map(_.table().tableArn())
           _   <- connector.runUnrecorded(testTable.table.updateTags(arn, Map("someTags" -> "test")))
@@ -509,7 +509,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "add, update counter field" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val v1     = UUID.randomUUID().toString
         val v2     = UUID.randomUUID().toString
         val prefix = UUID.randomUUID()
@@ -549,13 +549,13 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform table update" in scopeIO {
       ctx =>
-        import ctx._
-        import currentTable._
-        import d4s.models.table.index.ProvisionedGlobalIndex._
+        import ctx.*
+        import currentTable.*
+        import d4s.models.table.index.ProvisionedGlobalIndex.*
         import zio.duration.Duration.fromScala
 
-        import scala.concurrent.duration._
-        import scala.jdk.CollectionConverters._
+        import scala.concurrent.duration.*
+        import scala.jdk.CollectionConverters.*
 
         def repeatableUpdateQuery[DR <: DynamoRequest, Dec](query: DynamoQuery[DR, Dec]) = {
           def retryPolicy(attempts: Int): ZIO[Any, DynamoException, Unit] = {
@@ -598,7 +598,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform streamed DeleteBatch request" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload      = InterpreterTestPayload("batch_test", 333, "f3", RandomPayload("f2"))
         val prefix       = UUID.randomUUID()
         val expectedSize = 100
@@ -652,7 +652,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "perform streamed DeleteBatch request on non-existent table with retryWithPrefix" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val prefix1 = UUID.randomUUID()
         val prefix2 = UUID.randomUUID()
 
@@ -673,7 +673,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "filter by number set" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload = InterpreterTestPayload("number_test", 333, "f4", RandomPayload("f2"))
         for {
           _ <- connector.runUnrecorded(testTable.table.putItem(payload))
@@ -717,7 +717,7 @@ final class DynamoInterpreterTest extends DynamoTestBase[Ctx] {
 
     "DynamoConnectorLocal (d4z) should perform actions" in scopeZIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val payload = InterpreterTestPayload("perform put2", 321, "f3", RandomPayload("f2"))
         for {
           _     <- d4z.runUnrecorded(testTable.table.putItem(payload))

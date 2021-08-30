@@ -2,7 +2,7 @@ package d4s.codecs
 
 import java.util.UUID
 
-import cats.syntax.either._
+import cats.syntax.either.*
 import d4s.models.DynamoException.DecoderException
 
 import scala.util.Try

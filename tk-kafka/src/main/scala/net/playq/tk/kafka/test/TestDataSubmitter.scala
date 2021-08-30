@@ -3,21 +3,21 @@ package net.playq.tk.kafka.test
 import cats.effect.Blocker
 import fs2.Stream
 import io.circe.Encoder
-import io.circe.syntax._
+import io.circe.syntax.*
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{BlockingIO2, F, IO2}
-import izumi.fundamentals.platform.language.Quirks._
+import izumi.fundamentals.platform.language.Quirks.*
 import logstage.LogIO2
-import net.playq.tk.fs2kafka._
+import net.playq.tk.fs2kafka.*
 import net.playq.tk.kafka.config.KafkaPropsConfig
 import net.playq.tk.quantified.{AsyncThrowable, ContextShiftThrowable}
 import org.apache.kafka.clients.admin.{AdminClient, NewTopic}
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.TopicPartition
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.util.Random
-import scala.util.chaining._
+import scala.util.chaining.*
 
 trait TestDataSubmitter[F[_, _]] {
   def submit[T: Encoder](topicPartition: TopicPartition, jsons: Iterable[T]): F[Throwable, Unit]

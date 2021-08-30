@@ -7,7 +7,7 @@ import d4s.models.table.TableReference
 import izumi.fundamentals.platform.functional.Identity
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, BatchGetItemRequest, BatchGetItemResponse, KeysAndAttributes}
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final case class GetItemBatch(
   table: TableReference,

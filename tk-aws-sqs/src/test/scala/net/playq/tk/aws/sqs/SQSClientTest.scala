@@ -3,7 +3,7 @@ package net.playq.tk.aws.sqs
 import distage.{ModuleDef, TagKK}
 import izumi.distage.model.definition.Module
 import izumi.distage.modules.DefaultModule2
-import izumi.functional.bio.catz._
+import izumi.functional.bio.catz.*
 import izumi.functional.bio.{F, Fork2, IO2, Primitives2}
 import izumi.functional.mono.Entropy
 import izumi.fundamentals.platform.functional.Identity
@@ -50,7 +50,7 @@ abstract class SQSClientTestBase[F[+_, +_]: IO2: Primitives2: Fork2: TagKK: Defa
   "SQS client" should {
     "Perform base crud" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         val testMessage = "test message"
         for {
@@ -66,7 +66,7 @@ abstract class SQSClientTestBase[F[+_, +_]: IO2: Primitives2: Fork2: TagKK: Defa
 
     "skip failed to decode" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         val testMessage = "test message"
         for {
@@ -80,7 +80,7 @@ abstract class SQSClientTestBase[F[+_, +_]: IO2: Primitives2: Fork2: TagKK: Defa
 
     "Stream processing" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val msgsNum   = 20
         val batchSize = 10
 
@@ -107,7 +107,7 @@ abstract class SQSClientTestBase[F[+_, +_]: IO2: Primitives2: Fork2: TagKK: Defa
 
     "Virtual queues" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         val testMessage1 = "test message 1"
         val testMessage2 = "test message 2"

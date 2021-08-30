@@ -1,13 +1,13 @@
 package d4s.models.query.requests
 
 import d4s.models.conditions.Condition
-import d4s.models.conditions.Condition._
+import d4s.models.conditions.Condition.*
 import d4s.models.query.DynamoRequest
 import d4s.models.query.DynamoRequest.{WithAttributeNames, WithAttributeValues, WithCondition, WithKey, WithTableReference}
 import d4s.models.table.TableReference
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, DeleteItemRequest, DeleteItemResponse}
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final case class DeleteItem(
   table: TableReference,

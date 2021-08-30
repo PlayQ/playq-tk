@@ -38,7 +38,7 @@ object S3BucketCached {
     clock: Clock2[F],
     config: CacheFilesTTL,
   )(implicit val logger: LogIO2[F]
-  ) extends Lifecycle.NoClose[F[Throwable, ?], S3BucketCached[F, BucketId]] {
+  ) extends Lifecycle.NoClose[F[Throwable, _], S3BucketCached[F, BucketId]] {
     override def acquire: F[Throwable, S3BucketCached[F, BucketId]] = {
       for {
         keyToFile        <- F.mkRef(Map.empty[String, CachedFile])

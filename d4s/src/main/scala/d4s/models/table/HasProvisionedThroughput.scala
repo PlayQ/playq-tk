@@ -1,6 +1,6 @@
 package d4s.models.table
 
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
 trait HasProvisionedThroughput[A] {
   def provisionedThroughput(a: A, provisionedThroughput: ProvisionedThroughput): A

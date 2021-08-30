@@ -3,7 +3,7 @@ package d4s.codecs
 import magnolia.{Magnolia, ReadOnlyCaseClass, SealedTrait}
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.language.experimental.macros
 
 trait D4SEncoder[A] extends D4SAttributeEncoder[A] {
@@ -46,7 +46,7 @@ private[codecs] abstract class GenericD4SEncoder(dropNulls: Boolean) {
     traitEncoder[T](ctx.dispatch(_)(subtype => subtype.typeName.short -> subtype.typeclass))
   }
 
-  private[codecs] def traitEncoder[A](caseMap: A => (String, D4SAttributeEncoder[_ <: A])): D4SEncoder[A] = {
+  private[codecs] def traitEncoder[A](caseMap: A => (String, D4SAttributeEncoder[? <: A])): D4SEncoder[A] = {
     item =>
       val typeNameEncoder = caseMap(item)
       Map(typeNameEncoder._1 -> typeNameEncoder._2.asInstanceOf[D4SAttributeEncoder[A]].encode(item))

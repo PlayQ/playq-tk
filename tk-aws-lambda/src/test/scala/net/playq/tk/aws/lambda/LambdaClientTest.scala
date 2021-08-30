@@ -23,7 +23,7 @@ abstract class LambdaClientTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] exten
   "Lambda client" should {
     "Deploy, invoke, delete function" skip scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val testPack = ManagedFile.external("/home/???")
         val config   = LambdaFunctionConfig("testFunction", "MyFunction::MyFunction.Function::FunctionHandler", Runtime.DOTNETCORE3_1, 128)
         val lambda   = lambdaFactory.serviceBased(ServiceName("test"))

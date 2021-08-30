@@ -5,8 +5,8 @@ import d4s.models.query.DynamoRequest.{WithAttributeNames, WithConsistent, WithK
 import d4s.models.table.TableReference
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, GetItemRequest, GetItemResponse}
 
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
+import scala.jdk.CollectionConverters.*
+import scala.util.chaining.*
 
 final case class GetItem(
   table: TableReference,

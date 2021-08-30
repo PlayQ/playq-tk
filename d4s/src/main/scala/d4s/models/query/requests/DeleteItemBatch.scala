@@ -6,7 +6,7 @@ import d4s.models.table.TableReference
 import izumi.fundamentals.platform.functional.Identity
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, BatchWriteItemRequest, DeleteRequest, WriteRequest}
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final case class DeleteItemBatch(
   table: TableReference,

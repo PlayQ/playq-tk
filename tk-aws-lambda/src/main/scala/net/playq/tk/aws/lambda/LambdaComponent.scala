@@ -18,7 +18,7 @@ object LambdaComponent {
   }
 
   final class Resource[F[+_, +_]: IO2]
-    extends Lifecycle.Of[F[Throwable, ?], LambdaComponent[F]](
+    extends Lifecycle.Of[F[Throwable, _], LambdaComponent[F]](
       Lifecycle.fromAutoCloseable {
         F.syncThrowable(AWSLambda.builder().build())
       }.map(new Impl(_))

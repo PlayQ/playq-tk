@@ -1,7 +1,7 @@
 package net.playq.tk.metrics
 
-import cats.instances.list._
-import cats.syntax.foldable._
+import cats.instances.list.*
+import cats.syntax.foldable.*
 import io.github.classgraph.ClassGraph
 import izumi.distage.roles.model.meta.RolesInfo
 import logstage.IzLogger
@@ -10,7 +10,7 @@ import net.playq.tk.metrics.macrodefs.MacroMetricSaver
 import net.playq.tk.metrics.macrodefs.MacroMetricSaver.metricsDir
 
 import java.nio.charset.StandardCharsets.UTF_8
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final class MetricsExtractor(rolesInfo: RolesInfo, logger: IzLogger) {
 

@@ -3,7 +3,7 @@ package net.playq.tk.metrics.macrodefs
 import net.playq.tk.metrics.base.MetricDef
 import net.playq.tk.metrics.base.MetricDef.{MetricCounter, MetricGauge, MetricHistogram, MetricMeter, MetricTimer}
 import net.playq.tk.metrics.macrodefs.MacroMetricSaver.writeToFile
-import net.playq.tk.metrics._
+import net.playq.tk.metrics.*
 
 import scala.annotation.implicitNotFound
 import scala.language.experimental.macros
@@ -15,12 +15,12 @@ sealed trait MacroMetricBase {
   def createMetrics(role: String, label: String): List[MetricDef]
   def createLabel(label: String): String = label
 
-  @implicitNotFound("import ${DiscardType}.discarded._ to disable metric recording for ${S} - a metric created like this will not be visible in MetricsApi")
+  @implicitNotFound("import ${DiscardType}.discarded.* to disable metric recording for ${S} - a metric created like this will not be visible in MetricsApi")
   trait MetricBase[S <: String, DiscardType] {
     def get: Option[String]
   }
 
-  def empty[S <: String]: MetricBase[S, _] = new MetricBase[S, Nothing] {
+  def empty[S <: String]: MetricBase[S, ?] = new MetricBase[S, Nothing] {
     override val get: Option[String] = None
   }
 
@@ -29,7 +29,7 @@ sealed trait MacroMetricBase {
     def materializeImpl[S <: String: c.WeakTypeTag, DiscardType: c.WeakTypeTag](
       c: blackbox.Context { type PrefixType = self.type }
     ): c.Expr[c.prefix.value.MetricBase[S, DiscardType]] = {
-      import c.universe._
+      import c.universe.*
       val selfType    = c.prefix.actualType.typeSymbol.fullName
       val discardType = weakTypeOf[DiscardType].typeSymbol.fullName
       val label       = MacroMetricSaver.getConstantType[S](c, selfType, discardType)

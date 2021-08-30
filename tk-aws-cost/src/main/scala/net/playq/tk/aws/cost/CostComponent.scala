@@ -9,10 +9,10 @@ import net.playq.tk.util.retry.TkScheduler
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.costexplorer.CostExplorerClient
 
-import scala.util.chaining._
+import scala.util.chaining.*
 
 trait CostComponent[F[_, _]] {
-  def resourceClient: Lifecycle[F[Throwable, ?], CostClient[F]]
+  def resourceClient: Lifecycle[F[Throwable, _], CostClient[F]]
 }
 
 object CostComponent {
@@ -22,13 +22,13 @@ object CostComponent {
     metrics: Metrics[F],
   ) extends CostComponent[F] {
 
-    override def resourceClient: Lifecycle[F[Throwable, ?], CostClient[F]] = {
+    override def resourceClient: Lifecycle[F[Throwable, _], CostClient[F]] = {
       Lifecycle.fromAutoCloseable {
         CostExplorerClient
           .builder()
           .pipe(b => costConfig.getRegion.fold(b)(r => b.region(Region.of(r))))
           .build()
-      }.toEffect[F[Throwable, ?]].map(new CostClient.Impl[F](_, metrics))
+      }.toEffect[F[Throwable, _]].map(new CostClient.Impl[F](_, metrics))
     }
   }
 

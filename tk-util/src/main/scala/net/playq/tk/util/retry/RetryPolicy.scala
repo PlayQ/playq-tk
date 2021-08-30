@@ -6,7 +6,7 @@ import net.playq.tk.util.retry.RetryPolicy.{ControllerDecision, RetryFunction}
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
-import scala.jdk.DurationConverters._
+import scala.jdk.DurationConverters.*
 
 abstract class RetryPolicy[F[+_, +_]: Applicative2, -A, +B](val action: RetryFunction[F, A, B]) {
   def &&[A1 <: A, B1](policy: RetryPolicy[F, A1, B1]): RetryPolicy[F, A1, (B, B1)] = {

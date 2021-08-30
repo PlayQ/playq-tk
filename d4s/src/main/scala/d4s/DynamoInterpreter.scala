@@ -5,16 +5,16 @@ import d4s.models.DynamoException
 import d4s.models.DynamoException.InterpreterException
 import d4s.models.ExecutionStrategy.StrategyInput
 import d4s.models.query.DynamoRequest.{DynamoWriteBatchRequest, PageableRequest, WithBatch, WithProjectionExpression, WithTableReference}
-import d4s.models.query._
-import d4s.models.query.requests._
+import d4s.models.query.*
+import d4s.models.query.requests.*
 import d4s.models.query.responses.HasItems
-import izumi.functional.bio.catz._
+import izumi.functional.bio.catz.*
 import izumi.functional.bio.{Async2, Error2, F, Fork2, Temporal2}
 import logstage.LogIO2
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 trait DynamoInterpreter[F[_, _]] {
   def run[DR <: DynamoRequest, Dec](
@@ -32,7 +32,7 @@ object DynamoInterpreter {
     log: LogIO2[F]
   ) extends DynamoInterpreter[F] {
 
-    override def run[DR <: DynamoRequest.Aux[_, _], Dec](
+    override def run[DR <: DynamoRequest.Aux[?, ?], Dec](
       q: DynamoQuery[DR, Dec],
       tapError: PartialFunction[DynamoException, F[Nothing, Unit]],
     ): F[DynamoException, DR#Rsp] = {
@@ -90,13 +90,13 @@ object DynamoInterpreter {
     }
 
     private[this] def runStreamDeleteBatch[DR <: DynamoRequest with WithProjectionExpression[DR] with WithTableReference[DR]](
-      dynamoQuery: DynamoQuery[DR, _],
+      dynamoQuery: DynamoQuery[DR, ?],
       parallelism: Option[Int],
       interpreterErrorLogger: PartialFunction[DynamoException, F[Nothing, Unit]],
     )(implicit ev: HasItems[DR#Rsp],
       ev1: PageableRequest[DR],
     ): F[Throwable, List[BatchWriteItemResponse]] = {
-      import scala.jdk.CollectionConverters._
+      import scala.jdk.CollectionConverters.*
 
       val exec = dynamoQuery
         .withProjectionExpression(dynamoQuery.table.key.keyFields.toList: _*)

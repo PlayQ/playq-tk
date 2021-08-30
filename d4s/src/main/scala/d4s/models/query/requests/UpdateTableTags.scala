@@ -3,9 +3,9 @@ package d4s.models.query.requests
 import d4s.models.query.DynamoRequest
 import d4s.models.query.DynamoRequest.WithTableReference
 import d4s.models.table.TableReference
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final case class UpdateTableTags(
   table: TableReference,

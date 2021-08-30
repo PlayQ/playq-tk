@@ -2,7 +2,7 @@ package net.playq.tk.aws.s3
 
 import net.playq.tk.aws.common.ServiceName
 import net.playq.tk.aws.tagging.AwsNameSpace
-import net.playq.tk.aws.common.TagsConfigOps._
+import net.playq.tk.aws.common.TagsConfigOps.*
 import net.playq.tk.aws.s3.config.S3Config
 
 sealed trait S3BucketId {

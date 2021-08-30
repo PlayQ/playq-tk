@@ -14,7 +14,7 @@ object TableDDLOps {
   }
 
   private def indexDiff(newDDL: TableDDL, oldTableDescription: TableDescription) = {
-    import scala.jdk.CollectionConverters._
+    import scala.jdk.CollectionConverters.*
 
     val oldSecondaryIndexes = oldTableDescription.globalSecondaryIndexes().asScala.map(i => i.indexName -> i).toMap
     val currentIndexNames   = newDDL.globalIndexes.map(_.name).toList
@@ -33,7 +33,7 @@ object TableDDLOps {
         }
     }
 
-    val create: Set[ProvisionedGlobalIndex[_, _]] = newDDL.globalIndexes
+    val create: Set[ProvisionedGlobalIndex[?, ?]] = newDDL.globalIndexes
       .filter(i => namesToCreate.contains(i.name))
       .map(i => ProvisionedGlobalIndex(i.name, i.key, i.projection, newDDL.provisioning.getIndexProvisioning(i.name)))
 

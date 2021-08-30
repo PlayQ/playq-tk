@@ -3,7 +3,7 @@ package net.playq.tk.aws.cost
 import distage.TagKK
 import izumi.distage.modules.DefaultModule2
 import izumi.functional.bio.IO2
-import izumi.fundamentals.platform.strings.IzString._
+import izumi.fundamentals.platform.strings.IzString.*
 import CostClientTest.Ctx
 import net.playq.tk.test.{TkTestBaseCtx, WithProduction}
 import net.playq.tk.test.rnd.TkRndGeneric
@@ -30,7 +30,7 @@ abstract class CostClientTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends
   "Cost client" should {
     "Get cost" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         skip()
         val request = CostRequest(
           LocalDate.now().minusDays(7),

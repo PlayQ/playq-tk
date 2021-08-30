@@ -1,12 +1,12 @@
 package net.playq.tk.postgres.healthcheck
 
-import doobie._
+import doobie.*
 import doobie.hikari.HikariTransactor
-import doobie.implicits._
+import doobie.implicits.*
 import izumi.functional.bio.{F, Panic2}
 import net.playq.tk.health
 import net.playq.tk.health.{HealthChecker, TkHealthCheckStatus, TkHealthState}
-import net.playq.tk.postgres.healthcheck.PostgresHealthChecker._
+import net.playq.tk.postgres.healthcheck.PostgresHealthChecker.*
 import net.playq.tk.postgres.partitioning.model.TableName
 import net.playq.tk.quantified.BracketThrowable
 
@@ -17,7 +17,7 @@ object PostgresCheckTable {
 }
 
 final class PostgresHealthChecker[F[+_, +_]: Panic2: BracketThrowable](
-  transactor: HikariTransactor[F[Throwable, ?]],
+  transactor: HikariTransactor[F[Throwable, _]],
   tablesChecks: Set[PostgresCheckTable],
 ) extends HealthChecker[F] {
 

@@ -13,12 +13,12 @@ object WithD4S {
   object MaterializeDerivationMacros {
 
     def materializeCodec[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[D4SDerivedCodec[A]] = c.Expr[D4SDerivedCodec[A]] {
-      import c.universe._
+      import c.universe.*
       q"new ${weakTypeOf[D4SDerivedCodec[A]]}(_root_.d4s.codecs.D4SEncoder.derived[${weakTypeOf[A]}], _root_.d4s.codecs.D4SDecoder.derived[${weakTypeOf[A]}])"
     }
 
     def materializeAttributeCodec[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[D4SDerivedAttributeCodec[A]] = c.Expr[D4SDerivedAttributeCodec[A]] {
-      import c.universe._
+      import c.universe.*
       q"new ${weakTypeOf[D4SDerivedAttributeCodec[A]]}(_root_.d4s.codecs.D4SAttributeEncoder.derived[${weakTypeOf[A]}], _root_.d4s.codecs.D4SDecoder.derived[${weakTypeOf[A]}])"
     }
 

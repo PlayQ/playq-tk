@@ -1,11 +1,11 @@
 package d4s.codecs.circe
 
 import d4s.codecs.D4SAttributeEncoder
-import io.circe._
-import io.circe.syntax._
+import io.circe.*
+import io.circe.syntax.*
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 object D4SCirceAttributeEncoder {
   def derived[T: Encoder]: D4SAttributeEncoder[T] = a => jsonToAttribute(a.asJson)

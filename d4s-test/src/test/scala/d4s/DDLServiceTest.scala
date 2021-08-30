@@ -3,7 +3,7 @@ package d4s
 import d4s.DDLServiceTest.Ctx
 import d4s.config.DynamoMeta
 import d4s.env.DynamoTestBase
-import d4s.env.Models._
+import d4s.env.Models.*
 import d4s.models.DynamoExecution
 import d4s.models.table.TableDef
 import izumi.distage.model.definition.StandardAxis.Scene
@@ -33,7 +33,7 @@ final class DDLServiceTest extends DynamoTestBase[Ctx] with TkRndBase {
   "ddl service " must {
     "perform ddl up" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         for {
           prefix    <- F.random[UUID]
           _         <- assertIO(instances.nonEmpty)
@@ -57,7 +57,7 @@ final class DDLServiceTest extends DynamoTestBase[Ctx] with TkRndBase {
 
     "perform base TablesService crud" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         for {
           prefix    <- F.random[UUID]
           _         <- assertIO(instances.nonEmpty)

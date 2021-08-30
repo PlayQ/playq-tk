@@ -4,9 +4,9 @@ import d4s.codecs.{D4SAttributeEncoder, D4SEncoder}
 import d4s.models.query.DynamoRequest
 import d4s.models.query.DynamoRequest.{BatchWriteEntity, DynamoWriteBatchRequest, WithBatch, WithTableReference}
 import d4s.models.table.TableReference
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final case class PutItemBatch(
   table: TableReference,

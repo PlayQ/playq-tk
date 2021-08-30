@@ -7,12 +7,12 @@ import net.playq.tk.aws.sqs.clients.SQSClient
 import net.playq.tk.aws.sqs.clients.SQSClientBase.ThrowableSQSOps
 import net.playq.tk.aws.sqs.config.SQSConfig
 import net.playq.tk.quantified.{ConcurrentThrowable, TimerThrowable}
-import software.amazon.awssdk.services.sqs.model._
+import software.amazon.awssdk.services.sqs.model.*
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 trait SQSQueuesManager[F[+_, +_]] {
-  def regionBased(region: String): Lifecycle[F[Throwable, ?], SQSQueuesManager[F]]
+  def regionBased(region: String): Lifecycle[F[Throwable, _], SQSQueuesManager[F]]
 
   def subscribedClient[QueueId <: SQSQueueId](queue: QueueId): F[Throwable, SQSClient[F, QueueId]]
 
@@ -35,7 +35,7 @@ object SQSQueuesManager {
     log: LogIO2[F]
   ) extends SQSQueuesManager[F] {
 
-    override def regionBased(region: String): Lifecycle[F[Throwable, ?], SQSQueuesManager[F]] = {
+    override def regionBased(region: String): Lifecycle[F[Throwable, _], SQSQueuesManager[F]] = {
       for {
         _                 <- Lifecycle.liftF(log.info(s"Going to create SQS client in $region"): F[Throwable, Unit])
         regionalComponent <- sqsComponentFactory.mkClient(Some(region))

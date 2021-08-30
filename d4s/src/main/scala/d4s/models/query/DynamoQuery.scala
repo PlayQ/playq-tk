@@ -2,18 +2,18 @@ package d4s.models.query
 
 import d4s.codecs.{AttributeNames, D4SDecoder, D4SEncoder}
 import d4s.config.ProvisionedThroughputConfig
-import d4s.implicits._
+import d4s.implicits.*
 import d4s.models.DynamoException.DecoderException
 import d4s.models.conditions.Condition
 import d4s.models.conditions.Condition.{attribute_exists, attribute_not_exists}
-import d4s.models.query.DynamoRequest._
+import d4s.models.query.DynamoRequest.*
 import d4s.models.query.requests.UpdateTable
-import d4s.models.query.responses._
+import d4s.models.query.responses.*
 import d4s.models.table.index.{GlobalIndexUpdate, ProvisionedGlobalIndex, TableIndex}
 import d4s.models.table.{DynamoField, TableDDL, TableReference}
 import d4s.models.{DynamoExecution, FnIO2, OffsetLimit}
 import izumi.functional.bio.{Error2, F, IO2}
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
 import java.time.ZonedDateTime
 import scala.language.implicitConversions
@@ -94,7 +94,7 @@ object DynamoQuery {
   implicit final class RetryWithPrefix[DR <: DynamoRequest with WithTableReference[DR], Dec](
     private val query: DynamoQuery[DR, Dec]
   ) extends AnyVal {
-    import scala.concurrent.duration._
+    import scala.concurrent.duration.*
     def retryWithPrefix(ddl: TableDDL, sleep: Duration = 1.second): DynamoExecution[DR, Dec, Dec] = {
       query.modifyStrategy(DynamoExecution.retryWithPrefix(ddl, sleep))
     }
@@ -144,7 +144,7 @@ object DynamoQuery {
   implicit final class TweakIndex[DR <: DynamoRequest with WithIndex[DR], Dec](
     dynamoQuery: DynamoQuery[DR, Dec]
   ) extends WithIndex[DynamoQuery[DR, Dec]] {
-    @inline override def withIndex(index: TableIndex[_, _]): DynamoQuery[DR, Dec] = {
+    @inline override def withIndex(index: TableIndex[?, ?]): DynamoQuery[DR, Dec] = {
       dynamoQuery.modify(_.withIndex(index))
     }
   }
@@ -166,7 +166,7 @@ object DynamoQuery {
   }
 
   implicit final class TweakBatchItems[DR <: DynamoRequest with WithBatch[DR, BatchType], BatchType[_], Dec](
-    dynamoQuery: DynamoQuery[DR, Dec] with DynamoQuery[_ <: DynamoRequest with WithBatch[DR, BatchType], Dec] // satisfy intellij & scalac gods
+    dynamoQuery: DynamoQuery[DR, Dec] with DynamoQuery[? <: DynamoRequest with WithBatch[DR, BatchType], Dec] // satisfy intellij & scalac gods
   ) extends WithBatch[DynamoQuery[DR, Dec], BatchType] {
     @inline override def withBatch[I: D4SEncoder](batchItems: List[BatchType[I]]): DynamoQuery[DR, Dec] = {
       (dynamoQuery: DynamoQuery[DR, Dec]).modify(_.withBatch(batchItems))
@@ -312,7 +312,7 @@ object DynamoQuery {
       dynamoQuery.modify(_.withNewProvisioning(provisioning))
     }
 
-    @inline def withIndexToCreate(index: ProvisionedGlobalIndex[_, _]): DynamoQuery[UpdateTable, Dec] = {
+    @inline def withIndexToCreate(index: ProvisionedGlobalIndex[?, ?]): DynamoQuery[UpdateTable, Dec] = {
       dynamoQuery.modify(_.withIndexToCreate(index))
     }
 
@@ -359,7 +359,7 @@ object DynamoQuery {
     def decodeItems[Item: D4SDecoder]: DynamoQuery[DR, List[Item]] = {
       dynamoQuery.decodeF(FnIO2 {
         rsp => implicit F =>
-          import scala.jdk.CollectionConverters._
+          import scala.jdk.CollectionConverters.*
 
           val itemsData = rsp.flatMap(_.responses().asScala.values.flatMap(_.asScala).toList)
           F.traverse(itemsData)(decodeItemImpl(_)).map(_.flatten)
@@ -377,7 +377,7 @@ object DynamoQuery {
           _.withProjectionExpression(AttributeNames[Item].projectionExpression)
         ).decodeF(FnIO2 {
           response => implicit F =>
-            import scala.jdk.CollectionConverters._
+            import scala.jdk.CollectionConverters.*
 
             val itemsData = ev.items(response).asScala.toList
             F.traverse(itemsData)(decodeItemImpl(_)).map(_.flatten)
@@ -393,7 +393,7 @@ object DynamoQuery {
             .withProjectionExpression(ttlName)
         ).decodeF(FnIO2 {
           response => implicit F =>
-            import scala.jdk.CollectionConverters._
+            import scala.jdk.CollectionConverters.*
 
             val itemsData = ev.items(response).asScala.toList
             F.traverse(itemsData)(decodeItemTTLImpl(ttlName)(_)).map(_.flatten)

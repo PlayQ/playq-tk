@@ -22,7 +22,7 @@ abstract class SESClientTestBase[F[+_, +_]: Applicative2: TagKK: DefaultModule2]
   "SES client" should {
     "Send email to end user" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val emailBody = """<h1>Category Theory for Kittens</h1>
                           |<p>This is an invitation to an incredible journey into the WORLD OF FP.
                           |Click on the link to start it right now!!!.""".stripMargin

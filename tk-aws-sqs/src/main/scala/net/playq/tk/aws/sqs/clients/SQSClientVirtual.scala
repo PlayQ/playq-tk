@@ -1,6 +1,6 @@
 package net.playq.tk.aws.sqs.clients
 
-import fs2._
+import fs2.*
 import izumi.functional.bio.{Clock2, F, IO2}
 import izumi.fundamentals.platform.time.IzTime
 import logstage.LogIO2

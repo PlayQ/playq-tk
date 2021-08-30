@@ -34,7 +34,7 @@ object DynamoTestEnv {
   final case class DDLDown[F[+_, +_]: Applicative2](
     dynamoDDLService: DynamoDDLService[F],
     logger: LogIO2[F],
-  ) extends Lifecycle.Self[F[Throwable, ?], DDLDown[F]] {
+  ) extends Lifecycle.Self[F[Throwable, _], DDLDown[F]] {
     override def acquire: F[Throwable, Unit] = F.unit
     override def release: F[Throwable, Unit] = {
       logger.info("Deleting all tables") *>

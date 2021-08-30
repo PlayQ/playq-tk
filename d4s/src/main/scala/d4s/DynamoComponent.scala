@@ -15,7 +15,7 @@ import software.amazon.awssdk.http.apache.ApacheSdkHttpService
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
-import scala.util.chaining._
+import scala.util.chaining.*
 
 final case class DynamoComponent(client: DynamoDbClient)
 
@@ -24,8 +24,8 @@ object DynamoComponent {
   final class Impl[F[+_, +_]: IO2](
     conf: DynamoConfig,
     portCheck: PortCheck @Id("dynamo-port"),
-  ) extends Lifecycle.Basic[F[Throwable, ?], DynamoComponent]
-    with IntegrationCheck[F[Throwable, ?]] {
+  ) extends Lifecycle.Basic[F[Throwable, _], DynamoComponent]
+    with IntegrationCheck[F[Throwable, _]] {
 
     override def resourcesAvailable(): F[Throwable, ResourceCheck] = F.sync {
       conf.maybeLocalUrl.fold(ResourceCheck.Success(): ResourceCheck) {

@@ -3,7 +3,7 @@ package net.playq.tk.util.retry
 import izumi.functional.bio.{Clock2, F, IO2, Temporal2}
 import net.playq.tk.util.retry.RetryPolicy.{ControllerDecision, RetryFunction}
 
-import scala.jdk.DurationConverters._
+import scala.jdk.DurationConverters.*
 
 trait TkScheduler[F[+_, +_]] {
   def repeat[E, A, B](eff: F[E, A])(policy: RetryPolicy[F, A, B]): F[E, A]

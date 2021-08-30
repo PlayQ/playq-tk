@@ -2,10 +2,10 @@ package net.playq.tk.aws.cost
 
 import java.time.LocalDate
 
-import software.amazon.awssdk.services.costexplorer.model._
+import software.amazon.awssdk.services.costexplorer.model.*
 
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
+import scala.jdk.CollectionConverters.*
+import scala.util.chaining.*
 
 final case class CostRequest private (
   from: LocalDate,

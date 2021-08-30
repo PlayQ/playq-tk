@@ -5,12 +5,12 @@ import java.util
 import d4s.models.conditions.Condition
 import d4s.models.conditions.Condition.ZeroCondition
 import d4s.models.query.DynamoRequest
-import d4s.models.query.DynamoRequest._
+import d4s.models.query.DynamoRequest.*
 import d4s.models.table.TableReference
 import d4s.models.table.index.TableIndex
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, ScanRequest, ScanResponse, Select}
 
-import scala.util.chaining._
+import scala.util.chaining.*
 
 final case class Scan(
   table: TableReference,
@@ -44,7 +44,7 @@ final case class Scan(
 
   override def withSelect(newSelect: Select): Scan = copy(select = Some(newSelect))
 
-  override def withIndex(index: TableIndex[_, _]): Scan = copy(index = Some(index.name))
+  override def withIndex(index: TableIndex[?, ?]): Scan = copy(index = Some(index.name))
 
   override def withStartKeyMap(startKey: util.Map[String, AttributeValue]): Scan = copy(startKey = Some(startKey))
 

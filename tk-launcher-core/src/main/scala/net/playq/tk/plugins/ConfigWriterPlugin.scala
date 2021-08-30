@@ -6,6 +6,6 @@ import izumi.distage.roles.model.definition.RoleModuleDef
 import zio.IO
 
 object ConfigWriterPlugin extends PluginDef with RoleModuleDef {
-  makeRole[ConfigWriter[IO[Throwable, ?]]]
-  makeRole[Help[IO[Throwable, ?]]]
+  makeRole[ConfigWriter[IO[Throwable, _]]]
+  makeRole[Help[IO[Throwable, _]]]
 }

@@ -1,6 +1,6 @@
 package net.playq.tk.plugins
 
-import cats.effect._
+import cats.effect.*
 import distage.plugins.PluginDef
 import izumi.distage.framework.services.ResourceRewriter
 import izumi.distage.model.definition.{Id, ModuleDef}
@@ -9,10 +9,10 @@ import izumi.functional.bio.{Clock2, _}
 import izumi.functional.mono.{Clock, Entropy}
 import izumi.fundamentals.platform.functional.{Identity, Identity2}
 import izumi.logstage.api.IzLogger
-import logstage._
+import logstage.*
 import net.playq.tk.concurrent.threadpools.{MeteredExecutor, NamingThreadFactory, ThreadPools}
 import net.playq.tk.concurrent.{FiberWatchdog, LoggingZioRunner, YieldOpCounts, ZIOBlocking}
-import net.playq.tk.implicits.Identity2Instances._
+import net.playq.tk.implicits.Identity2Instances.*
 import zio.blocking.Blocking
 import zio.internal.Platform
 import zio.internal.tracing.TracingConfig
@@ -28,7 +28,7 @@ private[plugins] trait IO2ImplicitsModule extends ModuleDef {
     .from(LogZIO.withFiberId(_: IzLogger))
     .aliased[UnsafeLogIO2[IO]]
     .aliased[LogCreateIO2[IO]]
-  make[LogIO[IO[Throwable, ?]]].from((_: LogIO2[IO]).widen[IO[Throwable, ?]])
+  make[LogIO[IO[Throwable, _]]].from((_: LogIO2[IO]).widen[IO[Throwable, _]])
 
   make[FiberWatchdog[IO]].from[FiberWatchdog.Impl]
 
@@ -38,11 +38,11 @@ private[plugins] trait IO2ImplicitsModule extends ModuleDef {
   make[Entropy[Identity]].fromValue(Entropy.Standard)
   make[Clock2[IO]].from {
     (impureClock: Clock[Identity], syncSafe: SyncSafe2[IO]) =>
-      Clock.fromImpure[IO[Nothing, ?]](impureClock)(syncSafe)
+      Clock.fromImpure[IO[Nothing, _]](impureClock)(syncSafe)
   }
   make[Entropy2[IO]].from {
     (impureEntropy: Entropy[Identity], syncSafe: SyncSafe2[IO]) =>
-      Entropy.fromImpure[IO[Nothing, ?]](impureEntropy)(syncSafe)
+      Entropy.fromImpure[IO[Nothing, _]](impureEntropy)(syncSafe)
   }
 }
 

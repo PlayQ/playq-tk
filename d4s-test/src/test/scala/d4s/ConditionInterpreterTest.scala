@@ -1,6 +1,6 @@
 package d4s
 
-import d4s.models.conditions.Condition._
+import d4s.models.conditions.Condition.*
 import d4s.models.conditions.LogicalOperator
 import org.scalatest.wordspec.AnyWordSpec
 

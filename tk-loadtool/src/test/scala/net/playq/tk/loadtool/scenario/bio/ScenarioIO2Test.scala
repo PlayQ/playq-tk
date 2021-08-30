@@ -14,7 +14,7 @@ class ScenarioIO2Test extends TkTestBase[Ctx] with WithProduction {
   "ScenarioIO2" should {
     "run scenarios" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val scenario = for {
           // pure
           _    <- steps.bind(ScenarioGen[Boolean](true))
@@ -88,7 +88,7 @@ class ScenarioIO2Test extends TkTestBase[Ctx] with WithProduction {
         (for {
           scope   <- F.mkRef(ScenarioScope.empty)
           context <- ScenarioContext[IO](log, clock, ScenarioGenProvider.empty)
-        } yield scenario.provide(Has.allOf[Ref3[ZIO, ScenarioScope], ScenarioContext[ZIO[Any, ?, ?]]](scope, context))).flatten
+        } yield scenario.provide(Has.allOf[Ref3[ZIO, ScenarioScope], ScenarioContext[ZIO[Any, _, _]]](scope, context))).flatten
     }
   }
 }
@@ -98,6 +98,6 @@ object ScenarioIO2Test {
     log: LogIO2[IO],
     clock: Clock2[IO],
     zioClock: zio.clock.Clock,
-    steps: ScenarioIO2SyntaxAux[IO, ZIO[Has[Ref3[ZIO, ScenarioScope]] with Has[ScenarioContext[ZIO[Any, ?, ?]]], +?, +?]],
+    steps: ScenarioIO2SyntaxAux[IO, ZIO[Has[Ref3[ZIO, ScenarioScope]] with Has[ScenarioContext[ZIO[Any, _, _]]], +_, +_]],
   )
 }

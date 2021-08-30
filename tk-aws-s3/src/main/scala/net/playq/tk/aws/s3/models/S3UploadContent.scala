@@ -6,8 +6,8 @@ import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.model.{PutObjectRequest, Tag, Tagging}
 
 import scala.Predef
-import scala.Predef._
-import scala.jdk.CollectionConverters._
+import scala.Predef.*
+import scala.jdk.CollectionConverters.*
 
 sealed trait S3UploadContent {
   def tags: List[Tag]

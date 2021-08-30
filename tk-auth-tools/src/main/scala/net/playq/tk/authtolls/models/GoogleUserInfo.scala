@@ -13,7 +13,7 @@ object GoogleUserInfo {
       GoogleUserInfo.apply
     }
 
-  implicit def entityEncoder[F[+_, +_]: SyncThrowable]: EntityDecoder[F[Throwable, ?], GoogleUserInfo] = {
-    jsonOf[F[Throwable, ?], GoogleUserInfo]
+  implicit def entityEncoder[F[+_, +_]: SyncThrowable]: EntityDecoder[F[Throwable, _], GoogleUserInfo] = {
+    jsonOf[F[Throwable, _], GoogleUserInfo]
   }
 }

@@ -1,6 +1,6 @@
 package net.playq.tk.concurrent.threadpools
 
-import java.util.concurrent._
+import java.util.concurrent.*
 
 object ThreadPools {
   /** "virtually" unbounded thread pool to put blocking IO tasks on.

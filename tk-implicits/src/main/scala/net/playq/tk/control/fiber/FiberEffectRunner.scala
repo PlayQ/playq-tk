@@ -2,7 +2,7 @@ package net.playq.tk.control.fiber
 
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{Applicative2, BlockingIO2, F, Fiber2, Fork2}
-import izumi.fundamentals.platform.strings.IzString._
+import izumi.fundamentals.platform.strings.IzString.*
 import logstage.LogIO2
 import FiberEffectRunner.FiberEffects
 import net.playq.tk.control.Forever
@@ -11,7 +11,7 @@ final class FiberEffectRunner[F[+_, +_]: Applicative2: Fork2](
   effects: Set[FiberEffect[F]],
   log: LogIO2[F],
   blockingIO: BlockingIO2[F],
-) extends Lifecycle.Basic[F[Throwable, ?], FiberEffects[F]] {
+) extends Lifecycle.Basic[F[Throwable, _], FiberEffects[F]] {
   override def acquire: F[Throwable, FiberEffects[F]] = {
     log.info(s"Going to start ${effects.map(_.fiberName).toList.sorted.niceList() -> "fibers"}") *>
     F.traverse(effects)(p => blockingIO.shiftBlocking(p.runInFiber()).fork).map(FiberEffects(_))

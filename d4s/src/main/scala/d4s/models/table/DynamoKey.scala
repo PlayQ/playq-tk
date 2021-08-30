@@ -6,7 +6,7 @@ import d4s.codecs.{D4SAttributeEncoder, DynamoKeyAttribute}
 import fs2.INothing
 import software.amazon.awssdk.services.dynamodb.model.{AttributeDefinition, AttributeValue, KeySchemaElement, KeyType}
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final case class DynamoKey[-H, -R](
   hashKey: DynamoField[H],
@@ -18,7 +18,7 @@ final case class DynamoKey[-H, -R](
   def toJava: util.List[KeySchemaElement]     = toList.asJava
   def toAttributes: List[AttributeDefinition] = (hashKey :: rangeKey.toList).map(_.toAttribute)
 
-  def keyFields: Set[DynamoField[_]] = rangeKey.toSet[DynamoField[_]] + hashKey
+  def keyFields: Set[DynamoField[?]] = rangeKey.toSet[DynamoField[?]] + hashKey
   def keyNames: Set[String]          = rangeKey.map(_.name).toSet + hashKey.name
 
   def bind(hashValue: H, rangeValue: Option[R] = None): Map[String, AttributeValue] = {

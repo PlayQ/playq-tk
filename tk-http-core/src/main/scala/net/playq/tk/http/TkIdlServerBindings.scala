@@ -3,16 +3,16 @@ package net.playq.tk.http
 import io.circe.Printer
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{Clock2, F, IO2}
-import izumi.fundamentals.platform.strings.IzString._
-import izumi.idealingua.runtime.rpc._
-import izumi.idealingua.runtime.rpc.http4s._
+import izumi.fundamentals.platform.strings.IzString.*
+import izumi.idealingua.runtime.rpc.*
+import izumi.idealingua.runtime.rpc.http4s.*
 import izumi.logstage.api.IzLogger
 import logstage.LogIO2
 import TkIdlServerBindings.TkMetricLabels
-import net.playq.tk.metrics._
+import net.playq.tk.metrics.*
 import net.playq.tk.metrics.base.MetricDef
 import net.playq.tk.metrics.base.MetricDef.{MetricCounter, MetricTimer}
-import net.playq.tk.metrics.macrodefs.MacroMetricBase.discarded._
+import net.playq.tk.metrics.macrodefs.MacroMetricBase.discarded.*
 import net.playq.tk.metrics.macrodefs.MacroMetricSaver
 import net.playq.tk.metrics.MetricsSupport
 import net.playq.tk.http.auth.TkAuthenticator
@@ -22,14 +22,14 @@ import org.http4s.{HttpRoutes, MediaType, Response}
 
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 final class TkIdlServerBindings[F[+_, +_]: IO2, BaseContext, FullContext, ClientId](
   interfaceConfig: HttpInterfaceConfig,
   logger: LogIO2[F],
   clock: Clock2[F],
   metrics: Metrics[F],
-  metricsMiddleware: MetricsSupport[F[Throwable, ?]],
+  metricsMiddleware: MetricsSupport[F[Throwable, _]],
   services: Set[IRTWrappedService[F, FullContext]],
   // http server deps
   serverMuxer: IRTServerMultiplexor[F, BaseContext],
@@ -41,7 +41,7 @@ final class TkIdlServerBindings[F[+_, +_]: IO2, BaseContext, FullContext, Client
   izLogger: IzLogger,
   printer: Printer,
   private[TkIdlServerBindings] val rt: TkHttp4sRuntime[F, BaseContext, FullContext, ClientId],
-) extends Lifecycle.NoClose[F[Throwable, ?], TkHttp4sService[F, BaseContext]] {
+) extends Lifecycle.NoClose[F[Throwable, _], TkHttp4sService[F, BaseContext]] {
 
   private[this] val defaultContentType: `Content-Type` = `Content-Type`(MediaType.application.json)
 
@@ -54,17 +54,17 @@ final class TkIdlServerBindings[F[+_, +_]: IO2, BaseContext, FullContext, Client
           _ <- logger.info(s"${services.toList.map(_.serviceId.value).sorted.niceList() -> "IDL services"}")
         } yield ()
       }
-      override def httpRoutes: HttpRoutes[F[Throwable, ?]] = metricsMiddleware.wrap(httpServer().service)
+      override def httpRoutes: HttpRoutes[F[Throwable, _]] = metricsMiddleware.wrap(httpServer().service)
     }
   }
 
   private[this] def httpServer(): HttpServer[rt.type] = {
     new HttpServer[rt.type](rt, serverMuxer, clientMuxer, authenticator.authenticator, wsContextProvider, wsSessionStorage, wsSessionListeners.toSeq, izLogger, printer) {
       override protected def run(
-        context: HttpRequestContext[F[Throwable, ?], BaseContext],
+        context: HttpRequestContext[F[Throwable, _], BaseContext],
         body: String,
         method: IRTMethodId,
-      ): F[Throwable, Response[F[Throwable, ?]]] = {
+      ): F[Throwable, Response[F[Throwable, _]]] = {
         withMetrics(method) {
           super.run(context, body, method).map(_.withContentType(defaultContentType))
         }

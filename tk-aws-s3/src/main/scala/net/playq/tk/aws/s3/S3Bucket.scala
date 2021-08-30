@@ -5,9 +5,9 @@ import fs2.Stream
 import izumi.distage.constructors.ClassConstructor
 import izumi.distage.model.definition.{Lifecycle, ModuleDef}
 import izumi.functional.bio.{F, IO2}
-import izumi.fundamentals.platform.language.Quirks._
+import izumi.fundamentals.platform.language.Quirks.*
 import izumi.fundamentals.platform.time.IzTime
-import net.playq.tk.aws.s3.models._
+import net.playq.tk.aws.s3.models.*
 import net.playq.tk.quantified.SyncThrowable
 import net.playq.tk.util.ManagedFile
 import software.amazon.awssdk.services.s3.model
@@ -25,7 +25,7 @@ trait S3Bucket[F[_, _], BucketId] {
   def upload(record: S3Record[S3UploadContent]): F[Throwable, Unit]
   def download(key: String): F[Throwable, S3DownloadResponse]
 
-  def downloadToFile(key: String, path: Option[Path] = None): Lifecycle[F[Throwable, ?], ManagedFile]
+  def downloadToFile(key: String, path: Option[Path] = None): Lifecycle[F[Throwable, _], ManagedFile]
 
   def doesObjectExists(key: String): F[Throwable, Boolean]
   def delete(key: String): F[Throwable, Unit]
@@ -34,8 +34,8 @@ trait S3Bucket[F[_, _], BucketId] {
   def listObjects(prefix: String): F[Throwable, List[String]]
   def listObjectsMeta(prefix: String): F[Throwable, List[S3ObjectMeta]]
 
-  def streamObjects(prefix: String): Stream[F[Throwable, ?], String]
-  def streamObjectsMeta(prefix: String): Stream[F[Throwable, ?], S3ObjectMeta]
+  def streamObjects(prefix: String): Stream[F[Throwable, _], String]
+  def streamObjectsMeta(prefix: String): Stream[F[Throwable, _], S3ObjectMeta]
 
   def copyObject(sourceKey: String, targetBucket: String, targetKey: String): F[Throwable, Unit]
   def copyObject(sourceKey: String, targetKey: String): F[Throwable, Unit]
@@ -88,7 +88,7 @@ object S3Bucket {
       }
     })
 
-    override def downloadToFile(key: String, path: Option[Path]): Lifecycle[F[Throwable, ?], ManagedFile] = {
+    override def downloadToFile(key: String, path: Option[Path]): Lifecycle[F[Throwable, _], ManagedFile] = {
       Lifecycle.fromAutoCloseable {
         download(key).flatMap {
           response =>
@@ -132,10 +132,10 @@ object S3Bucket {
             models.S3ObjectMeta(name, k, "test", size, at.toEpochSecond)
         }
     })
-    override def streamObjects(prefix: String): Stream[F[Throwable, ?], String] = {
+    override def streamObjects(prefix: String): Stream[F[Throwable, _], String] = {
       fs2.Stream.eval(listObjects(prefix)).flatMap(l => fs2.Stream.fromIterator(l.iterator))
     }
-    override def streamObjectsMeta(prefix: String): Stream[F[Throwable, ?], S3ObjectMeta] = {
+    override def streamObjectsMeta(prefix: String): Stream[F[Throwable, _], S3ObjectMeta] = {
       fs2.Stream.eval(listObjectsMeta(prefix)).flatMap(l => fs2.Stream.fromIterator(l.iterator))
     }
     override def copyObject(sourceKey: String, targetBucket: String, targetKey: String): F[Throwable, Unit] = {

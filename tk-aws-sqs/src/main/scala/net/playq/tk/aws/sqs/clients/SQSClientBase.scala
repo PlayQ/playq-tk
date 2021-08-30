@@ -2,21 +2,21 @@ package net.playq.tk.aws.sqs.clients
 
 import fs2.Stream
 import io.circe.parser.{decode, parse}
-import io.circe.syntax._
+import io.circe.syntax.*
 import io.circe.{Decoder, Encoder, Json}
 import izumi.functional.bio.{Error2, F, IO2}
-import izumi.fundamentals.platform.strings.IzString._
+import izumi.fundamentals.platform.strings.IzString.*
 import izumi.fundamentals.platform.time.IzTime
 import izumi.idealingua.runtime.circe.IRTWithCirce
 import logstage.LogIO2
 import net.playq.tk.aws.sqs.config.SQSConfig
 import net.playq.tk.aws.sqs.{SQSComponent, SQSQueueId}
-import software.amazon.awssdk.services.sqs.model._
+import software.amazon.awssdk.services.sqs.model.*
 
 import java.util.UUID
 import scala.concurrent.duration.FiniteDuration
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
+import scala.jdk.CollectionConverters.*
+import scala.util.chaining.*
 
 trait SQSClientBase[F[+_, +_], +QueueId <: SQSQueueId] {
   def queueUrl: String
@@ -31,15 +31,15 @@ trait SQSClientBase[F[+_, +_], +QueueId <: SQSQueueId] {
   def pollString(batchSize: Int): F[Throwable, List[SQSMessage[String]]]
   def poll[T: Decoder](batchSize: Int, skipFailedToDecode: Boolean = false): F[Throwable, List[SQSMessage[T]]]
 
-  def stream[T: Decoder](batchSize: Int): Stream[F[Throwable, ?], List[SQSMessage[T]]]
-  def streamWithSkip[T: Decoder](batchSize: Int): Stream[F[Throwable, ?], List[SQSMessage[T]]]
-  def stringStream(batchSize: Int): Stream[F[Throwable, ?], List[SQSMessage[String]]]
+  def stream[T: Decoder](batchSize: Int): Stream[F[Throwable, _], List[SQSMessage[T]]]
+  def streamWithSkip[T: Decoder](batchSize: Int): Stream[F[Throwable, _], List[SQSMessage[T]]]
+  def stringStream(batchSize: Int): Stream[F[Throwable, _], List[SQSMessage[String]]]
 
   def changeMessagesVisibility(meta: List[SQSMessageMeta], newTimeout: Int): F[Throwable, Unit]
 
   def deleteMessage(meta: SQSMessageMeta): F[Throwable, Unit]
   def deleteMessages(meta: List[SQSMessageMeta]): F[Throwable, Unit]
-  final def deleteMessages(messages: Iterable[SQSMessage[_]]): F[Throwable, Unit] = deleteMessages(messages.map(_.meta).toList)
+  final def deleteMessages(messages: Iterable[SQSMessage[?]]): F[Throwable, Unit] = deleteMessages(messages.map(_.meta).toList)
   def purge: F[Throwable, Unit]
 
   def getAttributes(attributes: QueueAttributeName*): F[Throwable, Map[QueueAttributeName, String]]
@@ -204,15 +204,15 @@ object SQSClientBase {
       pollStringWithTimeout(batchSize, sqsConfig.maxPollingTime)
     }
 
-    override def stream[T: Decoder](batchSize: Int = 1): Stream[F[Throwable, ?], List[SQSMessage[T]]] = {
+    override def stream[T: Decoder](batchSize: Int = 1): Stream[F[Throwable, _], List[SQSMessage[T]]] = {
       Stream.repeatEval(poll(batchSize))
     }
 
-    override def streamWithSkip[T: Decoder](batchSize: Int): Stream[F[Throwable, ?], List[SQSMessage[T]]] = {
+    override def streamWithSkip[T: Decoder](batchSize: Int): Stream[F[Throwable, _], List[SQSMessage[T]]] = {
       Stream.repeatEval(poll(batchSize, skipFailedToDecode = true))
     }
 
-    override def stringStream(batchSize: Int = 1): Stream[F[Throwable, ?], List[SQSMessage[String]]] = {
+    override def stringStream(batchSize: Int = 1): Stream[F[Throwable, _], List[SQSMessage[String]]] = {
       Stream.repeatEval(pollString(batchSize))
     }
 

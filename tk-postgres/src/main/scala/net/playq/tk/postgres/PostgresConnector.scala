@@ -2,12 +2,12 @@ package net.playq.tk.postgres
 
 import doobie.free.connection.ConnectionIO
 import doobie.hikari.HikariTransactor
-import doobie.syntax.connectionio._
+import doobie.syntax.connectionio.*
 import doobie.util.log.LogHandler
 import izumi.functional.bio.Exit.{Error, Interruption, Termination}
 import izumi.functional.bio.{F, Panic2, Temporal2}
 import logstage.LogIO2
-import net.playq.tk.metrics._
+import net.playq.tk.metrics.*
 import net.playq.tk.metrics.{MacroMetricPostgresMeterException, MacroMetricPostgresMeterTimeout, MacroMetricPostgresTimer}
 import net.playq.tk.postgres.config.PostgresConfig
 import net.playq.tk.postgres.exceptions.{SQLConnectorException, SQLQueryException, SQLTimeoutException}
@@ -19,8 +19,8 @@ import java.net.URI
 import java.sql.SQLTransientConnectionException
 import java.util.concurrent.atomic.AtomicInteger
 import scala.annotation.unused
-import scala.concurrent.duration._
-import scala.util.chaining._
+import scala.concurrent.duration.*
+import scala.util.chaining.*
 
 trait PostgresConnector[F[_, _]] {
   val logHandler: LogHandler
@@ -47,7 +47,7 @@ trait PostgresConnector[F[_, _]] {
 
 object PostgresConnector {
   final class Impl[F[+_, +_]: Panic2: Temporal2: BracketThrowable](
-    transactor: HikariTransactor[F[Throwable, ?]],
+    transactor: HikariTransactor[F[Throwable, _]],
     cfg: PostgresConfig,
     @unused postgresHealthChecker: PostgresHealthChecker[F],
     log: LogIO2[F],
@@ -65,7 +65,7 @@ object PostgresConnector {
 
         } catch {
           case t: Throwable =>
-            import izumi.fundamentals.platform.exceptions.IzThrowable._
+            import izumi.fundamentals.platform.exceptions.IzThrowable.*
             t.stackTrace
         }
       } else {

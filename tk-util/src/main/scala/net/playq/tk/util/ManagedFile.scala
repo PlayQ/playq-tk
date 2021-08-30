@@ -5,7 +5,7 @@ import izumi.functional.bio.IO2
 
 import java.io.File
 import java.nio.file.{Files, Path}
-import scala.util.chaining._
+import scala.util.chaining.*
 
 sealed trait ManagedFile extends AutoCloseable {
   val file: File
@@ -13,10 +13,10 @@ sealed trait ManagedFile extends AutoCloseable {
   final def absolutePath: Path = file.toPath.toAbsolutePath
 }
 object ManagedFile {
-  def managedFile[F[+_, +_]: IO2](prefix: String = "managed_file", suffix: String = ".tmp"): Lifecycle[F[Throwable, ?], ManagedFile] = {
+  def managedFile[F[+_, +_]: IO2](prefix: String = "managed_file", suffix: String = ".tmp"): Lifecycle[F[Throwable, _], ManagedFile] = {
     Lifecycle.fromAutoCloseable(IO2(createFile(prefix, suffix)))
   }
-  def managedDirectory[F[+_, +_]: IO2](prefix: String = "managed_dir"): Lifecycle[F[Throwable, ?], ManagedFile] = {
+  def managedDirectory[F[+_, +_]: IO2](prefix: String = "managed_dir"): Lifecycle[F[Throwable, _], ManagedFile] = {
     Lifecycle.fromAutoCloseable(IO2(createDirectory(prefix)))
   }
 

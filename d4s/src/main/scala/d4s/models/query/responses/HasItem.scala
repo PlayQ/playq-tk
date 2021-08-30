@@ -1,6 +1,6 @@
 package d4s.models.query.responses
 
-import software.amazon.awssdk.services.dynamodb.model._
+import software.amazon.awssdk.services.dynamodb.model.*
 
 trait HasItem[A] {
   def item(a: A): java.util.Map[String, AttributeValue]

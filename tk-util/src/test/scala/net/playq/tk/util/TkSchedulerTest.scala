@@ -10,7 +10,7 @@ import net.playq.tk.util.retry.{RetryPolicy, TkScheduler}
 import zio.IO
 
 import java.time.ZonedDateTime
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 final class TkSchedulerTest extends TkSchedulerTestBase[IO] with WithDummy
 
@@ -23,7 +23,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
 
     "recur N times" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         for {
           res <- simpleCounter(RetryPolicy.recurs(3))
           _   <- assertIO(res == 4)
@@ -32,7 +32,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
 
     "recur while predicate is true" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         for {
           res <- simpleCounter(RetryPolicy.recursWhile[F, Int](_ < 3))
           _   <- assertIO(res == 3)
@@ -41,7 +41,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
 
     "execute effect with a given period" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         for {
           list <- runner(F.unit)(RetryPolicy.spaced(200.millis), 3)
           _    <- assertIO(list == Vector.fill(3)(200.millis))
@@ -52,7 +52,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
     // Since it took some time to run effect plus execute repeat logic, delays could be slightly less than expected.
     "execute effect within a time window" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         for {
           sleeps <- runner(T.sleep(1.second))(RetryPolicy.fixed(2.seconds), 4)
           _      <- assertIO(sleeps.head == 2.seconds)
@@ -62,7 +62,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
 
     "have correct exponential backoff policy" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val baseDelay = 100
         val policy    = RetryPolicy.exponential(baseDelay.millis)
         def test(rf: RetryFunction[F, Any, FiniteDuration], now: ZonedDateTime, exp: Int): F[Nothing, Unit] = {
@@ -81,7 +81,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
 
     "combine different policies properly" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val intersectP = RetryPolicy.recursWhile[F, Boolean](identity) && RetryPolicy.recurs(4)
         val unionP     = RetryPolicy.recursWhile[F, Boolean](identity) || RetryPolicy.recurs(4)
         val eff        = (counter: Ref2[F, Int]) => counter.update(_ + 1).map(_ < 3)
@@ -109,7 +109,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
 
     "retry effect after fail" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         def test(maxRetries: Int, expected: Int) = {
           val eff = (counter: Ref2[F, Int]) => counter.update(_ + 1).flatMap(v => if (v < 3) F.fail(new Throwable("Crap!")) else F.unit)
           for {
@@ -128,7 +128,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
 
     "should fail immediately if fail occurs during repeat" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val eff = (counter: Ref2[F, Int]) => counter.update(_ + 1).flatMap(v => if (v < 2) F.fail(new Throwable("Crap!")) else F.unit)
         for {
           counter <- F.mkRef(0)
@@ -144,7 +144,7 @@ abstract class TkSchedulerTestBase[F[+_, +_]: IO2: Primitives2: TagKK: DefaultMo
     }
 
     def runner[E, A, B](eff: F[E, Any])(policy: RetryPolicy[F, Any, B], n: Int)(implicit T: Temporal2[F], clock2: Clock2[F]): F[E, Vector[FiniteDuration]] = {
-      import scala.jdk.DurationConverters._
+      import scala.jdk.DurationConverters.*
       def loop(in: Any, makeDecision: RetryFunction[F, Any, B], acc: Vector[FiniteDuration], iter: Int): F[E, Vector[FiniteDuration]] = {
         if (iter <= 0) F.pure(acc)
         else {

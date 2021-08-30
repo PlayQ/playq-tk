@@ -11,7 +11,7 @@ import net.playq.tk.aws.sqs.config.SQSConfig
 import java.net.URI
 
 trait SQSComponentFactory[F[+_, +_]] {
-  def mkClient(region: Option[String]): Lifecycle[F[Throwable, ?], SQSComponent[F]]
+  def mkClient(region: Option[String]): Lifecycle[F[Throwable, _], SQSComponent[F]]
 }
 
 object SQSComponentFactory {
@@ -22,7 +22,7 @@ object SQSComponentFactory {
     portCheck: PortCheck,
     localCredentials: LocalTestCredentials,
   ) extends SQSComponentFactory[F]
-    with IntegrationCheck[F[Throwable, ?]] {
+    with IntegrationCheck[F[Throwable, _]] {
 
     override def resourcesAvailable(): F[Throwable, ResourceCheck] = F.sync {
       sqsConfig.getEndpoint.fold(
@@ -30,7 +30,7 @@ object SQSComponentFactory {
       )(url => portCheck.checkUrl(URI.create(url).toURL, "SQS Client"))
     }
 
-    override def mkClient(region: Option[String]): Lifecycle[F[Throwable, ?], SQSComponent[F]] = {
+    override def mkClient(region: Option[String]): Lifecycle[F[Throwable, _], SQSComponent[F]] = {
       val configuredRegion = region.orElse(sqsConfig.getRegion)
       SQSComponent.resource(metrics, sqsConfig, configuredRegion, localCredentials)
     }

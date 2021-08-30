@@ -9,7 +9,7 @@ import net.playq.tk.http.TkHttp4sClient
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.io.POST
 import org.http4s.{EntityDecoder, Status, Uri, UrlForm}
-import org.http4s.circe._
+import org.http4s.circe.*
 import net.playq.tk.quantified.SyncThrowable
 
 trait GoogleAuthorizationService[F[_, _]] {
@@ -20,13 +20,13 @@ trait GoogleAuthorizationService[F[_, _]] {
 object GoogleAuthorizationService {
   final class Impl[F[+_, +_]: IO2: SyncThrowable](
     httpClient: TkHttp4sClient[F],
-    clientDsl: Http4sClientDsl[F[Throwable, ?]],
+    clientDsl: Http4sClientDsl[F[Throwable, _]],
     clock: Clock2[F],
   ) extends GoogleAuthorizationService[F] {
-    import clientDsl._
+    import clientDsl.*
 
     private[this] val cache = new java.util.concurrent.ConcurrentHashMap[String, ExpiringAccessToken]()
-    private[this] implicit val accessTokenDecoder: EntityDecoder[F[Throwable, ?], GoogleAccessToken] = jsonOf[F[Throwable, ?], GoogleAccessToken]
+    private[this] implicit val accessTokenDecoder: EntityDecoder[F[Throwable, _], GoogleAccessToken] = jsonOf[F[Throwable, _], GoogleAccessToken]
 
     def invalidateToken(key: String): F[Nothing, Unit] = F.sync(cache.remove(key)).void
 

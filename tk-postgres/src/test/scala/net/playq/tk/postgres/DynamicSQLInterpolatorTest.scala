@@ -1,6 +1,6 @@
 package net.playq.tk.postgres
 
-import doobie.syntax.string._
+import doobie.syntax.string.*
 import net.playq.tk.postgres.RawSQL
 import net.playq.tk.postgres.partitioning.model.TableName
 import org.scalatest.wordspec.AnyWordSpec

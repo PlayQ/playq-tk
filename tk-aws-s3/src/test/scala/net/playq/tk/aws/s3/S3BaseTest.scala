@@ -4,14 +4,14 @@ import distage.{ModuleDef, TagKK}
 import izumi.distage.model.definition.Module
 import izumi.distage.modules.DefaultModule2
 import izumi.distage.testkit.TestConfig
-import izumi.functional.bio.catz._
+import izumi.functional.bio.catz.*
 import izumi.functional.bio.{F, IO2, Parallel2, Primitives2}
 import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.aws.common.ServiceName
 import net.playq.tk.aws.s3.S3BaseTest.{Ctx, TestBucketId}
 import net.playq.tk.aws.s3.config.S3Config
 import net.playq.tk.aws.s3.models.S3UploadContent.Bytes
-import net.playq.tk.aws.s3.models._
+import net.playq.tk.aws.s3.models.*
 import net.playq.tk.test.{TkTestBaseCtx, WithProduction}
 import zio.IO
 
@@ -41,7 +41,7 @@ abstract class S3BaseTestBase[F[+_, +_]: IO2: Primitives2: Parallel2: TagKK: Def
 
   "perform base operations" in scopeIO {
     ctx =>
-      import ctx._
+      import ctx.*
       val appId    = UUID.randomUUID()
       val testPath = "test-path/test"
       val record   = S3Record(S3File(testPath, S3FileFormat.Unknown), S3UploadContent.String("test")).tagged(appId)
@@ -65,7 +65,7 @@ abstract class S3BaseTestBase[F[+_, +_]: IO2: Primitives2: Parallel2: TagKK: Def
 
   "use cached files" in scopeIO {
     ctx =>
-      import ctx._
+      import ctx.*
       val appId    = UUID.randomUUID()
       val testPath = s"cached-test/${UUID.randomUUID()}"
       val record   = S3Record(S3File(testPath, S3FileFormat.Unknown), S3UploadContent.String("test")).tagged(appId)
@@ -100,7 +100,7 @@ abstract class S3BaseTestBase[F[+_, +_]: IO2: Primitives2: Parallel2: TagKK: Def
 
   "use cached files in parallel" in scopeIO {
     ctx =>
-      import ctx._
+      import ctx.*
       val appId    = UUID.randomUUID()
       val testPath = s"cached-test/${UUID.randomUUID()}"
       val record   = S3Record(S3File(testPath, S3FileFormat.Unknown), S3UploadContent.String("test")).tagged(appId)

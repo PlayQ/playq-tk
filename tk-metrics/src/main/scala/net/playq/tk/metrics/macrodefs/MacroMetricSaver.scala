@@ -2,7 +2,7 @@ package net.playq.tk.metrics.macrodefs
 
 import java.io.{BufferedWriter, File, FileWriter}
 
-import izumi.fundamentals.platform.language.Quirks._
+import izumi.fundamentals.platform.language.Quirks.*
 import net.playq.tk.metrics.base.MetricDef
 
 import scala.reflect.macros.blackbox
@@ -24,7 +24,7 @@ object MacroMetricSaver {
   }
 
   def getConstantType[S: c.WeakTypeTag](c: blackbox.Context, className: String, discardName: String): String = {
-    import c.universe._
+    import c.universe.*
     weakTypeOf[S] match {
       case ConstantType(Constant(s: String)) => s
       case tpe =>
@@ -32,7 +32,7 @@ object MacroMetricSaver {
           c.enclosingPosition,
           s"""When materializing $className[$tpe],
              |Couldn't record metric for metric name `$tpe` - metric name should be a String Constant. It can't be an expression.
-             |To disable metric recording for `$tpe`, import $discardName._ - a metric created like this will not be visible in MetricsApi
+             |To disable metric recording for `$tpe`, import $discardName.* - a metric created like this will not be visible in MetricsApi
            """.stripMargin,
         )
     }

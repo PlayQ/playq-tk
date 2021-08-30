@@ -49,7 +49,7 @@ object SynchronizedAction {
 
   final class Zookeeper[F[+_, +_]: IO2: LogIO2](
     zkCfg: ZookeeperConfig
-  ) extends Lifecycle.Self[F[Throwable, ?], Zookeeper[F]]
+  ) extends Lifecycle.Self[F[Throwable, _], Zookeeper[F]]
     with SynchronizedAction[F] {
     private[this] val mutexMap                 = new ConcurrentHashMap[String, InterProcessSemaphoreMutex]()
     private[this] val retryPolicy              = new ExponentialBackoffRetry(1000, 3) // retry policy differs from ZKComponent...

@@ -10,7 +10,7 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sqs.SqsClient
 
 import java.net.URI
-import scala.util.chaining._
+import scala.util.chaining.*
 
 trait SQSComponent[F[+_, +_]] {
   def rawClientRequest[A](
@@ -28,7 +28,7 @@ object SQSComponent {
     sqsConfig: SQSConfig,
     region: Option[String],
     localCredentials: LocalTestCredentials,
-  ): Lifecycle[F[Throwable, ?], SQSComponent[F]] = {
+  ): Lifecycle[F[Throwable, _], SQSComponent[F]] = {
     for {
       client <- Lifecycle.fromAutoCloseable(F.syncThrowable {
         SqsClient

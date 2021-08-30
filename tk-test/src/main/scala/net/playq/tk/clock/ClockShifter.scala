@@ -2,7 +2,7 @@ package net.playq.tk.clock
 
 import izumi.functional.bio.SyncSafe2
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 final class ClockShifter[F[+_, +_]](F: SyncSafe2[F]) {
   private[this] var offset: Long = 0L

@@ -1,6 +1,6 @@
 package d4s.codecs
 
-import d4s.codecs.Fixtures._
+import d4s.codecs.Fixtures.*
 import d4s.codecs.circe.{D4SCirceAttributeCodec, D4SCirceCodec}
 import d4s.models.DynamoException.DecoderException
 import io.circe.generic.extras.semiauto
@@ -11,7 +11,7 @@ import org.scalatestplus.scalacheck.Checkers
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 final class DynamoCodecTest extends AnyWordSpec with Checkers {
 

@@ -6,5 +6,5 @@ import izumi.distage.model.providers.Functoid
 import izumi.functional.bio.Applicative2
 
 abstract class TkTestBaseCtx[F[+_, +_]: Applicative2: TagKK: DefaultModule2, Ctx: AnyConstructor] extends TkTestAbstract[F] {
-  protected final def scopeIO(f: Ctx => F[_, _]): Functoid[F[_, Unit]] = AnyConstructor[Ctx].map(f(_).void)
+  protected final def scopeIO(f: Ctx => F[?, ?]): Functoid[F[?, Unit]] = AnyConstructor[Ctx].map(f(_).void)
 }

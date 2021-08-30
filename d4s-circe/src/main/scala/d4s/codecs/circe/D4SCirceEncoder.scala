@@ -1,8 +1,8 @@
 package d4s.codecs.circe
 
 import d4s.codecs.D4SEncoder
-import io.circe._
-import io.circe.syntax._
+import io.circe.*
+import io.circe.syntax.*
 
 object D4SCirceEncoder {
   def derived[T: Encoder.AsObject]: D4SEncoder[T] = {

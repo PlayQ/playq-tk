@@ -16,7 +16,7 @@ abstract class ClockShiftTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends
   "Closk shifter" must {
     "shift clock impurely" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
 
         val targetShift = entropy.nextLong().abs
         val first       = testClock.now()
@@ -31,7 +31,7 @@ abstract class ClockShiftTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends
 
     "shift clock in IO" in scopeIO {
       ctx =>
-        import ctx._
+        import ctx.*
         val targetShift = entropy.nextLong().abs
         for {
           first  <- clockIO.now()

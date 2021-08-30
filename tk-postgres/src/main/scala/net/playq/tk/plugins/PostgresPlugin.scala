@@ -31,8 +31,8 @@ object PostgresPlugin extends PluginDef {
     many[HealthChecker[IO]].weak[PostgresHealthChecker[IO]]
 
     make[HikariDataSource].fromResource[PostgresDataSource[IO]]
-    make[HikariTransactor[IO[Throwable, ?]]].from {
-      (hikariDataSource: HikariDataSource, blockingIOExecutionContext: Blocker, F: AsyncThrowable[IO], shift: ContextShift[IO[Throwable, ?]]) =>
+    make[HikariTransactor[IO[Throwable, _]]].from {
+      (hikariDataSource: HikariDataSource, blockingIOExecutionContext: Blocker, F: AsyncThrowable[IO], shift: ContextShift[IO[Throwable, _]]) =>
         HikariTransactor(hikariDataSource, blockingIOExecutionContext.blockingContext, blockingIOExecutionContext)(F, shift)
     }
 

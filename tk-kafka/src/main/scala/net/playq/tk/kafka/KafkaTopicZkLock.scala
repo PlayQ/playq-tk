@@ -10,7 +10,7 @@ import net.playq.tk.zookeeper.ZkComponent
 import org.apache.curator.framework.recipes.locks.{InterProcessLock, InterProcessSemaphoreMutex}
 import org.apache.kafka.common.TopicPartition
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 trait KafkaTopicZkLock[F[_, _]] {
   def lockFor(topicPartition: TopicPartition): F[Nothing, ZkLock[F]]
@@ -67,7 +67,7 @@ object KafkaTopicZkLock {
   }
 
   final class Dummy[F[+_, +_]: Async2: Temporal2: Primitives2]
-    extends Lifecycle.LiftF[F[Throwable, ?], KafkaTopicZkLock[F]](for {
+    extends Lifecycle.LiftF[F[Throwable, _], KafkaTopicZkLock[F]](for {
       state <- F.mkRef(Map.empty[TopicPartition, scala.concurrent.Promise[Unit]])
     } yield {
       new KafkaTopicZkLock[F] {

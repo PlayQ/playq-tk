@@ -1,13 +1,13 @@
 package d4s.codecs.circe
 
-import cats.implicits._
+import cats.implicits.*
 import d4s.codecs.D4SDecoder
 import d4s.models.DynamoException.DecoderException
 import io.circe.{Decoder, Json}
 import software.amazon.awssdk.core.util.{DefaultSdkAutoConstructList, DefaultSdkAutoConstructMap}
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 object D4SCirceDecoder {
 
@@ -42,9 +42,9 @@ object D4SCirceDecoder {
     def asBool: Option[Boolean]                    = Option(v.bool()).map(_.booleanValue())
     def asNull: Option[Unit]                       = Option(v.nul()).map(_.booleanValue()).collect { case true => () }
     def asString: Option[String]                   = Option(v.s())
-    def asStringsSet: Option[Set[String]]          = Option(v.ss()).filter(!_.isInstanceOf[DefaultSdkAutoConstructList[_]]).map(_.asScala.toSet)
-    def asNumberSet: Option[Set[String]]           = Option(v.ns()).filter(!_.isInstanceOf[DefaultSdkAutoConstructList[_]]).map(_.asScala.toSet)
-    def asCollection: Option[List[AttributeValue]] = Option(v.l()).filter(!_.isInstanceOf[DefaultSdkAutoConstructList[_]]).map(_.asScala.toList)
-    def asMap: Option[Map[String, AttributeValue]] = Option(v.m()).filter(!_.isInstanceOf[DefaultSdkAutoConstructMap[_, _]]).map(_.asScala.toMap)
+    def asStringsSet: Option[Set[String]]          = Option(v.ss()).filter(!_.isInstanceOf[DefaultSdkAutoConstructList[?]]).map(_.asScala.toSet)
+    def asNumberSet: Option[Set[String]]           = Option(v.ns()).filter(!_.isInstanceOf[DefaultSdkAutoConstructList[?]]).map(_.asScala.toSet)
+    def asCollection: Option[List[AttributeValue]] = Option(v.l()).filter(!_.isInstanceOf[DefaultSdkAutoConstructList[?]]).map(_.asScala.toList)
+    def asMap: Option[Map[String, AttributeValue]] = Option(v.m()).filter(!_.isInstanceOf[DefaultSdkAutoConstructMap[?, ?]]).map(_.asScala.toMap)
   }
 }

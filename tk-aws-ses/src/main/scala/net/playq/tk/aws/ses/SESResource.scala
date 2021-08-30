@@ -11,16 +11,16 @@ import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.VerifyDomainIdentityRequest
 
 import java.net.URI
-import scala.util.chaining._
+import scala.util.chaining.*
 
 final class SESResource[F[+_, +_]: IO2: BlockingIO2](
   sesConfig: SESConfig,
   portCheck: PortCheck,
   localCredentials: LocalTestCredentials,
-) extends Lifecycle.OfInner[F[Throwable, ?], SESComponent[F]]
-  with IntegrationCheck[F[Throwable, ?]] {
+) extends Lifecycle.OfInner[F[Throwable, _], SESComponent[F]]
+  with IntegrationCheck[F[Throwable, _]] {
 
-  override val lifecycle: Lifecycle[F[Throwable, ?], SESComponent[F]] = {
+  override val lifecycle: Lifecycle[F[Throwable, _], SESComponent[F]] = {
     makeClient.evalTap(verifyDomain).map(new SESComponent(_))
   }
 
@@ -30,7 +30,7 @@ final class SESResource[F[+_, +_]: IO2: BlockingIO2](
     )(url => portCheck.checkUrl(URI.create(url).toURL, "SESClient"))
   }
 
-  private[this] def makeClient: Lifecycle[F[Throwable, ?], SesClient] = Lifecycle.fromAutoCloseable(F.syncThrowable {
+  private[this] def makeClient: Lifecycle[F[Throwable, _], SesClient] = Lifecycle.fromAutoCloseable(F.syncThrowable {
     SesClient.builder
       .pipe(builder => sesConfig.getRegion.fold(builder)(builder region Region.of(_)))
       .pipe(builder => sesConfig.getEndpoint.fold(builder)(builder endpointOverride URI.create(_) credentialsProvider localCredentials.get))

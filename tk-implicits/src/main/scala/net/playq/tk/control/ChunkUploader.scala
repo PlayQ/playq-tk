@@ -1,12 +1,12 @@
 package net.playq.tk.control
 
 import cats.effect.{Concurrent, Timer}
-import cats.syntax.functor._
-import cats.syntax.flatMap._
+import cats.syntax.functor.*
+import cats.syntax.flatMap.*
 import fs2.Chunk
 import fs2.concurrent.Queue
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 final case class ChunkUploader[F[_], A](push: A => F[Unit], kill: F[Unit])
 

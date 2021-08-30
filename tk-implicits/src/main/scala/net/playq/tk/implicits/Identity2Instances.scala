@@ -2,7 +2,7 @@ package net.playq.tk.implicits
 
 import izumi.functional.bio.Applicative2
 import izumi.fundamentals.platform.functional.Identity2
-import izumi.fundamentals.platform.language.Quirks._
+import izumi.fundamentals.platform.language.Quirks.*
 
 object Identity2Instances {
   implicit val bioapplicativeIdentity2: Applicative2[Identity2] = new Applicative2[Identity2] {

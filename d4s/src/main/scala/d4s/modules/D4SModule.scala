@@ -1,7 +1,7 @@
 package d4s.modules
 
-import d4s._
-import d4s.config._
+import d4s.*
+import d4s.config.*
 import d4s.docker.DynamoDocker
 import d4s.health.DynamoDBHealthChecker
 import d4s.models.table.TableDef
@@ -11,9 +11,9 @@ import izumi.fundamentals.platform.integration.PortCheck
 import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.health.HealthChecker
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
-class D4SModule[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, ?]]) extends ModuleDef {
+class D4SModule[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, _]]) extends ModuleDef {
   include(D4SModule.base[F])
   include(D4SModule.configs)
 }
@@ -21,7 +21,7 @@ class D4SModule[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, ?]]) extends Mo
 object D4SModule {
   def apply[F[+_, +_]: TagKK]: ModuleDef = new D4SModule[F]
 
-  def base[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, ?]]): ModuleDef = new ModuleDef {
+  def base[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, _]]): ModuleDef = new ModuleDef {
     make[DynamoClient[F]].from[DynamoClient.Impl[F]]
     make[DynamoConnector[F]].from[DynamoConnector.Impl[F]].addDependency[DynamoDBHealthChecker[F]]
     make[DynamoInterpreter[F]].from[DynamoInterpreter.Impl[F]]
@@ -38,7 +38,7 @@ object D4SModule {
       new PortCheck(3.seconds)
     }
 
-    include(DynamoDocker.module[F[Throwable, ?]]("aws.dynamo"))
+    include(DynamoDocker.module[F[Throwable, _]]("aws.dynamo"))
   }
 
   val configs: ConfigModuleDef = new ConfigModuleDef {

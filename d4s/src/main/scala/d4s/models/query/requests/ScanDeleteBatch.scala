@@ -5,7 +5,7 @@ import java.util
 import d4s.models.conditions.Condition
 import d4s.models.conditions.Condition.ZeroCondition
 import d4s.models.query.DynamoRequest
-import d4s.models.query.DynamoRequest._
+import d4s.models.query.DynamoRequest.*
 import d4s.models.table.TableReference
 import d4s.models.table.index.TableIndex
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, BatchWriteItemResponse, ScanRequest, Select}
@@ -47,7 +47,7 @@ final case class ScanDeleteBatch(
 
   override def withSelect(newSelect: Select): ScanDeleteBatch = copy(select = Some(newSelect))
 
-  override def withIndex(index: TableIndex[_, _]): ScanDeleteBatch = copy(index = Some(index.name))
+  override def withIndex(index: TableIndex[?, ?]): ScanDeleteBatch = copy(index = Some(index.name))
 
   override def withStartKeyMap(startKey: util.Map[String, AttributeValue]): ScanDeleteBatch = copy(startKey = Some(startKey))
 

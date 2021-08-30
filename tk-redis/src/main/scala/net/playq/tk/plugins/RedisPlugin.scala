@@ -10,8 +10,8 @@ import zio.IO
 object RedisPlugin extends PluginDef {
   include(RedisPlugin.module[IO])
 
-  def module[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, ?]]): ConfigModuleDef = new ConfigModuleDef {
+  def module[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, _]]): ConfigModuleDef = new ConfigModuleDef {
     make[RedisComponent[F]].fromResource[RedisComponent.Resource[F]]
-    include(RedisDocker.module[F[Throwable, ?]]("redis"))
+    include(RedisDocker.module[F[Throwable, _]]("redis"))
   }
 }

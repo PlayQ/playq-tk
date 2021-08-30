@@ -4,7 +4,7 @@ import d4s.codecs.D4SAttributeEncoder
 import d4s.models.conditions.Condition.{ConditionEvaluated, and, not, or}
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 trait Condition {
   final def AND(that: Condition): Condition.and = and(this, that)

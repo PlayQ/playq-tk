@@ -1,7 +1,7 @@
 package net.playq.tk.aws.cost
 
 import cats.effect.concurrent.Ref
-import cats.syntax.list._
+import cats.syntax.list.*
 import izumi.functional.bio.{BlockingIO2, F, IO2, Temporal2}
 import net.playq.tk.metrics.Metrics
 import net.playq.tk.metrics.{MacroMetricCostMeter, MacroMetricCostTimer}
@@ -9,7 +9,7 @@ import net.playq.tk.quantified.SyncThrowable
 import net.playq.tk.util.retry.{RetryPolicy, TkScheduler}
 import software.amazon.awssdk.services.costexplorer.CostExplorerClient
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 trait CostClient[F[_, _]] {
   def getCosts(request: CostRequest): F[Throwable, CostResponse]
@@ -70,8 +70,8 @@ object CostClient {
         client =>
           val schedule = RetryPolicy.recursWhile[F, Option[String]](_.nonEmpty)
           for {
-            ref       <- Ref.of[F[Throwable, ?], List[CostResponse]](Nil)
-            nextToken <- Ref.of[F[Throwable, ?], Option[String]](None)
+            ref       <- Ref.of[F[Throwable, _], List[CostResponse]](Nil)
+            nextToken <- Ref.of[F[Throwable, _], Option[String]](None)
             _ <- TkScheduler[F].repeat {
               for {
                 next   <- nextToken.get

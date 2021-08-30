@@ -20,7 +20,7 @@ object ZkComponent {
     zkCfg: ZookeeperConfig,
     zkRetryPolicy: RetryPolicy @Id("zookeeper-client"),
   )(implicit F: BlockingIO2[F]
-  ) extends Lifecycle.MakePair[F[Throwable, ?], ZkComponent[F]](
+  ) extends Lifecycle.MakePair[F[Throwable, _], ZkComponent[F]](
       F.syncBlocking {
         val client = CuratorFrameworkFactory
           .newClient(zkCfg.url, zkRetryPolicy)

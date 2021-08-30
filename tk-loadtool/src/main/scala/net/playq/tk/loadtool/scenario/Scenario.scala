@@ -9,7 +9,7 @@ import scala.concurrent.duration.FiniteDuration
 
 trait Scenario[F[+_, +_], E, A] {
   val id: String
-  def mkScenario[F1[+_, +_]: ScenarioIO2Syntax[F]#l]: Lifecycle[F1[E, ?], F1[E, A]]
+  def mkScenario[F1[+_, +_]: ScenarioIO2Syntax[F]#l]: Lifecycle[F1[E, _], F1[E, A]]
 }
 
 object Scenario {

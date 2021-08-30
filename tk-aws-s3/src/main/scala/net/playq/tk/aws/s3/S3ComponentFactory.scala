@@ -31,7 +31,7 @@ object S3ComponentFactory {
     localCredentials: LocalTestCredentials,
     metrics: Metrics[F],
   ) extends S3ComponentFactory[F]
-    with IntegrationCheck[F[Throwable, ?]] {
+    with IntegrationCheck[F[Throwable, _]] {
 
     override def resourcesAvailable(): F[Nothing, ResourceCheck] = F.sync {
       s3Conf.getEndpoint.fold(

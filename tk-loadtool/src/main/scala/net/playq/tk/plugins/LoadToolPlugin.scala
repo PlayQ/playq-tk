@@ -19,16 +19,16 @@ import scala.annotation.unchecked.{uncheckedVariance => v}
 object LoadToolPlugin extends PluginDef {
   include(LoadToolPlugin.module[ZIO])
 
-  def module[F[-_, +_, +_]: TagK3](implicit tag0: TagKK[F[Any, +?, ?]]): ConfigModuleDef = new ConfigModuleDef {
-    addConverted3To2[F[Any, +?, +?]](tag0)
+  def module[F[-_, +_, +_]: TagK3](implicit tag0: TagKK[F[Any, +_, _]]): ConfigModuleDef = new ConfigModuleDef {
+    addConverted3To2[F[Any, +_, +_]](tag0)
 
     addImplicit[Tag[Ref3[ZIO, ScenarioScope]]]
-    addImplicit[Tag[ScenarioContext[ZIO[Any, ?, ?]]]]
+    addImplicit[Tag[ScenarioContext[ZIO[Any, _, _]]]]
     addImplicit[Tag[Has[Ref3[ZIO, ScenarioScope]]]]
 
     make[ScenarioRunner[F]]
     make[ScenarioGenProvider]
-    many[ScenarioGen[_]]
+    many[ScenarioGen[?]]
       .add[IntGen]
       .add[LongGen]
       .add[UUIDGen]
@@ -38,8 +38,8 @@ object LoadToolPlugin extends PluginDef {
     // workaround for https://github.com/zio/izumi-reflect/issues/82
     def addConverted3To2[G[+e, +a] >: F[Any, e @v, a @v] <: F[Any, e @v, a @v]: TagKK]: Unit = {
       make[LoadTool[G]].from[LoadTool.Impl[F]]
-      many[Scenario[G, _, _]]
-      make[ScenarioIO2SyntaxAux[G, F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[G]], +?, +?]]]
+      many[Scenario[G, ?, ?]]
+      make[ScenarioIO2SyntaxAux[G, F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[G]], +_, +_]]]
         .from[ScenarioIO2.Impl[F]]
         .aliased[ScenarioIO2Syntax[G]]
       ()

@@ -3,26 +3,26 @@ package net.playq.tk.http
 import distage.Id
 import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{F, IO2}
-import izumi.fundamentals.platform.strings.IzString._
+import izumi.fundamentals.platform.strings.IzString.*
 import logstage.LogIO2
 import TkHttp4sServerResource.TkHttp4sServer
 import org.http4s.HttpApp
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.{Router, Server}
-import org.http4s.syntax.kleisli._
+import org.http4s.syntax.kleisli.*
 import net.playq.tk.quantified.{ConcurrentEffect2, TimerThrowable}
 
 import scala.concurrent.ExecutionContext
-import scala.util.chaining._
+import scala.util.chaining.*
 
 final class TkHttp4sServerResource[F[+_, +_]: IO2: ConcurrentEffect2: TimerThrowable, BaseContext, FullContext, ClientId](
   interface: TkHttpInterface,
   restServices: Set[TkHttp4sService[F, BaseContext]],
   logger: LogIO2[F],
   globalExecutionContext: ExecutionContext @Id("global"),
-) extends Lifecycle.Of[F[Throwable, ?], TkHttp4sServer[F, BaseContext, FullContext]]({
-    def resource: Lifecycle[F[Throwable, ?], TkHttp4sServer[F, BaseContext, FullContext]] = {
-      BlazeServerBuilder[F[Throwable, ?]](globalExecutionContext)
+) extends Lifecycle.Of[F[Throwable, _], TkHttp4sServer[F, BaseContext, FullContext]]({
+    def resource: Lifecycle[F[Throwable, _], TkHttp4sServer[F, BaseContext, FullContext]] = {
+      BlazeServerBuilder[F[Throwable, _]](globalExecutionContext)
         .bindHttp(interface.port, interface.bindingHost)
         .withHttpApp(routes)
         .withLengthLimits(maxRequestLineLen = 64 * 1024, maxHeadersLen = 64 * 1024)
@@ -32,13 +32,13 @@ final class TkHttp4sServerResource[F[+_, +_]: IO2: ConcurrentEffect2: TimerThrow
         .map(TkHttp4sServer[F, BaseContext, FullContext])
     }
 
-    def routes: HttpApp[F[Throwable, ?]] = {
+    def routes: HttpApp[F[Throwable, _]] = {
       val all = restServices.map(svc => svc.prefix -> svc.httpRoutes).toList
       Router(all: _*).orNotFound
     }
 
-    def withLog[A](interface: TkHttpInterface): Lifecycle[F[Throwable, ?], A] => Lifecycle[F[Throwable, ?], A] = {
-      (_: Lifecycle[F[Throwable, ?], A]).wrapAcquire {
+    def withLog[A](interface: TkHttpInterface): Lifecycle[F[Throwable, _], A] => Lifecycle[F[Throwable, _], A] = {
+      (_: Lifecycle[F[Throwable, _], A]).wrapAcquire {
         f =>
           for {
             _   <- logger.info("Starting HTTP server...")
@@ -61,5 +61,5 @@ final class TkHttp4sServerResource[F[+_, +_]: IO2: ConcurrentEffect2: TimerThrow
   })
 
 object TkHttp4sServerResource {
-  final case class TkHttp4sServer[F[_, _], BaseContext, FullContext](server: Server[F[Throwable, ?]])
+  final case class TkHttp4sServer[F[_, _], BaseContext, FullContext](server: Server[F[Throwable, _]])
 }

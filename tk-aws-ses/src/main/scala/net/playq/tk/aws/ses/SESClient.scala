@@ -3,7 +3,7 @@ package net.playq.tk.aws.ses
 import izumi.functional.bio.{Applicative2, F, IO2}
 import net.playq.tk.aws.ses.config.SESConfig
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 trait SESClient[F[_, _]] {
   def sendEmail(email: SESEmail): F[Throwable, Unit]

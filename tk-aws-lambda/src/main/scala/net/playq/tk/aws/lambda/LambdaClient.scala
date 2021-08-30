@@ -18,7 +18,7 @@ trait LambdaClient[F[_, _]] {
   def createPublish(deploymentPackageZip: ManagedFile, config: LambdaFunctionConfig): F[Throwable, String]
   def delete(name: String): F[Throwable, Unit]
   def invoke(name: String, body: String): F[Throwable, String]
-  def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, ?], ManagedFile]
+  def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, _], ManagedFile]
 }
 
 object LambdaClient {
@@ -34,7 +34,7 @@ object LambdaClient {
     override def createPublish(deploymentPackageZip: ManagedFile, config: LambdaFunctionConfig): F[Throwable, String] = F.pure("arn")
     override def delete(name: String): F[Throwable, Unit]                                                             = F.unit
     override def invoke(name: String, body: String): F[Throwable, String]                                             = F.pure(body)
-    override def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, ?], ManagedFile] = {
+    override def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, _], ManagedFile] = {
       ManagedFile.managedFile()
     }
   }
@@ -47,8 +47,8 @@ object LambdaClient {
     service: ServiceName,
   ) extends LambdaClient[F] {
 
-    override def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, ?], ManagedFile] = {
-      import sys.process._
+    override def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, _], ManagedFile] = {
+      import sys.process.*
       ManagedFile.managedFile("lambda", ".zip").evalTap {
         packageFolder =>
           for {
@@ -77,7 +77,7 @@ object LambdaClient {
     }
 
     override def createPublish(deploymentPackageZip: ManagedFile, config: LambdaFunctionConfig): F[Throwable, String] = {
-      import config._
+      import config.*
       val actualName = environmentalName(name)
       val req: CreateFunctionRequest = CreateFunctionRequest.builder
         .code(FunctionCode.builder.zipFile(SdkBytes.fromInputStream(Files.newInputStream(deploymentPackageZip.file.toPath))).build)

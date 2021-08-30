@@ -5,23 +5,23 @@ import logstage.LogIO
 import org.apache.kafka.clients.consumer.{Consumer, ConsumerRecords}
 
 trait PollLogger[F[_]] {
-  def preLog(consumer: Consumer[_, _], timeout: Long): F[Unit]
-  def postLog(consumer: Consumer[_, _], records: ConsumerRecords[_, _], timeout: Long): F[Unit]
+  def preLog(consumer: Consumer[?, ?], timeout: Long): F[Unit]
+  def postLog(consumer: Consumer[?, ?], records: ConsumerRecords[?, ?], timeout: Long): F[Unit]
 }
 
 object PollLogger {
   def empty[F[_]](implicit F: Applicative[F]): PollLogger[F] =
     new PollLogger[F] {
-      override def preLog(consumer: Consumer[_, _], timeout: Offset): F[Unit]                                  = F.unit
-      override def postLog(consumer: Consumer[_, _], records: ConsumerRecords[_, _], timeout: Offset): F[Unit] = F.unit
+      override def preLog(consumer: Consumer[?, ?], timeout: Offset): F[Unit]                                  = F.unit
+      override def postLog(consumer: Consumer[?, ?], records: ConsumerRecords[?, ?], timeout: Offset): F[Unit] = F.unit
     }
 
   def logger[F[_]](topic: String)(implicit log: LogIO[F]): PollLogger[F] =
     new PollLogger[F] {
-      override def preLog(consumer: Consumer[_, _], timeout: Long): F[Unit] =
+      override def preLog(consumer: Consumer[?, ?], timeout: Long): F[Unit] =
         log.info(s"Polling $topic with $timeout")
 
-      override def postLog(consumer: Consumer[_, _], records: ConsumerRecords[_, _], timeout: Long): F[Unit] =
+      override def postLog(consumer: Consumer[?, ?], records: ConsumerRecords[?, ?], timeout: Long): F[Unit] =
         log.info(s"Polled $topic successfully, got ${records.count}")
     }
 }

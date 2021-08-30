@@ -1,7 +1,7 @@
 package net.playq.tk.plugins
 
-import distage._
-import distage.plugins._
+import distage.*
+import distage.plugins.*
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.Http4sDsl
 import zio.Task

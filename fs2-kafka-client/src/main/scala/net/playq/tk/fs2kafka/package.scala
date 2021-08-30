@@ -1,20 +1,20 @@
 package net.playq.tk
 
-import cats.effect._
-import cats.syntax.flatMap._
+import cats.effect.*
+import cats.syntax.flatMap.*
 import fs2.{Pipe, Pure, Stream}
-import org.apache.kafka.clients.consumer._
+import org.apache.kafka.clients.consumer.*
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord, RecordMetadata}
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 /** yet another fs2-kafka adapter */
 package object fs2kafka {
 
-  final type Stream2[+F[_, _], +A]  = Stream[F[Throwable, ?], A]
-  final type Pipe2[F[_, _], -A, +B] = Pipe[F[Throwable, ?], A, B]
+  final type Stream2[+F[_, _], +A]  = Stream[F[Throwable, _], A]
+  final type Pipe2[F[_, _], -A, +B] = Pipe[F[Throwable, _], A, B]
 
   final type Partition    = Int
   final type Offset       = Long
