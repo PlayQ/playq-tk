@@ -21,7 +21,7 @@ object V {
   val aws_java_sdk  = "2.17.1"
   val parquet       = "1.11.1"
   val hadoop_common = "3.3.1"
-  val jedis         = "3.6.3"
+  val jedis         = "3.7.0"
   val auth0_jwks    = "0.19.0"
 
   val log4j_to_slf4j   = "2.14.1"
