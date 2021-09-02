@@ -12,9 +12,5 @@ final class TkWaiterFactory[F[+_, +_]: Temporal2: LogIO2] {
       log.info(s"TEST MODE: Sleeping for $constant time") *>
       F.sleep(constant)
     }
-    override def sleep(waitMin: Int, waitMax: Int): F[Nothing, Unit] = {
-      log.info(s"TEST MODE: Sleeping for $constant time") *>
-      F.sleep(constant)
-    }
   }
 }
