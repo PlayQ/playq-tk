@@ -55,7 +55,6 @@ object ExecutionStrategy {
       }
     }
 
-
   trait Streamed[DR <: DynamoRequest, -Dec, +A] extends ExecutionStrategy.Dependent[DR, Dec, StreamFThrowable[*[+_, +_], A]] {
     def apply[F[+_, +_]](input: StrategyInput[F, DR, Dec]): Stream[F[Throwable, _], A]
   }
