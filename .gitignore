@@ -13,6 +13,8 @@ buildinfo.sh
 .DS_Store
 .bsp
 .gradle
+node_modules
+dist
 
 # Compiled class file
 *.class
