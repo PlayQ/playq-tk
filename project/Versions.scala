@@ -61,5 +61,5 @@ object V {
   val circe_derivation     = "0.13.0-M5"
 
   val scalatest                = "3.2.9"
-  val scalatestplus_scalacheck = "3.2.9.0"
+  val scalatestplus_scalacheck = "3.2.10.0"
 }
