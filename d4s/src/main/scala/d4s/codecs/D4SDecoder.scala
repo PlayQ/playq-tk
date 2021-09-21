@@ -41,6 +41,7 @@ trait D4SDecoder[T] {
   }
 }
 
+@SuppressWarnings(Array("IsInstanceOf"))
 object D4SDecoder {
   @inline def apply[A](implicit ev: D4SDecoder[A]): ev.type = ev
 

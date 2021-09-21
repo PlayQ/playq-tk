@@ -1,4 +1,7 @@
-object V {
+package Tk
+
+object V extends V
+trait V {
   val scala_213 = "2.13.6"
 
   val izumi_version            = "1.0.8"

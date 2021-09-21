@@ -39,6 +39,7 @@ private[codecs] abstract class GenericD4SAttributeEncoder(dropNulls: Boolean) {
     traitEncoder[T](ctx.dispatch(_)(subtype => subtype.typeName.short -> subtype.typeclass))
   }
 
+  @SuppressWarnings(Array("IsInstanceOf"))
   private[codecs] def traitEncoder[A](caseMap: A => (String, D4SAttributeEncoder[? <: A])): D4SAttributeEncoder[A] = {
     item =>
       val typeNameEncoder = caseMap(item)

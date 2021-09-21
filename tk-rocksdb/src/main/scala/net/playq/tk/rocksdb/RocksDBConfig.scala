@@ -2,7 +2,7 @@ package net.playq.tk.rocksdb
 
 import org.rocksdb.Options
 
-case class RocksDBConfig(
+final case class RocksDBConfig(
   createIfMissing: Boolean,
   writeBufferSize: Long,
   paranoidChecks: Boolean,

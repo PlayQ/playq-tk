@@ -29,7 +29,8 @@ object TableDDLOps {
           case None => false
           case Some(value) =>
             val provisioning = newDDL.provisioning.getIndexProvisioning(name)
-            provisioning.read != value.provisionedThroughput().readCapacityUnits() || provisioning.write != value.provisionedThroughput().writeCapacityUnits()
+            provisioning.read != (value.provisionedThroughput().readCapacityUnits(): Long) ||
+              provisioning.write != (value.provisionedThroughput().writeCapacityUnits(): Long)
         }
     }
 
