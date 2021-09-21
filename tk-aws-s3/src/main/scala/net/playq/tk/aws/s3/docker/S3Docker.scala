@@ -7,7 +7,7 @@ import net.playq.tk.aws.s3.config.S3Config
 import net.playq.tk.docker.TkContainerDef
 
 object S3Docker extends TkContainerDef[S3Config] {
-  override def image: String             = "adobe/s3mock:latest"
+  override def image: String             = "adobe/s3mock:2.1.29"
   override def containerPort: DockerPort = DockerPort.TCP(9090)
 
   override def config: S3Docker.Config = super.config.copy(
