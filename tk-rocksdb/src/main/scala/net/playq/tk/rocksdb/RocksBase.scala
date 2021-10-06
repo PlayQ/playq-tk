@@ -2,6 +2,7 @@ package net.playq.tk.rocksdb
 
 import distage.{ModuleDef, Tag, TagKK}
 import izumi.distage.constructors.ClassConstructor
+import izumi.distage.model.definition.StandardAxis.Mode
 import izumi.functional.bio.{F, IO2}
 
 import scala.collection.mutable
@@ -13,10 +14,14 @@ trait RocksBase[F[_, _], RocksDBId] {
 }
 
 object RocksBase {
-  def rocksBaseModule[F[+_, +_]: TagKK, RocksDBId <: RocksBaseId: Tag: ClassConstructor]: ModuleDef = new ModuleDef {
-    make[RocksDBId]
+  def rocksBaseModule[F[+_, +_]: TagKK, RocksDBId <: RocksBaseId[RocksDBId]: Tag: ClassConstructor]: ModuleDef = new ModuleDef {
+    make[RocksDBId].tagged(Mode.Prod)
+    make[RocksDBId].modify(_.updatePath(
+      scala.util.Random.alphanumeric.take(5).mkString,
+      scala.util.Random.alphanumeric.take(5).mkString)
+    ).tagged(Mode.Test)
     make[RocksBase[F, RocksDBId]].fromResource((_: RocksBaseFactory[F]).mkBase(_: RocksDBId))
-    many[RocksBaseId]
+    many[RocksBaseId[?]]
       .weak[RocksDBId]
   }
 

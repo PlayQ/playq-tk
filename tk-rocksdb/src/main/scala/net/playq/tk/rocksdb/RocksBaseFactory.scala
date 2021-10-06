@@ -8,13 +8,13 @@ import java.nio.file.Paths
 import scala.collection.mutable
 
 trait RocksBaseFactory[F[+_, +_]] {
-  def mkBase[RocksDBId <: RocksBaseId](baseId: RocksDBId): Lifecycle2[F, Throwable, RocksBase[F, RocksDBId]]
+  def mkBase[RocksDBId <: RocksBaseId[RocksDBId]](baseId: RocksDBId): Lifecycle2[F, Throwable, RocksBase[F, RocksDBId]]
 }
 
 object RocksBaseFactory {
   final class Dummy[F[+_, +_]: IO2] extends RocksBaseFactory[F] {
-    private[this] val bases = mutable.HashMap.empty[RocksBaseId, RocksBase[F, ?]]
-    override def mkBase[RocksDBId <: RocksBaseId](baseId: RocksDBId): Lifecycle2[F, Throwable, RocksBase[F, RocksDBId]] = Lifecycle.liftF(F.sync {
+    private[this] val bases = mutable.HashMap.empty[RocksBaseId[?], RocksBase[F, ?]]
+    override def mkBase[RocksDBId <: RocksBaseId[RocksDBId]](baseId: RocksDBId): Lifecycle2[F, Throwable, RocksBase[F, RocksDBId]] = Lifecycle.liftF(F.sync {
       bases.getOrElseUpdate(baseId, new RocksBase.Dummy[F, RocksDBId]).asInstanceOf[RocksBase[F, RocksDBId]]
     })
   }
@@ -22,7 +22,7 @@ object RocksBaseFactory {
   final class Impl[F[+_, +_]: IO2](
     config: RocksDBConfig
   ) extends RocksBaseFactory[F] {
-    override def mkBase[RocksDBId <: RocksBaseId](baseId: RocksDBId): Lifecycle2[F, Throwable, RocksBase[F, RocksDBId]] = Lifecycle.liftF(F.sync {
+    override def mkBase[RocksDBId <: RocksBaseId[RocksDBId]](baseId: RocksDBId): Lifecycle2[F, Throwable, RocksBase[F, RocksDBId]] = Lifecycle.liftF(F.sync {
       new RocksBase[F, RocksDBId] {
         private[this] val base = Paths.get(baseId.base)
         private[this] val dbp  = base.resolve(baseId.dpb)
