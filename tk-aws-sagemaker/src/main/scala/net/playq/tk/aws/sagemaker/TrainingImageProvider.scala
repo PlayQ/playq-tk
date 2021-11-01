@@ -13,7 +13,7 @@ final class TrainingImageProvider[F[+_, +_]: ApplicativeError2](
   def trainingImageUri(trainingScript: TrainingScript, trainingHardware: TrainingHardware): F[GettingTrainingImageURIException, TrainingImageURI] = {
     F.fromEither {
       getTrainingImageURI(
-        config.regionOrDefault,
+        config.region,
         trainingHardware.hardwareType.qualifier,
         trainingScript.framework,
         trainingScript.frameworkVersion,

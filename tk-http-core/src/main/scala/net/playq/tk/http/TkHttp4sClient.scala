@@ -5,7 +5,7 @@ import izumi.distage.model.definition.Id
 import net.playq.tk.quantified.ConcurrentEffect2
 import org.http4s.*
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.middleware.FollowRedirect
 
 import javax.net.ssl.SSLContext

@@ -10,7 +10,7 @@ import org.http4s.headers.Authorization
 final class GoogleOAuth[F[+_, +_]: IO2](client: TkHttp4sClient[F]) {
   private[this] val uri = Uri.unsafeFromString("https://www.googleapis.com/oauth2/v3/userinfo")
   def validate(token: String): F[Throwable, GoogleUserInfo] = {
-    val request = Request[F[Throwable, _]](Method.GET, uri, headers = Headers.of(Authorization(Credentials.Token(AuthScheme.Bearer, token))))
+    val request = Request[F[Throwable, _]](Method.GET, uri, headers = Headers(Authorization(Credentials.Token(AuthScheme.Bearer, token))))
     client.expect[GoogleUserInfo](request)
   }
 }

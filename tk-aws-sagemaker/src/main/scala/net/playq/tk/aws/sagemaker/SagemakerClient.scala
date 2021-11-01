@@ -61,7 +61,7 @@ object SagemakerClient {
       client <- Lifecycle.fromAutoCloseable(F.syncThrowable {
         SageMakerClient
           .builder()
-          .pipe(builder => config.getRegion.fold(builder)(builder region Region.of(_)))
+          .region(Region.of(config.region))
           .build()
       })
     } yield new SagemakerClient[F] {
@@ -122,7 +122,7 @@ object SagemakerClient {
                     "sagemaker_container_log_level" -> "20",
                     "sagemaker_job_name"            -> quote(trainingJobName),
                     "sagemaker_program"             -> quote(uploadedSources.scriptFileName),
-                    "sagemaker_region"              -> quote(config.regionOrDefault),
+                    "sagemaker_region"              -> quote(config.region),
                     "sagemaker_submit_directory"    -> quote(S3URI.format(bucket, uploadedSources.s3File.fileName)),
                   ).asJava
                 }

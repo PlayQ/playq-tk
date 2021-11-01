@@ -5,16 +5,16 @@ trait V {
   val scala_213 = "2.13.6"
 
   val izumi_version            = "1.0.8"
-  val izumi_idealingua_version = "1.0.8"
+  val izumi_idealingua_version = "1.0.9"
 
   // ToolKit Deps
 
   // compiler
   val kind_projector = "0.13.2"
-  val scapegoat      = "1.4.9"
+  val scapegoat      = "1.4.10"
 
   // java
-  val guava         = "30.1.1-jre"
+  val guava         = "31.0.1-jre"
   val dropwizard    = "3.2.6"
   val opendmk       = "1.0_01-ea"
   val parboiled2    = "2.3.0"
@@ -25,7 +25,7 @@ trait V {
   val parquet       = "1.11.1"
   val hadoop_common = "3.3.1"
   val jedis         = "3.7.0"
-  val auth0_jwks    = "0.19.0"
+  val auth0_jwks    = "0.20.0"
 
   val log4j_to_slf4j   = "2.14.1"
   val log4j12_to_slf4j = "1.7.32"
@@ -51,7 +51,7 @@ trait V {
   val scalacheck           = "1.15.4"
   val scalacheck_shapeless = "1.2.5"
 
-  val fs2      = "2.5.9"
+  val fs2      = "2.5.10"
   val magnolia = "0.16.0"
 
   val scala_xml = "1.3.0"

@@ -52,9 +52,9 @@ object GoogleAuthorizationService {
         "client_secret" -> config.clientSecret,
         "refresh_token" -> config.refreshToken,
       )
+      val req = POST(requestNode, Uri.unsafeFromString(config.tokenRefreshUri))
 
       for {
-        req <- POST(requestNode, Uri.unsafeFromString(config.tokenRefreshUri))
         token <- httpClient.fetch(req) {
           case Status.Successful(r) =>
             r.as[GoogleAccessToken]

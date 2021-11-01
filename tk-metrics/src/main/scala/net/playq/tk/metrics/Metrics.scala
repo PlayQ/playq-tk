@@ -26,9 +26,9 @@ object Metrics {
   def apply[F[_, _]: Metrics]: Metrics[F] = implicitly
 
   final class Empty[F[+_, +_]: Applicative2] extends Metrics[F] {
-    override def inc(label: String, value: Int)(implicit macroSaveCounterMetric: MacroMetricCounter[label.type]): F[Nothing, Unit] = F.unit
-    override def dec(label: String, value: Int)(implicit macroSaveCounterMetric: MacroMetricCounter[label.type]): F[Nothing, Unit] = F.unit
-    override def mark(label: String, value: Long = 0)(implicit macroSaveMeterMetric: MacroMetricMeter[label.type]): F[Nothing, Unit] = F.unit
+    override def inc(label: String, value: Int)(implicit macroSaveCounterMetric: MacroMetricCounter[label.type]): F[Nothing, Unit]                = F.unit
+    override def dec(label: String, value: Int)(implicit macroSaveCounterMetric: MacroMetricCounter[label.type]): F[Nothing, Unit]                = F.unit
+    override def mark(label: String, value: Long = 0)(implicit macroSaveMeterMetric: MacroMetricMeter[label.type]): F[Nothing, Unit]              = F.unit
     override def record(label: String, value: Long)(implicit macroSaveHistogramMetric: MacroMetricHistogram[label.type]): F[Nothing, Unit]        = F.unit
     override def timerUpdate(label: String, value: FiniteDuration)(implicit macroSaveTimerMetric: MacroMetricTimer[label.type]): F[Nothing, Unit] = F.unit
     override def setGauge(label: String, effect: () => Long)(implicit macroSaveCounterMetric: MacroMetricGauge[label.type]): F[Nothing, Unit]     = F.unit

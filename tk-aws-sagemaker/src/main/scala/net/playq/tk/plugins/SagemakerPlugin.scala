@@ -8,7 +8,7 @@ import net.playq.tk.aws.sagemaker.config.{SagemakerConfig, TrainingImageConfig}
 import net.playq.tk.aws.sagemaker.{SagemakerClient, TrainingImageProvider}
 import zio.IO
 
-object SagemakerPlugin extends PluginDef with ConfigModuleDef {
+object SagemakerPlugin extends PluginDef {
   include(services[IO])
   include(config)
 
@@ -17,7 +17,7 @@ object SagemakerPlugin extends PluginDef with ConfigModuleDef {
     make[TrainingImageProvider[F]]
   }
 
-  private[this] def config: ConfigModuleDef = new ConfigModuleDef {
+  private[this] def config: ModuleDef = new ConfigModuleDef {
     makeConfig[SagemakerConfig]("aws.sagemaker")
     makeConfig[TrainingImageConfig]("aws.sagemaker")
   }

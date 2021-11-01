@@ -5,12 +5,11 @@ import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{F, IO2}
 import izumi.fundamentals.platform.strings.IzString.*
 import logstage.LogIO2
-import TkHttp4sServerResource.TkHttp4sServer
-import org.http4s.HttpApp
-import org.http4s.server.blaze.BlazeServerBuilder
-import org.http4s.server.{Router, Server}
-import org.http4s.syntax.kleisli.*
+import net.playq.tk.http.TkHttp4sServerResource.TkHttp4sServer
 import net.playq.tk.quantified.{ConcurrentEffect2, TimerThrowable}
+import org.http4s.HttpApp
+import org.http4s.blaze.server.BlazeServerBuilder
+import org.http4s.server.{Router, Server}
 
 import scala.concurrent.ExecutionContext
 import scala.util.chaining.*
@@ -61,5 +60,5 @@ final class TkHttp4sServerResource[F[+_, +_]: IO2: ConcurrentEffect2: TimerThrow
   })
 
 object TkHttp4sServerResource {
-  final case class TkHttp4sServer[F[_, _], BaseContext, FullContext](server: Server[F[Throwable, _]])
+  final case class TkHttp4sServer[F[_, _], BaseContext, FullContext](server: Server)
 }
