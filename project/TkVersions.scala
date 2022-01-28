@@ -4,7 +4,7 @@ object V extends V
 trait V {
   val scala_213 = "2.13.6"
 
-  val izumi_version            = "1.0.8"
+  val izumi_version            = "1.0.9"
   val izumi_idealingua_version = "1.0.9"
 
   // ToolKit Deps

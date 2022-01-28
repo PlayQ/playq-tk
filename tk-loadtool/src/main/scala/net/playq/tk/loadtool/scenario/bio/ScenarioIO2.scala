@@ -2,7 +2,7 @@ package net.playq.tk.loadtool.scenario.bio
 
 import distage.{Functoid, Tag}
 import izumi.distage.model.effect.QuasiApplicative
-import izumi.functional.bio.syntax.BIOSyntax.BIOPanicOps
+import izumi.functional.bio.syntax.Syntax2.PanicOps
 import izumi.functional.bio.{F, IO3, Local3, Panic2, Ref3}
 import net.playq.tk.loadtool.scenario.{ScenarioContext, ScenarioGen, ScenarioScope}
 import zio.Has
@@ -66,8 +66,8 @@ object ScenarioIO2 {
     type ScenarioF[+E, +A] = SF[E, A]
   }
 
-  implicit def ScenarioIO2Syntax[F[_, _], SF[+_, +_], E, A](f: SF[E, A])(implicit SF: ScenarioIO2SyntaxAux[F, SF]): BIOPanicOps[SF, E, A] =
-    new BIOPanicOps[SF, E, A](f)(SF.Panic2)
+  implicit def ScenarioIO2Syntax[F[_, _], SF[+_, +_], E, A](f: SF[E, A])(implicit SF: ScenarioIO2SyntaxAux[F, SF]): PanicOps[SF, E, A] =
+    new PanicOps[SF, E, A](f)(SF.Panic2)
   implicit def ScenarioIO2Syntax[F[_, _], SF[+_, +_], E](implicit SF: ScenarioIO2SyntaxAux[F, SF]): QuasiApplicative[SF[E, _]] =
     QuasiApplicative.fromBIO(SF.Panic2)
 
