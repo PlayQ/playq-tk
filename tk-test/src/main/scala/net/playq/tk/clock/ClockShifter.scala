@@ -11,6 +11,5 @@ final class ClockShifter[F[+_, +_]](F: SyncSafe2[F]) {
   def shiftOffset(newOffset: Long): F[Nothing, Unit] = F.syncSafe(synchronized { offset = newOffset })
   def reset(): F[Nothing, Unit]                      = F.syncSafe(synchronized { offset = 0L })
 
-  def shiftOffset(finiteDuration: FiniteDuration): F[Nothing, Unit] =
-    shiftOffset(finiteDuration.toMillis)
+  def shiftOffset(finiteDuration: FiniteDuration): F[Nothing, Unit] = shiftOffset(finiteDuration.toMillis)
 }

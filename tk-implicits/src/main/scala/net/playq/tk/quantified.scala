@@ -1,5 +1,6 @@
 package net.playq.tk
-import cats.effect.{Async, Bracket, Concurrent, ConcurrentEffect, ContextShift, Effect, Sync, Timer}
+
+import cats.effect.{Async, Concurrent, MonadCancel, Spawn, Sync, Temporal}
 import cats.{Applicative, Functor, Monad, MonadError}
 
 object quantified {
@@ -24,9 +25,9 @@ object quantified {
     def apply[F[_, _]: MonadErrorThrowable]: MonadErrorThrowable[F] = implicitly
   }
 
-  final type BracketThrowable[F[_, _]] = Bracket[F[Throwable, _], Throwable]
-  object BracketThrowable {
-    def apply[F[_, _]: BracketThrowable]: BracketThrowable[F] = implicitly
+  final type MonadCancelThrowable[F[_, _]] = MonadCancel[F[Throwable, _], Throwable]
+  object MonadCancelThrowable {
+    def apply[F[_, _]: MonadCancelThrowable]: MonadCancelThrowable[F] = implicitly
   }
 
   final type SyncThrowable[F[_, _]] = Sync[F[Throwable, _]]
@@ -34,14 +35,9 @@ object quantified {
     def apply[F[_, _]: SyncThrowable]: SyncThrowable[F] = implicitly
   }
 
-  final type AsyncThrowable[F[_, _]] = Async[F[Throwable, _]]
-  object AsyncThrowable {
-    def apply[F[_, _]: AsyncThrowable]: AsyncThrowable[F] = implicitly
-  }
-
-  final type EffectThrowable[F[_, _]] = Effect[F[Throwable, _]]
-  object EffectThrowable {
-    def apply[F[_, _]: EffectThrowable]: EffectThrowable[F] = implicitly
+  final type SpawnThrowable[F[_, _]] = Spawn[F[Throwable, _]]
+  object SpawnThrowable {
+    def apply[F[_, _]: SpawnThrowable]: SpawnThrowable[F] = implicitly
   }
 
   final type ConcurrentThrowable[F[_, _]] = Concurrent[F[Throwable, _]]
@@ -49,19 +45,14 @@ object quantified {
     def apply[F[_, _]: ConcurrentThrowable]: ConcurrentThrowable[F] = implicitly
   }
 
-  final type ConcurrentEffect2[F[_, _]] = ConcurrentEffect[F[Throwable, _]]
-  object ConcurrentEffect2 {
-    def apply[F[_, _]: ConcurrentEffect2]: ConcurrentEffect2[F] = implicitly
+  final type TemporalThrowable[F[_, _]] = Temporal[F[Throwable, _]]
+  object TemporalThrowable {
+    def apply[F[_, _]: TemporalThrowable]: TemporalThrowable[F] = implicitly
   }
 
-  final type TimerThrowable[F[_, _]] = Timer[F[Throwable, _]]
-  object TimerThrowable {
-    def apply[F[_, _]: TimerThrowable]: TimerThrowable[F] = implicitly
-  }
-
-  final type ContextShiftThrowable[F[_, _]] = ContextShift[F[Throwable, _]]
-  object ContextShiftThrowable {
-    def apply[F[_, _]: ContextShiftThrowable]: ContextShiftThrowable[F] = implicitly
+  final type AsyncThrowable[F[_, _]] = Async[F[Throwable, _]]
+  object AsyncThrowable {
+    def apply[F[_, _]: AsyncThrowable]: AsyncThrowable[F] = implicitly
   }
 
 }

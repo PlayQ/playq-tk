@@ -1,6 +1,6 @@
 package net.playq.tk.aws.sqs
 
-import izumi.functional.bio.Exit.{Error, Interruption, Termination}
+import izumi.functional.bio.Exit.{Error, Termination}
 import izumi.functional.bio.{F, IO2}
 import logstage.LogIO2
 import net.playq.tk.health.{HealthChecker, TkHealthCheckStatus, TkHealthState}
@@ -22,9 +22,6 @@ final class SQSHealthChecker[F[+_, +_]: IO2](
           F.pure(TkHealthState.DEFUNCT)
         case Termination(compoundException, allExceptions, trace) =>
           log.crit(s"Error while health checking AWS with exception: $compoundException, other exceptions: $allExceptions, trace: $trace") *>
-          F.pure(TkHealthState.DEFUNCT)
-        case Interruption(compoundException, trace) =>
-          log.crit(s"Error while health checking AWS with interruption: $compoundException, trace: $trace") *>
           F.pure(TkHealthState.DEFUNCT)
       }.map(TkHealthCheckStatus(s"aws-$name", _))
   }

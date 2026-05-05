@@ -1,5 +1,5 @@
 package d4s
 
-import d4s.models.StringFieldOps
+import d4s.conditions.ConditionFieldSyntax
 
-object implicits extends StringFieldOps
+object implicits extends ConditionFieldSyntax

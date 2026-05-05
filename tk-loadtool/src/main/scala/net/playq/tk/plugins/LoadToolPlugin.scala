@@ -1,48 +1,35 @@
 package net.playq.tk.plugins
 
-import distage.Tag
 import distage.config.ConfigModuleDef
-import distage.plugins.PluginDef
-import izumi.functional.bio.Ref3
-import izumi.reflect.{TagK3, TagKK}
+import izumi.distage.plugins.PluginDef
+import izumi.reflect.TagKK
 import net.playq.tk.loadtool.LoadTool
 import net.playq.tk.loadtool.LoadTool.LoadToolConfig
-import net.playq.tk.loadtool.scenario.bio.ScenarioIO2
-import net.playq.tk.loadtool.scenario.bio.ScenarioIO2.{ScenarioIO2Syntax, ScenarioIO2SyntaxAux}
-import net.playq.tk.loadtool.scenario.gen.ScenarioGen.{IntGen, LongGen, UUIDGen}
-import net.playq.tk.loadtool.scenario.gen.{ScenarioGen, ScenarioGenProvider}
-import net.playq.tk.loadtool.scenario.{Scenario, ScenarioContext, ScenarioRunner, ScenarioScope}
-import zio.{Has, ZIO}
-
-import scala.annotation.unchecked.{uncheckedVariance => v}
+import net.playq.tk.loadtool.scenario.ScenarioGen.*
+import net.playq.tk.loadtool.scenario.{ScenarioAny, ScenarioGen, ScenarioRunner}
+import zio.IO
 
 object LoadToolPlugin extends PluginDef {
-  include(LoadToolPlugin.module[ZIO])
+  include(LoadToolPlugin.module[IO])
 
-  def module[F[-_, +_, +_]: TagK3](implicit tag0: TagKK[F[Any, +_, _]]): ConfigModuleDef = new ConfigModuleDef {
-    addConverted3To2[F[Any, +_, +_]](tag0)
-
-    addImplicit[Tag[Ref3[ZIO, ScenarioScope]]]
-    addImplicit[Tag[ScenarioContext[ZIO[Any, _, _]]]]
-    addImplicit[Tag[Has[Ref3[ZIO, ScenarioScope]]]]
+  def module[F[+_, +_]: TagKK]: ConfigModuleDef = new ConfigModuleDef {
+    // could be needed for scenario gen bindings
+    addImplicit[TagKK[F]]
 
     make[ScenarioRunner[F]]
-    make[ScenarioGenProvider]
-    many[ScenarioGen[?]]
+    many[ScenarioGen.Gen[?]]
       .add[IntGen]
       .add[LongGen]
       .add[UUIDGen]
+      .add[BooleanGen]
+      .add[StringGen]
+      .add[DoubleGen]
+      .add[ShortGen]
+      .add[ByteGen]
+
+    make[LoadTool[F]].from[LoadTool.Impl[F]]
+    many[ScenarioAny[F]]
 
     makeConfig[LoadToolConfig]("loadtool")
-
-    // workaround for https://github.com/zio/izumi-reflect/issues/82
-    def addConverted3To2[G[+e, +a] >: F[Any, e @v, a @v] <: F[Any, e @v, a @v]: TagKK]: Unit = {
-      make[LoadTool[G]].from[LoadTool.Impl[F]]
-      many[Scenario[G, ?, ?]]
-      make[ScenarioIO2SyntaxAux[G, F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[G]], +_, +_]]]
-        .from[ScenarioIO2.Impl[F]]
-        .aliased[ScenarioIO2Syntax[G]]
-      ()
-    }
   }
 }

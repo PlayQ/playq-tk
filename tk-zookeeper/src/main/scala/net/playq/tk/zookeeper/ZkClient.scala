@@ -2,8 +2,11 @@ package net.playq.tk.zookeeper
 
 import izumi.fundamentals.platform.language.Quirks.*
 import ZkClient.ZkClientOps
+import net.playq.tk.zookeeper.health.ZkHealthChecker
+import org.apache.zookeeper.CreateMode
 
 import java.nio.charset.StandardCharsets.UTF_8
+import scala.annotation.unused
 import scala.jdk.CollectionConverters.*
 
 trait ZkClient[F[_, _]] {
@@ -22,7 +25,8 @@ trait ZkClient[F[_, _]] {
 object ZkClient {
 
   final class Impl[F[+_, +_]](
-    zkComponent: ZkComponent[F]
+    zkComponent: ZkComponent[F],
+    @unused health: ZkHealthChecker[F],
   ) extends ZkClient[F] {
 
     override def getData(path: String): F[Throwable, String] = {
@@ -34,7 +38,7 @@ object ZkClient {
     }
 
     override def create(path: String): F[Throwable, Unit] = {
-      zkComponent.withZkRequest(_.create().creatingParentContainersIfNeeded().forPath(path).discard())
+      zkComponent.withZkRequest(_.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path).discard())
     }
 
     override def delete(path: String): F[Throwable, Unit] = {
@@ -53,7 +57,7 @@ object ZkClient {
       zkComponent.withZkRequest {
         client =>
           val curatorOps = ops.map {
-            case ZkClientOps.CreateOp(path)      => client.transactionOp().create().forPath(path)
+            case ZkClientOps.CreateOp(path)      => client.transactionOp().create().withMode(CreateMode.PERSISTENT).forPath(path)
             case ZkClientOps.DeleteOp(path)      => client.transactionOp().delete().forPath(path)
             case ZkClientOps.WriteOp(path, data) => client.transactionOp().setData().forPath(path, data.getBytes(UTF_8))
           }

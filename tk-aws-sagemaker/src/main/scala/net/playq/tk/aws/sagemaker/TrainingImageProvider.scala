@@ -19,7 +19,7 @@ final class TrainingImageProvider[F[+_, +_]: ApplicativeError2](
         trainingScript.frameworkVersion,
         trainingScript.pythonVersion,
       )
-    }.bimap(GettingTrainingImageURIException, TrainingImageURI)
+    }.bimap(GettingTrainingImageURIException.apply, TrainingImageURI.apply)
   }
 
   private[this] def getTrainingImageURI(
@@ -31,7 +31,7 @@ final class TrainingImageProvider[F[+_, +_]: ApplicativeError2](
   ): Either[String, String] = {
     for {
       frameworkConf <- trainingImageConfig.trainingImages.find(_.framework == framework).toRight(s"No training image configuration found for framework=$framework")
-      _ <-
+      _             <-
         if (frameworkConf.processors.contains(hardwareType)) Right(())
         else Left(s"Hardware type `$hardwareType` is not supported by framework=$framework, supported hardware types: ${frameworkConf.processors.mkString(",")}")
 
@@ -46,7 +46,7 @@ final class TrainingImageProvider[F[+_, +_]: ApplicativeError2](
           )
       registry <- versionConfig.registries.get(region).toRight {
         s"No training image configuration found for region=$region of version=$frameworkVersion of framework=$framework, available regions: ${versionConfig.registries.keys
-          .mkString(",")}"
+            .mkString(",")}"
       }
 
       repository = versionConfig.repository

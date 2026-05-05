@@ -1,89 +1,112 @@
 package net.playq.tk.loadtool.scenario
 
-import distage.Tag
-import izumi.functional.bio.{Async3, Clock3, Exit, F, Local3, Primitives3, Ref3, Temporal3}
-import logstage.LogIO3
+import izumi.functional.bio.retry.{RetryPolicy, Scheduler2}
+import izumi.functional.bio.{Async2, BlockingIO2, Clock2, Exit, F, Fork2, Primitives2, Temporal2}
+import logstage.LogIO2
 import net.playq.tk.loadtool.scenario.Scenario.ScenarioConfig
 import net.playq.tk.loadtool.scenario.ScenarioContext.ExecutionReport
+import net.playq.tk.loadtool.scenario.ScenarioF.ScenarioExecutionContext
 import net.playq.tk.loadtool.scenario.ScenarioRunner.ScenarioWithReport
-import net.playq.tk.loadtool.scenario.bio.ScenarioIO2.ScenarioIO2SyntaxAux
-import net.playq.tk.loadtool.scenario.gen.ScenarioGenProvider
-import net.playq.tk.util.retry.{RetryPolicy, TkScheduler}
-import zio.Has
 
-final class ScenarioRunner[F[-_, +_, +_]: Async3: Primitives3: Local3](
-  logger: LogIO3[F],
-  clock: Clock3[F],
-  scenarioGenProvider: ScenarioGenProvider,
-  scenarioIO2Syntax: ScenarioIO2SyntaxAux[F[Any, +_, +_], F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, _, _]]], +_, +_]],
-)(implicit
-  t1: Tag[Ref3[F, ScenarioScope]],
-  t2: Tag[ScenarioContext[F[Any, _, _]]],
-  sc: TkScheduler[F[Any, +_, +_]],
+import scala.concurrent.duration.DurationInt
+
+final class ScenarioRunner[F[+_, +_]: Async2: Primitives2: BlockingIO2: Fork2: Temporal2: Scheduler2](
+  logger: LogIO2[F],
+  clock: Clock2[F],
+  defaultGens: Set[ScenarioGen.Gen[?]],
 ) {
 
   private[this] def execute[E, A](
-    effect: F[Has[Ref3[F, ScenarioScope]] with Has[ScenarioContext[F[Any, _, _]]], E, A],
-    ctx: ScenarioContext[F[Any, _, _]],
-  ): F[Any, E, A] = {
-    F.mkRef(ScenarioScope.empty).flatMap(scope => effect.provide(Has.allOf[Ref3[F, ScenarioScope], ScenarioContext[F[Any, _, _]]](scope, ctx)))
+    effect: ScenarioF[F, E, A],
+    ctx: ScenarioContext[F],
+  ): F[E, A] = {
+    val gens         = ScenarioGens(defaultGens)
+    val execCtx      = ScenarioExecutionContext(ctx, gens)
+    val rechargeLoop = F.shiftBlocking(gens.rechargeGenerators(5).flatMap(_ => F.sleep(100.millis)).forever)
+    F.bracket(rechargeLoop.fork)(_.interrupt)(_ => effect.eff(execCtx))
   }
 
-  def run[E, A](scenario: Scenario[F[Any, +_, +_], E, A], config: ScenarioConfig): F[Any, E, ScenarioWithReport] = {
-    val resource = scenario.mkScenario(scenarioIO2Syntax)
+  def run[E, A](scenario: Scenario[F, E, A], config: ScenarioConfig): F[Nothing, ScenarioWithReport] = {
+    val builder = scenario.mkScenario
     for {
-      context <- ScenarioContext(logger("scenario_id" -> scenario.id), clock, scenarioGenProvider)
-      _       <- context.logger.info(s"Scenario ${scenario.id} execution started ...")
+      context <- ScenarioContext(logger("scenario_id" -> scenario.id), clock)
+      _       <- context.logger.info(s"Scenario ${scenario.id} started ...")
 
-      _ <- F.bracket {
-        context.logger.info(s"Setup ...") *>
-        execute(resource.acquire, context).sandboxExit.flatMap {
-          case Exit.Success(v)    => F.pure(Option(v))
-          case Exit.Error(err, _) => context.logger.error(s"Setup failed due to: $err.") *> F.pure(Option.empty[resource.InnerResource])
-          case Exit.Termination(err, all, _) =>
-            context.logger.crit(s"Setup terminated due to: $err, $all.") *> F.pure(Option.empty[resource.InnerResource])
-          case Exit.Interruption(err, _) =>
-            context.logger.crit(s"Setup interrupted by $err") *> F.pure(Option.empty[resource.InnerResource])
-        }
-      } {
-        _.fold(F.unit) {
-          ctx =>
-            context.logger.info(s"Cleanup  ...") *>
-            execute(resource.release(ctx), context).sandboxExit.flatMap {
-              case Exit.Success(_)               => F.unit
-              case Exit.Error(err, _)            => context.logger.error(s"Cleanup failed due to: $err.")
-              case Exit.Termination(err, all, _) => context.logger.crit(s"Cleanup terminated due to: $err, $all.")
-              case Exit.Interruption(err, _)     => context.logger.crit(s"Clean up interrupted by $err")
-            }
-        }
-      } {
-        _.fold(F.unit) {
-          ctx =>
-            context.logger.info(s"Execute ...") *>
-            F.parTraverse_(0 until config.onUsers) {
-              _ =>
-                sc.repeat {
-                  for {
-                    _ <-
-                      execute(resource.extract(ctx).fold(identity, scenarioIO2Syntax.pure).flatMap(identity), context).sandboxExit.flatMap {
-                        case Exit.Success(_)               => F.unit
-                        case Exit.Error(err, _)            => context.fail *> context.logger.error(s"Execution failed with: $err.")
-                        case Exit.Termination(err, all, _) => context.fail *> context.logger.crit(s"Execution terminated with: $err, $all.")
-                        case Exit.Interruption(err, _)     => context.fail *> context.logger.crit(s"Execution interrupted with: $err")
-                      }
-                    _ <- context.executed
-                  } yield ()
-                }(RetryPolicy.spaced[F[Any, +_, +_]](config.pauseForUser) && RetryPolicy.recurs[F[Any, +_, +_]](config.userScenarioRepeat)).void: F[Any, Nothing, Unit]
-            }
-        }
-      }
+      _ <- F.bracket(
+        acquire = buildScenario(builder, context)
+      )(
+        release = F.traverse_(_)(releaseScenario(builder, context))
+      )(
+        use = F.traverse_(_)(executeScenario(builder, context, config))
+      )
       _   <- context.logReport
       res <- context.report
     } yield ScenarioWithReport(scenario.id, res)
   }
 
+  private def executeScenario[E, A](
+    builder: ScenarioBuilder[F, E, A],
+    context: ScenarioContext[F],
+    config: ScenarioConfig,
+  )(resource: builder.InnerResource
+  ): F[Nothing, Unit] = {
+    val repeatPolicy = RetryPolicy.spaced[F](config.pauseForUser) && RetryPolicy.recurs[F](config.userScenarioRepeat)
+    context.logger.info(s"Execute ...") *>
+    F.parTraverse_(0 until config.onUsers) {
+      userIdx =>
+        setupScenario(builder, context, userIdx)(resource).flatMap {
+          F.traverse_(_) {
+            scenario =>
+              F.repeat {
+                for {
+                  _ <- execute(scenario, context).sandboxExit.flatMap {
+                    case Exit.Success(_)                   => F.unit
+                    case Exit.Error(err, trace)            => context.fail *> context.logger.error(s"Execution failed with: $err\n$trace")
+                    case Exit.Termination(err, all, trace) => context.fail *> context.logger.crit(s"Execution terminated with: $err\n$all\n$trace")
+                  }
+                  _ <- context.executed
+                } yield ()
+              }(repeatPolicy).void
+          }
+        }
+    }
+  }
+
+  private def setupScenario[E, A](
+    builder: ScenarioBuilder[F, E, A],
+    context: ScenarioContext[F],
+    userIdx: Int,
+  )(resource: builder.InnerResource
+  ): F[Nothing, Option[SF[F, E, A]]] = {
+    context.logger.info(s"User $userIdx scenario setup ...") *>
+    handleErrors(context, "User scenario setup")(execute(builder.extract(resource).fold(identity, SF.pure(_)), context))
+  }
+
+  private def buildScenario[E, A](builder: ScenarioBuilder[F, E, A], context: ScenarioContext[F]): F[Nothing, Option[builder.InnerResource]] = {
+    context.logger.info(s"Building ...") *>
+    handleErrors(context, "Building")(execute(builder.acquire, context))
+  }
+
+  private def releaseScenario[E, A](builder: ScenarioBuilder[F, E, A], context: ScenarioContext[F])(resource: builder.InnerResource): F[Nothing, Unit] = {
+    context.logger.info(s"Cleanup  ...") *>
+    handleErrors(context, "Cleanup")(execute(builder.release(resource), context)).void
+  }
+
+  private def handleErrors[E, A](context: ScenarioContext[F], phase: String)(eff: F[E, A]): F[Nothing, Option[A]] = {
+    eff.sandboxExit.flatMap {
+      case Exit.Success(v)               => F.pure(Some(v))
+      case Exit.Error(err, _)            => context.logger.error(s"Scenario $phase failed due to: $err.").as(None)
+      case Exit.Termination(err, all, _) => context.logger.crit(s"Scenario $phase terminated due to: $err, $all.").as(None)
+    }
+  }
 }
 
 object ScenarioRunner {
-  final case class ScenarioWithReport(id: String, report: ExecutionReport)
+  final case class ScenarioWithReport(id: String, report: ExecutionReport) {
+    override def toString: String = {
+      s"""Scenario $id report:
+         |${report.toString.split("\n").map("\t" + _).mkString("\n")}
+         |""".stripMargin
+    }
+  }
 }

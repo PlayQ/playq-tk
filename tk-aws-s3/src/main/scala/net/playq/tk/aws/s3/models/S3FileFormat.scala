@@ -6,13 +6,15 @@ sealed class S3FileFormat(
 )
 
 object S3FileFormat {
-  def apply(contentType: String): S3FileFormat = new S3FileFormat(contentType = contentType)
+  def apply(contentType: String): S3FileFormat                    = new S3FileFormat(contentType = contentType)
+  def apply(extension: String, contentType: String): S3FileFormat = new S3FileFormat(extension, contentType)
 
   case object CSV extends S3FileFormat("csv", "text/csv")
   case object ORC extends S3FileFormat("orc", "application/octet-stream")
   case object HDF5 extends S3FileFormat("hdf5", "application/octet-stream")
   case object Parquet extends S3FileFormat("parquet", "application/parquet")
   case object Unknown extends S3FileFormat("unknown", "application/octet-stream")
+  case object Binary extends S3FileFormat("bin", "application/octet-stream")
   case object JSON extends S3FileFormat("json", "application/json")
   case object JSONGZIP extends S3FileFormat("json.gz", "application/x-gzip")
   case object TARGZIP extends S3FileFormat("tar.gz", "application/gzip")

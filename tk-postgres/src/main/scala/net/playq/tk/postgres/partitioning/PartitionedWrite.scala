@@ -1,5 +1,5 @@
 package net.playq.tk.postgres.partitioning
 
-trait PartitionedWrite[K] {
-  def partitionKey: K
+trait PartitionedWrite[-T, +K] {
+  def getPartitionKey(t: T): K
 }

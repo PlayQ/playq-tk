@@ -2,67 +2,68 @@ package Tk
 
 object V extends V
 trait V {
-  val scala_213 = "2.13.6"
+  val scala_213 = "2.13.18"
+  val scala_300 = "3.8.4-RC2"
 
-  val izumi_version            = "1.0.9"
-  val izumi_idealingua_version = "1.0.9"
+  // izumi version is set by sbt-izumi-deps plugin
+  val izumi_idealingua_version = "1.4.16"
 
   // ToolKit Deps
 
   // compiler
-  val kind_projector = "0.13.2"
-  val scapegoat      = "1.4.10"
-
-  // java
-  val guava         = "31.0.1-jre"
-  val dropwizard    = "3.2.6"
-  val opendmk       = "1.0_01-ea"
-  val parboiled2    = "2.3.0"
-  val kafka         = "0.11.0.1"
-  val curator       = "4.3.0"
-  val zookeeper     = "3.4.14"
-  val aws_java_sdk  = "2.17.1"
-  val parquet       = "1.11.1"
-  val hadoop_common = "3.3.1"
-  val jedis         = "3.7.0"
-  val auth0_jwks    = "0.20.0"
-
-  val log4j_to_slf4j   = "2.14.1"
-  val log4j12_to_slf4j = "1.7.32"
-  val slf4j            = "1.7.32"
-
-  val apache_commons_compress = "1.21"
-  val apache_commons_io       = "2.11.0"
-
-  val antlr = "4.9.2"
-
-  val tfa = "1.3"
-
-  val rocksdb = "6.22.1.1"
+  val kind_projector = "0.13.4"
+  val scapegoat      = "3.3.4"
 
   // scala
-  val jwt_scala    = "5.0.0"
-  val bouncycastle = "1.69"
+  val jwt_scala    = "11.0.4"
+  val bouncycastle = "1.84"
 
-  val doobie = "0.13.4"
+  val doobie = "1.0.0-RC12"
 
-  val scala_csv = "1.3.8"
-
-  val scalacheck           = "1.15.4"
-  val scalacheck_shapeless = "1.2.5"
-
-  val fs2      = "2.5.10"
-  val magnolia = "0.16.0"
-
-  val scala_xml = "1.3.0"
-
-  // Izumi Deps
-
-  val circe                = "0.14.1"
-  val circe_generic_extras = "0.14.1"
-  val circe_pointer        = "0.14.1"
+  val circe_generic_extras = "0.14.4"
   val circe_derivation     = "0.13.0-M5"
 
-  val scalatest                = "3.2.10"
-  val scalatestplus_scalacheck = "3.2.10.0"
+  // used by http4s 0.23.33
+  val fs2        = "3.12.2"
+  val magnolia   = "1.1.13"
+  val magnolia_3 = "1.3.18"
+
+  val asynchttpclient = "3.0.9"
+
+  // java
+  val protobuf     = "3.25.5"
+  val guava        = "33.6.0-jre"
+  val opendmk      = "1.0_01-ea"
+  val aws_java_sdk = "2.42.39"
+  val redisson     = "4.3.1"
+  val tfa          = "1.3"
+  val auth0_jwks   = "0.23.1"
+  val netty        = "4.1.130.Final"
+
+  val zstd = "1.5.7-7"
+
+  val apache_commons_text     = "1.15.0"
+  val apache_commons_compress = "1.28.0"
+  val apache_commons_io       = "2.21.0"
+
+  val log4j_to_slf4j = "2.25.4"
+  val slf4j          = "2.0.17"
+
+  val rocksdb = "10.10.1.1"
+
+  val scalacheck               = "1.19.0"
+  val scalacheck_shapeless     = "1.2.5"
+  val scalatestplus_scalacheck = "3.2.14.0"
+
+  // latest Kafka version is fully compatible with the old servers
+  val kafka = "4.2.0"
+  // apache curator 5.5.0+ using ZooKeeper 3.7.1+ version
+  // (all versions of ZooKeeper are compatible with 3.5 and newer servers)
+  val curator = "5.9.0"
+
+  // hadoop versions (be careful updating hadoop-common, as it may break ZooKeeper)
+  val hadoop_hive_storage_api = "4.2.0"
+  val hadoop_common           = "3.5.0"
+  val parquet                 = "1.17.0"
+  val orc                     = "2.3.0"
 }

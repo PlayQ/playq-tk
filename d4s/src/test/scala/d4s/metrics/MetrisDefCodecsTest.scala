@@ -1,14 +1,14 @@
 package d4s.metrics
 
-import d4s.codecs.D4SAttributeEncoder
+import d4s.codecs.D4SEncoder
 import net.playq.tk.metrics.base.MetricDef
 import org.scalatest.wordspec.AnyWordSpec
 
 class MetrisDefCodecsTest extends AnyWordSpec {
 
   "MetricDef implicits are searchable without circe-core on the classpath (no more orphans)" in {
-    def summonOrNull[T >: Null](implicit t: T = null) = t
-    assert(summonOrNull[D4SAttributeEncoder[MetricDef]] == null)
+    def summonOrNull[T >: Null](implicit t: T = null): T = t
+    assert(summonOrNull[D4SEncoder[MetricDef]] == null)
   }
 
 }

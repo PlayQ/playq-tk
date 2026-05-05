@@ -2,7 +2,7 @@ package net.playq.tk.plugins
 
 import distage.ModuleDef
 import distage.config.ConfigModuleDef
-import distage.plugins.PluginDef
+import izumi.distage.plugins.PluginDef
 import izumi.reflect.TagKK
 import net.playq.tk.aws.sagemaker.config.{SagemakerConfig, TrainingImageConfig}
 import net.playq.tk.aws.sagemaker.{SagemakerClient, TrainingImageProvider}

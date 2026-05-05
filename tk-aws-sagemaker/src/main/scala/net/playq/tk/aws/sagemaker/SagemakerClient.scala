@@ -5,11 +5,10 @@ import com.github.dockerjava.core.util.CompressArchiveUtil
 import izumi.distage.model.definition.{Lifecycle, Lifecycle2}
 import izumi.functional.bio.catz.BIOToApplicative
 import izumi.functional.bio.{BlockingIO2, Entropy2, F, IO2, Temporal2}
-import izumi.fundamentals.collections.nonempty.NonEmptyList
+import izumi.fundamentals.collections.nonempty.NEList
 import izumi.fundamentals.platform.language.Quirks.Discarder
 import logstage.LogIO2
 import logstage.LogIO2.log
-import net.playq.tk.metrics.Metrics
 import net.playq.tk.aws.s3.S3Bucket
 import net.playq.tk.aws.s3.models.S3FileFormat.TARGZIP
 import net.playq.tk.aws.s3.models.{S3File, S3FileFormat, S3Record, S3UploadContent}
@@ -18,8 +17,8 @@ import net.playq.tk.aws.sagemaker.TrainingImageProvider.TrainingImageURI
 import net.playq.tk.aws.sagemaker.config.SagemakerConfig
 import net.playq.tk.aws.sagemaker.model.TrainingScript.SourceFile
 import net.playq.tk.aws.sagemaker.model.{TrainingHardware, TrainingJobName, TrainingScript}
-import net.playq.tk.metrics.{MacroMetricSagemakerMeter, MacroMetricSagemakerTimer}
-import net.playq.tk.util.ManagedFile
+import net.playq.tk.metrics.{MacroMetricSagemakerMeter, MacroMetricSagemakerTimer, Metrics}
+import net.playq.tk.util.ClosableFile
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sagemaker.SageMakerClient
 import software.amazon.awssdk.services.sagemaker.model.*
@@ -93,11 +92,11 @@ object SagemakerClient {
                     .trainingInputMode(TrainingInputMode.FILE)
                     .build()
                 )
-                .pipe(b => NonEmptyList.from(mbUploadedFacts).fold(b)(channels => b.inputDataConfig(channels.toList: _*)))
+                .pipe(b => NEList.from(mbUploadedFacts).fold(b)(channels => b.inputDataConfig(channels.toList*)))
                 .outputDataConfig(
                   OutputDataConfig
                     .builder()
-                    .s3OutputPath(s"s3://${bucket.name}/")
+                    .s3OutputPath(s"s3://${bucket.bucketName}/")
                     .kmsKeyId(null)
                     .build()
                 )
@@ -118,7 +117,7 @@ object SagemakerClient {
                   def quote(s: String): String = "\"" + s + "\""
 
                   Map(
-                    "model_dir"                     -> quote(s"s3://${bucket.name}/$trainingJobName/model"),
+                    "model_dir"                     -> quote(s"s3://${bucket.bucketName}/$trainingJobName/model"),
                     "sagemaker_container_log_level" -> "20",
                     "sagemaker_job_name"            -> quote(trainingJobName),
                     "sagemaker_program"             -> quote(uploadedSources.scriptFileName),
@@ -152,7 +151,7 @@ object SagemakerClient {
                   s"Job Halted with $status: ${res.roleArn() -> "roleArn"}  ${res.stoppingCondition() -> "stoppingCondition"} ${res.failureReason() -> "failureReason"}"
                 )
 
-              case status @ (TrainingJobStatus.IN_PROGRESS | TrainingJobStatus.STOPPING | TrainingJobStatus.UNKNOWN_TO_SDK_VERSION) =>
+              case status @ (TrainingJobStatus.IN_PROGRESS | TrainingJobStatus.STOPPING | TrainingJobStatus.DELETING | TrainingJobStatus.UNKNOWN_TO_SDK_VERSION) =>
                 val duration = 10.seconds
                 log.info(s"Got $status, waiting $duration for $trainingJobName") *>
                 F.sleep(duration) *> awaitTrainingJob(trainingJobName)
@@ -163,16 +162,17 @@ object SagemakerClient {
       override def rawRequest[A](
         metric: String
       )(f: SageMakerClient => A
-      )(implicit saveCounter: MacroMetricSagemakerMeter[metric.type],
+      )(implicit
+        saveCounter: MacroMetricSagemakerMeter[metric.type],
         saveTimer: MacroMetricSagemakerTimer[metric.type],
       ): F[Throwable, A] = {
         F.shiftBlocking {
-          metrics.withTimer(metric) {
+          metrics.timerAnd(metric) {
             F.syncThrowable(f(client)).catchAll {
               failure =>
-                metrics.mark(metric)(saveCounter) *> F.fail(failure)
+                metrics.mark(metric)(using saveCounter) *> F.fail(failure)
             }
-          }(saveTimer)
+          }(using saveTimer)
         }
       }
 
@@ -216,7 +216,7 @@ object SagemakerClient {
         }
       }
 
-      private[this] def gzippedSourceArchive(trainingScript: TrainingScript): Lifecycle2[F, Throwable, (ManagedFile, String)] = {
+      private[this] def gzippedSourceArchive(trainingScript: TrainingScript): Lifecycle2[F, Throwable, (ClosableFile, String)] = {
         for {
           sourceDir     <- writeSourceDir(trainingScript.sourceFiles)
           tarFile       <- tarGzSource(sourceDir.path)
@@ -224,9 +224,9 @@ object SagemakerClient {
         } yield (tarFile, scriptFileName)
       }
 
-      private[this] def writeSourceDir(sourceFiles: NonEmptyList[SourceFile]): Lifecycle2[F, Throwable, ManagedFile] = {
-        ManagedFile
-          .managedDirectory("ml-training-script")
+      private[this] def writeSourceDir(sourceFiles: NEList[SourceFile]): Lifecycle2[F, Throwable, ClosableFile] = {
+        ClosableFile
+          .resourceTempDirectory("ml-training-script")
           .evalTap {
             sourceDir =>
               F.syncThrowable {
@@ -238,9 +238,9 @@ object SagemakerClient {
           }
       }
 
-      private[this] def tarGzSource(scriptFile: Path): Lifecycle2[F, Throwable, ManagedFile] = {
-        ManagedFile
-          .managedFile("src-archive", ".tar.gz")
+      private[this] def tarGzSource(scriptFile: Path): Lifecycle2[F, Throwable, ClosableFile] = {
+        ClosableFile
+          .resourceTempFile("src-archive", ".tar.gz")
           .evalTap(tarFile => F.syncThrowable(CompressArchiveUtil.tar(scriptFile, tarFile.path, true, true)))
       }
 
@@ -260,7 +260,7 @@ object SagemakerClient {
       S3URI(S3URI.format(bucket, key))
     }
     def format[F[_, _]](bucket: S3Bucket[F, ?], key: String): String = {
-      s"s3://${bucket.name}/$key"
+      s"s3://${bucket.bucketName}/$key"
     }
   }
 

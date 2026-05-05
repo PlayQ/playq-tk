@@ -5,7 +5,7 @@ import software.amazon.awssdk.services.ses.model.*
 import scala.jdk.CollectionConverters.*
 import scala.util.chaining.*
 
-final case class SESEmail private (toAddresses: Set[String], txtMessage: Option[String], htmlMsg: Option[String], subject: Option[String]) {
+final case class SESEmail(toAddresses: Set[String], txtMessage: Option[String], htmlMsg: Option[String], subject: Option[String]) {
   def withTxt(txt: String): SESEmail = this.copy(txtMessage = Some(txt))
 
   def withHtml(htmlMsg: String): SESEmail = this.copy(htmlMsg = Some(htmlMsg))

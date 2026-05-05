@@ -1,20 +1,23 @@
 package net.playq.tk.aws.s3.health
 
-import izumi.functional.bio.Exit.{Error, Interruption, Termination}
-import izumi.functional.bio.{F, Panic2}
+import izumi.functional.bio.Exit.{Error, Termination}
+import izumi.functional.bio.{F, IO2}
 import logstage.LogIO2
-import net.playq.tk.aws.s3.{S3BucketId, S3Component}
+import net.playq.tk.aws.s3.{S3Bucket, S3BucketId}
 import net.playq.tk.health.{HealthChecker, TkHealthCheckStatus, TkHealthState}
-import software.amazon.awssdk.services.s3.model.GetBucketLocationRequest
 
-final class S3HealthChecker[F[+_, +_]: Panic2](
-  client: S3Component[F],
+final class S3HealthChecker[F[+_, +_]: IO2](
+  healthCheckers: Set[S3Bucket[F, S3BucketId]],
   logger: LogIO2[F],
-  buckets: => Set[S3BucketId],
 ) extends HealthChecker[F] {
 
-  private[this] lazy val bucketForHealth: Set[S3BucketId.GenWithOverride] = {
-    buckets.collect { case f: S3BucketId.GenWithOverride if f.serviceCreatesBucket => f }
+  private[this] lazy val bucketForHealth: Set[S3Bucket[F, S3BucketId]] = {
+    healthCheckers.filter {
+      _.bucket match {
+        case f: S3BucketId.Managed => f.serviceCreatesBucket
+        case _                     => false
+      }
+    }
   }
 
   private[this] def sandboxRequest[A](name: String)(f: F[Throwable, A]): F[Throwable, TkHealthCheckStatus] = {
@@ -23,20 +26,12 @@ final class S3HealthChecker[F[+_, +_]: Panic2](
         logger.crit(s"Error while health checking AWS with exception: $exception, other exceptions: $allExceptions, trace: $trace")
       case Error(exception, trace) =>
         logger.error(s"Error while health checking AWS with exception: $exception $trace")
-      case Interruption(compoundException, trace) =>
-        logger.crit(s"Interrupted while health checking AWS with exception: $compoundException, trace: $trace")
     }
-      .catchAll(_ => F.pure(TkHealthState.DEFUNCT))
-      .as(TkHealthCheckStatus(s"aws-$name", TkHealthState.OK))
-  }
-
-  private[this] def bucketHealth(bucket: S3BucketId): F[Throwable, TkHealthCheckStatus] = {
-    sandboxRequest(s"s3-${bucket.bucketName}") {
-      client.rawRequest("health-probe")(_.getBucketLocation(GetBucketLocationRequest.builder.bucket(bucket.bucketName).build)).void
-    }
+      .redeemPure(err = _ => TkHealthState.DEFUNCT, succ = _ => TkHealthState.OK)
+      .map(TkHealthCheckStatus(name, _))
   }
 
   override def healthCheck(): F[Throwable, Set[TkHealthCheckStatus]] = {
-    F.traverse(bucketForHealth)(bucketHealth).map(_.toSet)
+    F.traverse(bucketForHealth)(b => sandboxRequest(s"aws-s3-${b.bucketName}")(b.healthProbe)).map(_.toSet)
   }
 }

@@ -1,7 +1,7 @@
 package net.playq.tk.concurrent
 
+import izumi.functional.bio.Clock1.ClockAccuracy
 import izumi.functional.bio.{BlockingIO2, Clock2, F, IO2, Temporal2}
-import izumi.functional.mono.ClockAccuracy
 
 import java.time.ZonedDateTime
 import java.util.concurrent.{CountDownLatch, TimeUnit}
@@ -9,8 +9,8 @@ import scala.collection.mutable
 import scala.concurrent.duration.FiniteDuration
 
 trait LoopTimer[F[_, _]] {
-  def poll(): F[Nothing, ZonedDateTime]
-  def now(): F[Nothing, ZonedDateTime]
+  def pollZoned(accuracy: ClockAccuracy = ClockAccuracy.MILLIS): F[Nothing, ZonedDateTime]
+  def nowZoned(accuracy: ClockAccuracy  = ClockAccuracy.MILLIS): F[Nothing, ZonedDateTime]
 }
 
 object LoopTimer {
@@ -21,8 +21,8 @@ object LoopTimer {
     pollingInterval: FiniteDuration,
     clock: Clock2[F],
   ) extends LoopTimer[F] {
-    override def poll(): F[Nothing, ZonedDateTime] = F.sleep(pollingInterval) *> now()
-    override def now(): F[Nothing, ZonedDateTime]  = clock.now(ClockAccuracy.MILLIS)
+    override def pollZoned(accuracy: ClockAccuracy): F[Nothing, ZonedDateTime] = F.sleep(pollingInterval) *> nowZoned(accuracy)
+    override def nowZoned(accuracy: ClockAccuracy): F[Nothing, ZonedDateTime]  = clock.nowZoned(accuracy)
   }
 
   @SuppressWarnings(Array("UnsafeTraversableMethods"))
@@ -32,19 +32,19 @@ object LoopTimer {
     require(series.nonEmpty, "Empty series in dummy timer...")
 
     private[this] val latch = new CountDownLatch(1)
-    private[this] val state = mutable.Stack(series.toSeq: _*)
+    private[this] val state = mutable.Stack(series.toSeq*)
 
     def await(blocking: BlockingIO2[F]): F[Nothing, Boolean] = {
       blocking.syncBlocking(latch.await(15, TimeUnit.SECONDS)).orTerminate
     }
 
     @SuppressWarnings(Array("UnsafeTraversableMethods"))
-    override def now(): F[Nothing, ZonedDateTime] = {
+    override def nowZoned(accuracy: ClockAccuracy): F[Nothing, ZonedDateTime] = {
       F.sync(state.headOption.getOrElse(series.last))
     }
 
     @SuppressWarnings(Array("UnsafeTraversableMethods"))
-    override def poll(): F[Nothing, ZonedDateTime] = F.sync {
+    override def pollZoned(accuracy: ClockAccuracy): F[Nothing, ZonedDateTime] = F.sync {
       state.synchronized {
         if (state.nonEmpty) {
           state.pop()

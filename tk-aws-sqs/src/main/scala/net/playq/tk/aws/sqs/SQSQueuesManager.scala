@@ -1,12 +1,12 @@
 package net.playq.tk.aws.sqs
 
 import distage.Lifecycle
-import izumi.functional.bio.{Clock2, F, Fork2, IO2, Primitives2, Temporal2}
+import izumi.functional.bio.{Async2, Clock2, F, Fork2, Primitives2, Temporal2}
 import logstage.LogIO2
 import net.playq.tk.aws.sqs.clients.SQSClient
-import net.playq.tk.aws.sqs.clients.SQSClientBase.ThrowableSQSOps
+import net.playq.tk.aws.sqs.clients.SQSClient.ThrowableSQSOps
 import net.playq.tk.aws.sqs.config.SQSConfig
-import net.playq.tk.quantified.{ConcurrentThrowable, TimerThrowable}
+import net.playq.tk.quantified.AsyncThrowable
 import software.amazon.awssdk.services.sqs.model.*
 
 import scala.jdk.CollectionConverters.*
@@ -16,7 +16,7 @@ trait SQSQueuesManager[F[+_, +_]] {
 
   def subscribedClient[QueueId <: SQSQueueId](queue: QueueId): F[Throwable, SQSClient[F, QueueId]]
 
-  def createDefaultQueue(queue: SQSQueueId): F[Throwable, String]
+  def createQueue(queue: SQSQueueId): F[Throwable, String]
   def getQueueUrl(queue: SQSQueueId): F[Throwable, String]
   def deleteQueue(queue: SQSQueueId): F[Throwable, Unit]
 
@@ -25,21 +25,21 @@ trait SQSQueuesManager[F[+_, +_]] {
 
 object SQSQueuesManager {
 
-  final class SQSQueuesManagerImpl[F[+_, +_]: IO2: Temporal2: Fork2: Primitives2: ConcurrentThrowable: TimerThrowable](
+  final class SQSQueuesManagerImpl[F[+_, +_]: Async2: Temporal2: Fork2: Primitives2: AsyncThrowable](
     sqsConfig: SQSConfig,
     sqsComponent: SQSComponent[F],
     sqsComponentFactory: SQSComponentFactory[F],
     healthChecker: SQSHealthChecker[F],
-    clock: Clock2[F],
   )(implicit
-    log: LogIO2[F]
+    log: LogIO2[F],
+    clock: Clock2[F],
   ) extends SQSQueuesManager[F] {
 
     override def regionBased(region: String): Lifecycle[F[Throwable, _], SQSQueuesManager[F]] = {
       for {
         _                 <- Lifecycle.liftF(log.info(s"Going to create SQS client in $region"): F[Throwable, Unit])
-        regionalComponent <- sqsComponentFactory.mkClient(Some(region))
-      } yield new SQSQueuesManagerImpl(sqsConfig, regionalComponent, sqsComponentFactory, healthChecker, clock)
+        regionalComponent <- sqsComponentFactory.mkComponent(Some(region))
+      } yield new SQSQueuesManagerImpl(sqsConfig, regionalComponent, sqsComponentFactory, healthChecker)
     }
 
     override def getQueueUrl(queue: SQSQueueId): F[Throwable, String] = {
@@ -51,18 +51,18 @@ object SQSQueuesManager {
 
     override def subscribedClient[QueueId <: SQSQueueId](queue: QueueId): F[Throwable, SQSClient[F, QueueId]] = {
       for {
-        _ <- log.info(s"SQS: Creating subscribed SQSClient. ${queue.queueName}")
-        subscriber <- getQueueUrl(queue)
-          .catchAll(_ => createDefaultQueue(queue))
-          .map(new SQSClient.Impl(sqsConfig, sqsComponent, clock)(queue, _))
-      } yield subscriber
+        _      <- log.info(s"SQS: Creating subscribed SQSClient. ${queue.queueName}")
+        client <- getQueueUrl(queue)
+          .catchAll(_ => createQueue(queue))
+          .map(new SQSClient.Impl(sqsConfig, sqsComponent)(queue, _))
+      } yield client
     }
 
-    override def createDefaultQueue(queue: SQSQueueId): F[Throwable, String] = {
+    override def createQueue(queue: SQSQueueId): F[Throwable, String] = {
       for {
         _        <- log.info(s"SQS: Going to create $queue with ${queue.tags -> "tags"}.")
         queueUrl <- createQueueIfNotExists(queue)
-        _ <- sqsComponent
+        _        <- sqsComponent
           .rawClientRequest("queue-tag") {
             _.tagQueue(TagQueueRequest.builder.queueUrl(queueUrl).tags(queue.tags.asJava).build)
           }.logThrowable("TagQueue", queue)
@@ -80,7 +80,7 @@ object SQSQueuesManager {
 
     override def listDefaultQueuesUrl(): F[Throwable, List[String]] = {
       for {
-        _ <- log.info("SQS: list queues")
+        _   <- log.info("SQS: list queues")
         res <- sqsComponent.rawClientRequest("queue-list")(_.listQueues().queueUrls.asScala.toList).catchAll {
           f =>
             log.error(s"SQS: failure during listing queues: ${f -> "Failure"}.") *> F.fail(f)

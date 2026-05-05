@@ -13,7 +13,7 @@ object AwsSQSPlugin extends PluginDef {
   many[SQSQueueId]
 
   def module[F[+_, +_]: TagKK](implicit T: TagK[F[Throwable, _]]): ConfigModuleDef = new ConfigModuleDef {
-    make[SQSComponent[F]].fromResource((_: SQSComponentFactory[F]).mkClient(None))
+    make[SQSComponent[F]].fromResource((_: SQSComponentFactory[F]).mkComponent(None))
     make[SQSComponentFactory[F]].from[SQSComponentFactory.Impl[F]]
 
     make[SQSQueuesManager[F]].from[SQSQueuesManager.SQSQueuesManagerImpl[F]]

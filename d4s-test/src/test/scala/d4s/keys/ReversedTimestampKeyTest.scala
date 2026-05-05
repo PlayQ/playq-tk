@@ -16,7 +16,7 @@ final class ReversedTimestampKeyTest extends AnyWordSpec with Checkers with TkRn
   }
 
   "negated timestamp has opposite lexicographic ordering to usual timestamp" in check {
-    times: List[ZonedDateTime] =>
+    (times: List[ZonedDateTime]) =>
       val sortedTs = times.sorted
 
       val negates       = sortedTs.map(ReversedTimestampKey(_).asString)

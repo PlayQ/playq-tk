@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package net.playq.tk.http.ws.proto;
+
+option java_multiple_files = true;
+option java_package = "net.playq.tk.http.ws.proto";
+
+message WsProtoRequestMessage {
+    string request_id = 1;
+    string tag = 2;
+    bytes message = 3;
+}
+message WsProtoRequestClose {
+    string request_id = 1;
+}
+
+message WsProtoRequest {
+  oneof request {
+    WsProtoRequestMessage message = 1;
+    WsProtoRequestClose close = 2;
+  }
+}
+
+
+message WsProtoResponseMessage {
+    string request_id = 1;
+    bytes message = 3;
+}
+message WsProtoResponseClose {
+    string request_id = 1;
+    int32 messages_sent = 2;
+}
+message WsProtoResponseError {
+    string request_id = 1;
+    string error = 2;
+    string trace = 3;
+}
+
+message WsProtoResponse {
+  oneof response {
+    WsProtoResponseMessage message = 1;
+    WsProtoResponseClose close = 2;
+    WsProtoResponseError error = 3;
+  }
+}

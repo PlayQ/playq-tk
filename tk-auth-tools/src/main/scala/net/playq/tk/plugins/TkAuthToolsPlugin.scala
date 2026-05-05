@@ -1,6 +1,6 @@
 package net.playq.tk.plugins
 
-import distage.plugins.PluginDef
+import izumi.distage.plugins.PluginDef
 import distage.{ModuleDef, TagKK}
 import net.playq.tk.authtolls.{AppleIdAuth, GoogleAuthorizationService, GoogleOAuth, OTPTools}
 import zio.IO

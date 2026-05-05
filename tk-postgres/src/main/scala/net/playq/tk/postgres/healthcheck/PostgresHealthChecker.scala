@@ -2,21 +2,25 @@ package net.playq.tk.postgres.healthcheck
 
 import doobie.*
 import doobie.hikari.HikariTransactor
-import doobie.implicits.*
 import izumi.functional.bio.{F, Panic2}
 import net.playq.tk.health
 import net.playq.tk.health.{HealthChecker, TkHealthCheckStatus, TkHealthState}
 import net.playq.tk.postgres.healthcheck.PostgresHealthChecker.*
+import net.playq.tk.postgres.implicits.*
 import net.playq.tk.postgres.partitioning.model.TableName
-import net.playq.tk.quantified.BracketThrowable
+import net.playq.tk.quantified.MonadCancelThrowable
 
-// TODO: cyclic deps conflict if it will depends on [[PostgresConnector]]
-final case class PostgresCheckTable(tables: Set[TableName])
+// Note: will generate cyclic deps conflict if it depends on [[PostgresConnector]]
+trait PostgresCheckTable {
+  def tables: Set[TableName]
+}
 object PostgresCheckTable {
-  def apply(s: (String, String)*): PostgresCheckTable = PostgresCheckTable(s.map { case (sc, t) => TableName(sc, t) }.toSet)
+  def apply(s: (String, String)*): PostgresCheckTable = new PostgresCheckTable {
+    override def tables: Set[TableName] = s.map { case (sc, t) => TableName(sc, t) }.toSet
+  }
 }
 
-final class PostgresHealthChecker[F[+_, +_]: Panic2: BracketThrowable](
+final class PostgresHealthChecker[F[+_, +_]: Panic2: MonadCancelThrowable](
   transactor: HikariTransactor[F[Throwable, _]],
   tablesChecks: Set[PostgresCheckTable],
 ) extends HealthChecker[F] {
@@ -29,7 +33,7 @@ final class PostgresHealthChecker[F[+_, +_]: Panic2: BracketThrowable](
   }
 
   private[this] val schemaTable: Set[TableName] = tablesChecks.flatMap(_.tables)
-  private[this] val queries: Set[NameQuery] = schemaTable.map {
+  private[this] val queries: Set[NameQuery]     = schemaTable.map {
     st =>
       val q = sql"""SELECT EXISTS (
           SELECT 1
@@ -37,7 +41,7 @@ final class PostgresHealthChecker[F[+_, +_]: Panic2: BracketThrowable](
           JOIN   pg_catalog.pg_namespace n ON n.oid = c.relnamespace
           WHERE  n.nspname = ${st.schema}
           AND    c.relname = ${st.table}
-          AND    c.relkind = 'r'
+          AND    (c.relkind = 'r' or c.relkind = 'p' or c.relkind = 't')
         );""".query[Res]
       val name = s"postgres.table.alive.${st.schema}.${st.table}"
       NameQuery(name, q)
@@ -69,6 +73,9 @@ final class PostgresHealthChecker[F[+_, +_]: Panic2: BracketThrowable](
 
 object PostgresHealthChecker {
   private final case class Res(exists: Boolean)
+  private object Res {
+    implicit val read: Read[Res] = Read.derived[Res]
+  }
 
   private final case class NameQuery(name: String, query: Query0[Res])
 

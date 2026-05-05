@@ -1,10 +1,10 @@
 package net.playq.tk.postgres.test
 
-import distage.{DIKey, TagKK}
-import izumi.distage.model.definition.StandardAxis.{Repo, Scene}
-import izumi.distage.testkit.TestConfig.{AxisDIKeys, PriorAxisDIKeys}
-import net.playq.tk.postgres.config.PostgresConfig
-import net.playq.tk.postgres.ddl.DDLComponent.DDLUpComponent
+import distage.{DIKey, Scene, TagKK}
+import doobie.hikari.HikariTransactor
+import izumi.distage.model.definition.StandardAxis.Repo
+import izumi.distage.testkit.model.TestConfig.{AxisDIKeys, PriorAxisDIKeys}
+import net.playq.tk.postgres.ddl.DDLComponent
 import net.playq.tk.test.{ForcedRoots, MemoizationRoots, WithProduction}
 
 trait PostgresTestEnv[F[+_, +_]] extends MemoizationRoots with ForcedRoots with WithProduction {
@@ -12,9 +12,10 @@ trait PostgresTestEnv[F[+_, +_]] extends MemoizationRoots with ForcedRoots with 
 
   abstract override def memoizationRoots: PriorAxisDIKeys =
     super.memoizationRoots ++
-    Map(0 -> Map(Scene.Managed -> DIKey[PostgresConfig])) +
-    (1 -> DIKey[DDLUpComponent[F]])
+    Map(0 -> Map(Scene.Managed -> DIKey[HikariTransactor[F[Throwable, _]]])) +
+    (1 -> DIKey[Set[DDLComponent]])
 
   abstract override def forcedRoots: AxisDIKeys =
-    super.forcedRoots ++ Map(Repo.Prod -> DIKey[DDLUpComponent[F]])
+    super.forcedRoots ++
+    Map(Repo.Prod -> DIKey[Set[DDLComponent]])
 }

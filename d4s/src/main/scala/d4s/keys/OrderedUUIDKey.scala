@@ -1,15 +1,15 @@
 package d4s.keys
 
-import java.util.UUID
+import d4s.codecs.{D4SAttributeKeyType, D4SDecoder, D4SEncoder}
+import d4s.util.{leftpadLongInvertNegative, reinvertNegative}
 
-import d4s.codecs.{D4SAttributeEncoder, D4SDecoder, DynamoKeyAttribute}
-import d4s.util.leftpadLongInvertNegative
+import java.util.UUID
 
 /**
   * A string representation of UUID that preserves UUID and TimeUUID native ordering
   * for use as a RangeKey in Dynamo
   */
-final case class OrderedUUIDKey private (asString: String) extends AnyVal
+final class OrderedUUIDKey private (val asString: String) extends AnyVal
 
 object OrderedUUIDKey {
   def apply(uuid: UUID): OrderedUUIDKey = {
@@ -21,11 +21,22 @@ object OrderedUUIDKey {
     new OrderedUUIDKey(uuidStr)
   }
 
-  // encode as string
-  implicit val encoder: D4SAttributeEncoder[OrderedUUIDKey] = D4SAttributeEncoder[String].contramap(_.asString)
-  implicit val decoder: D4SDecoder[OrderedUUIDKey]          = D4SDecoder[String].map(OrderedUUIDKey(_))
+  def parse(orderedUUIDKey: OrderedUUIDKey): UUID = {
+    orderedUUIDKey.asString match {
+      case s"$mst:$lst" =>
+        val mostSignificantBits  = reinvertNegative(mst).toLong
+        val leastSignificantBits = reinvertNegative(lst).toLong
+        new UUID(mostSignificantBits, leastSignificantBits)
+      case _ =>
+        throw new IllegalArgumentException(s"Malformed OrderedUUIDKey `${orderedUUIDKey.asString}`")
+    }
+  }
 
-  implicit val keyAttribute: DynamoKeyAttribute[OrderedUUIDKey] = DynamoKeyAttribute.S
+  // encode as string
+  implicit val encoder: D4SEncoder[OrderedUUIDKey] = D4SEncoder[String].contramap(_.asString)
+  implicit val decoder: D4SDecoder[OrderedUUIDKey] = D4SDecoder[String].map(new OrderedUUIDKey(_))
+
+  implicit val keyAttribute: D4SAttributeKeyType[OrderedUUIDKey] = D4SAttributeKeyType.S
 
   implicit val ordering: Ordering[OrderedUUIDKey] = Ordering[String].on(_.asString)
 }

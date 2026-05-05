@@ -9,8 +9,8 @@ final class LiteralCodecsTest extends AnyWordSpec with Checkers {
   "literal tuple encode/decode test" in check(Prop.forAllNoShrink {
     i: Int =>
       val t: ("name", Int) = ("name", i)
-      val attrMap          = D4SEncoder.encodeObject(t)
-      val attrMap1         = D4SEncoder.encodeObject(("name", i))
+      val attrMap          = D4SEncoder.AsObject.encode(t)
+      val attrMap1         = D4SEncoder.AsObject.encode(("name", i))
 
       D4SDecoder.decodeObject[("name", Int)](attrMap) == Right(t) &&
       D4SDecoder.decodeObject[("name", Int)](attrMap1) == Right(t) &&

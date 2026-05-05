@@ -1,16 +1,17 @@
 package net.playq.tk.authtolls
 
-import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit.MILLIS
-import izumi.functional.bio.{Clock2, F, IO2}
+import izumi.functional.bio.{Clock1, Clock2, F, IO2}
 import izumi.idealingua.runtime.circe.IRTWithCirce
 import net.playq.tk.authtolls.GoogleAuthorizationService.{ExpiringAccessToken, GoogleAccessTokenMeta}
 import net.playq.tk.http.TkHttp4sClient
+import net.playq.tk.quantified.AsyncThrowable
+import org.http4s.circe.*
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.io.POST
 import org.http4s.{EntityDecoder, Status, Uri, UrlForm}
-import org.http4s.circe.*
-import net.playq.tk.quantified.SyncThrowable
+
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit.MILLIS
 
 trait GoogleAuthorizationService[F[_, _]] {
   def invalidateToken(key: String): F[Throwable, Unit]
@@ -18,7 +19,7 @@ trait GoogleAuthorizationService[F[_, _]] {
 }
 
 object GoogleAuthorizationService {
-  final class Impl[F[+_, +_]: IO2: SyncThrowable](
+  final class Impl[F[+_, +_]: IO2: AsyncThrowable](
     httpClient: TkHttp4sClient[F],
     clientDsl: Http4sClientDsl[F[Throwable, _]],
     clock: Clock2[F],
@@ -33,7 +34,7 @@ object GoogleAuthorizationService {
     def accessToken(key: String, config: GoogleAccessTokenMeta): F[Throwable, ExpiringAccessToken] = {
       for {
         existingToken <- F.sync(Option(cache.get(key)))
-        token <- existingToken match {
+        token         <- existingToken match {
           case Some(value) if value.isValid =>
             F.pure(value)
           case _ =>
@@ -66,7 +67,7 @@ object GoogleAuthorizationService {
         }
         res <- Option(token.access_token) match {
           case Some(_) =>
-            clock.now().map {
+            clock.nowZoned().map {
               now =>
                 ExpiringAccessToken(token, now.truncatedTo(MILLIS))
             }: F[Throwable, ExpiringAccessToken]
@@ -81,10 +82,10 @@ object GoogleAuthorizationService {
   object GoogleAccessToken extends IRTWithCirce[GoogleAccessToken]
 
   final case class ExpiringAccessToken(token: GoogleAccessToken, issueTimestamp: ZonedDateTime) {
-    def value: String = token.access_token
+    def value: String    = token.access_token
     def isValid: Boolean = {
       // we count token as oudated in two minutes before actual expiration time
-      issueTimestamp.plusSeconds((token.expires_in - 120).toLong).isAfter(ZonedDateTime.now())
+      issueTimestamp.plusSeconds((token.expires_in - 120).toLong).isAfter(Clock1.Standard.nowZoned())
     }
   }
 

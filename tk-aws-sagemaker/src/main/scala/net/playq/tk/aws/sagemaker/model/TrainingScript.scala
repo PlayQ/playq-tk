@@ -1,10 +1,10 @@
 package net.playq.tk.aws.sagemaker.model
 
-import izumi.fundamentals.collections.nonempty.NonEmptyList
-import TrainingScript.SourceFile
+import izumi.fundamentals.collections.nonempty.NEList
+import net.playq.tk.aws.sagemaker.model.TrainingScript.SourceFile
 
 final case class TrainingScript(
-  sourceFiles: NonEmptyList[SourceFile],
+  sourceFiles: NEList[SourceFile],
   framework: String,
   frameworkVersion: String,
   pythonVersion: String,

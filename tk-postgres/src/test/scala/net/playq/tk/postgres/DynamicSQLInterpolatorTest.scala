@@ -16,7 +16,7 @@ class DynamicSQLInterpolatorTest extends AnyWordSpec {
 
     assert(
       sql"select (abc, cba) from $table1 join $table2 where x = $i and y = $z".query[Unit].sql
-      == sql"""select (abc, cba) from "public"."my_table_1" join "public"."my_table_2" where x = $i and y = $z""".query[Unit].sql
+        == sql"""select (abc, cba) from "public"."my_table_1" join "public"."my_table_2" where x = $i and y = $z""".query[Unit].sql
     )
   }
 
@@ -29,7 +29,7 @@ class DynamicSQLInterpolatorTest extends AnyWordSpec {
 
     assert(
       sql"select (abc, cba) from $table1 join $table2 where x = $i and y = $z".query[Unit].sql
-      == sql"""select (abc, cba) from "public"."my_table_1" join "public"."my_table_2" where x = $i and y = $z""".query[Unit].sql
+        == sql"""select (abc, cba) from "public"."my_table_1" join "public"."my_table_2" where x = $i and y = $z""".query[Unit].sql
     )
   }
 
@@ -39,7 +39,7 @@ class DynamicSQLInterpolatorTest extends AnyWordSpec {
 
     assert(
       sql"select (abc, cba) from tab where x = $i and y = $z".query[Unit].sql
-      == sql"""select (abc, cba) from tab where x = $i and y = $z""".query[Unit].sql
+        == sql"""select (abc, cba) from tab where x = $i and y = $z""".query[Unit].sql
     )
   }
 
@@ -53,7 +53,7 @@ class DynamicSQLInterpolatorTest extends AnyWordSpec {
 
     assert(
       sql"select (abc, cba) from $table1 join $table2 where $name = $i and y = $z".query[Unit].sql
-      == sql"""select (abc, cba) from "public"."my_table_1" join "public"."my_table_2" where xyz = $i and y = $z""".query[Unit].sql
+        == sql"""select (abc, cba) from "public"."my_table_1" join "public"."my_table_2" where xyz = $i and y = $z""".query[Unit].sql
     )
   }
 

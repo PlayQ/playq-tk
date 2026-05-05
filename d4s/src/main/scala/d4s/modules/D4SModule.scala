@@ -3,17 +3,17 @@ package d4s.modules
 import d4s.*
 import d4s.config.*
 import d4s.docker.DynamoDocker
-import d4s.health.DynamoDBHealthChecker
-import d4s.models.table.TableDef
+import d4s.services.*
+import d4s.table.DynamoTableDef
 import distage.config.ConfigModuleDef
-import distage.{ModuleDef, TagK, TagKK}
+import distage.{ModuleDef, TagKK}
 import izumi.fundamentals.platform.integration.PortCheck
 import net.playq.tk.aws.tagging.AwsNameSpace
 import net.playq.tk.health.HealthChecker
 
 import scala.concurrent.duration.*
 
-class D4SModule[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, _]]) extends ModuleDef {
+final class D4SModule[F[+_, +_]: TagKK] extends ModuleDef {
   include(D4SModule.base[F])
   include(D4SModule.configs)
 }
@@ -21,18 +21,18 @@ class D4SModule[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, _]]) extends Mo
 object D4SModule {
   def apply[F[+_, +_]: TagKK]: ModuleDef = new D4SModule[F]
 
-  def base[F[+_, +_]: TagKK](implicit ev: TagK[F[Throwable, _]]): ModuleDef = new ModuleDef {
+  def base[F[+_, +_]: TagKK]: ModuleDef = new ModuleDef {
+    make[DynamoComponent].fromResource[DynamoComponent.Resource[F]]
     make[DynamoClient[F]].from[DynamoClient.Impl[F]]
-    make[DynamoConnector[F]].from[DynamoConnector.Impl[F]].addDependency[DynamoDBHealthChecker[F]]
-    make[DynamoInterpreter[F]].from[DynamoInterpreter.Impl[F]]
+    make[Dynamo[F]].from[Dynamo.Impl[F]].addDependency[DynamoHealthChecker[F]]
+
+    make[DynamoHealthChecker[F]]
+    many[HealthChecker[F]].weak[DynamoHealthChecker[F]]
+
     make[DynamoTablesService[F]].from[DynamoTablesService.Impl[F]]
+    make[DynamoSetupService[F]].fromResource[DynamoSetupService[F]]
 
-    make[DynamoDBHealthChecker[F]]
-    many[HealthChecker[F]].weak[DynamoDBHealthChecker[F]]
-    make[DynamoDDLService[F]].fromResource[DynamoDDLService[F]]
-    make[DynamoComponent].fromResource[DynamoComponent.Impl[F]]
-
-    many[TableDef]
+    many[DynamoTableDef]
 
     make[PortCheck].named("dynamo-port").from {
       new PortCheck(3.seconds)
@@ -51,6 +51,7 @@ object D4SModule {
     }
 
     makeConfig[DynamoBatchConfig]("aws.dynamo")
+    makeConfig[DynamoTransactionConfig]("aws.dynamo")
     makeConfig[ProvisioningConfig]("aws.dynamo.provisioning")
   }
 }

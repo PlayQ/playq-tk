@@ -1,11 +1,11 @@
 package d4s.keys
 
-import java.util.UUID
-
-import izumi.fundamentals.platform.uuid.UUIDGen
+import izumi.functional.bio.Entropy1
 import org.scalacheck.Prop.AnyOperators
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.Checkers
+
+import java.util.UUID
 
 final class OrderedUUIDKeyTest extends AnyWordSpec with Checkers {
 
@@ -15,7 +15,7 @@ final class OrderedUUIDKeyTest extends AnyWordSpec with Checkers {
   }
 
   "OrderedUUIDKey has the same lexicographic ordering as the UUID's usual ordering" in check {
-    uuids: List[UUID] =>
+    (uuids: List[UUID]) =>
       val sortedUUIDs = uuids.sorted
 
       val strings       = sortedUUIDs.map(OrderedUUIDKey(_).asString)
@@ -24,9 +24,17 @@ final class OrderedUUIDKeyTest extends AnyWordSpec with Checkers {
       sortedStrings ?= strings
   }
 
+  "OrderedUUIDKey preserves values" in check {
+    (uuids: List[UUID]) =>
+      val orderedStrs = uuids.map(OrderedUUIDKey(_))
+      val parsedUuids = orderedStrs.map(OrderedUUIDKey.parse)
+
+      uuids ?= parsedUuids
+  }
+
   "TimeUUID ordering" in check {
-    _: Unit =>
-      val uuids = List.fill(20)(UUIDGen.getTimeUUID()).sorted
+    (_: Unit) =>
+      val uuids = List.fill(20)(Entropy1.Standard.nextTimeUUID()).sorted
       val strs  = uuids.map(OrderedUUIDKey(_).asString)
 
       val sortedUUID = uuids.map(OrderedUUIDKey(_).asString)

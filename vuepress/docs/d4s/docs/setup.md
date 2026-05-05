@@ -15,14 +15,14 @@ With DIStage your will embrace a [role-based](https://izumi.7mind.io/latest/rele
 which simplifies deployments. In case those words do not mean anything to you, don't worry, we will gently guide you
 and teach you everything you need to know. So, to start with DIStage we need to describe a role (could be many), create a plugin with our dependencies. Let's describe a role first.
 ```scala
-final class TestRole[F[+_, +_]] extends RoleService[F[Throwable, ?]] {
-  override def start(roleParameters: RawEntrypointParams, freeArgs: Vector[String]): DIResource.DIResourceBase[F[Throwable, ?], Unit] = {
+final class TestRole[F[+_, +_]] extends RoleService[F[Throwable, _]] {
+  override def start(roleParameters: EntrypointArgs): Lifecycle[F[Throwable, ?], Unit] = {
    // define your logic here...
   }
 }
 
-object MainProd extends MainBase(Activation(CustomAxis -> CustomAxis.Prod))
-object MainDummy extends MainBase(Activation(CustomAxis -> CustomAxis.Dummy))
+object MainProd extends MainBase(Activation(Mode -> Mode.Test))
+object MainDummy extends MainBase(Activation(Mode -> Mode.Prod))
 
 object TestRole extends RoleDescriptor {
   val id = "test-role"
@@ -42,32 +42,6 @@ object LeaderboardPlugin extends PluginDef {
 ```
 `D4SModule` creates everything you need to work with D4S even health check. We also add `AwsTagsModule` that could be quite
 helpful in case we want to tag our AWS tables.
-
-Finally, you have to add a plugin for effect type that will be used to interpret blueprints. Here is how plugin with ZIO could look like:
-```scala
-object ZIOPlugin extends PluginDef {
-  include(ZIODIEffectModule)
-
-  addImplicit[Bracket[Task, Throwable]]
-  addImplicit[Async[Task]]
-  addImplicit[ContextShiftThrowable[IO]]
-  addImplicit[AsyncThrowable[IO]]
-  addImplicit[ContextShift[Task]]
-  make[TTimer[IO]].from(TTimer[IO])
-
-  make[ConcurrentThrowable[IO]].from {
-    implicit r: Runtime[Any] =>
-      implicitly[ConcurrentEffect[IO[Throwable, ?]]]
-  }
-
-  make[Blocker].from {
-    pool: ThreadPoolExecutor @Id("zio.io") =>
-      Blocker.liftExecutionContext(ExecutionContext.fromExecutorService(pool))
-  }
-
-  make[LogIO2[IO]].from(LogIO2.fromLogger[IO] _)
-}
-```
 
 Huurraayyy, we've finished setting up our project, now we are ready to move further. Before we move to the next session, 
 we would like to list what we achieved so far:

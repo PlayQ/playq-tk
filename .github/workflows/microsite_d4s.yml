@@ -1,36 +1,54 @@
-name: Build D4S Microsite
-on:
-  pull_request:
-    paths:
-      - 'vuepress/**'
-  push:
-    branches:
-      - develop
-    paths:
-      - 'vuepress/**'
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build
-        run: |
-          cd vuepress
-          yarn install
-          yarn docs:build
-          cd ..
-          rm -rf docs
-          cp -r vuepress/docs/.vuepress/dist docs
-      - name: Deploy docs
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run:  |
-            if [[ "$GITHUB_REF" == refs/heads/develop ]] ; then
-              git config --local user.email "platform-team@playq.net"
-              git config --local user.name "PlayQPlatformTeam"
-              git add docs
-              git commit -m 'Update D4S docs.'
-              remote_repo="https://PlayQPlatformTeam:${BOT_TOKEN}@github.com/PlayQ/playq-tk.git"
-              git push "${remote_repo}"
-            fi
+# NOTE: disabled for the public release.
+#
+# This workflow built the vuepress microsite under ./vuepress and pushed the
+# rendered output back to ./docs on the develop branch using a bot token, so
+# that GitHub Pages would serve it at playq.github.io/playq-tk.
+#
+# It is preserved here (commented out) as a scaffold for future maintainers
+# who want to bring the microsite back up. To re-enable:
+#   1. Configure a deploy token (or switch to actions/deploy-pages with the
+#      built-in GITHUB_TOKEN), and adjust `remote_repo` to point at the
+#      public repository.
+#   2. Verify that the upstream vuepress build still works — at the time of
+#      release, @vuepress/theme-default failed to compile against
+#      esbuild-loader's es2020 target on Node 20, so the build step below
+#      will not succeed without further upstream-version updates.
+#   3. Bump action versions (checkout@v2 → @v4, etc.).
+#   4. Uncomment everything below this banner and remove this note.
+#
+# name: Build D4S Microsite
+# on:
+#   pull_request:
+#     paths:
+#       - 'vuepress/**'
+#   push:
+#     branches:
+#       - develop
+#     paths:
+#       - 'vuepress/**'
+#
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Build
+#         run: |
+#           cd vuepress
+#           yarn install
+#           yarn docs:build
+#           cd ..
+#           rm -rf docs
+#           cp -r vuepress/docs/.vuepress/dist docs
+#       - name: Deploy docs
+#         env:
+#           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+#         run:  |
+#             if [[ "$GITHUB_REF" == refs/heads/develop ]] ; then
+#               git config --local user.email "platform-team@playq.net"
+#               git config --local user.name "PlayQPlatformTeam"
+#               git add docs
+#               git commit -m 'Update D4S docs.'
+#               remote_repo="https://PlayQPlatformTeam:${BOT_TOKEN}@github.com/PlayQ/playq-tk.git"
+#               git push "${remote_repo}"
+#             fi

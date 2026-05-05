@@ -15,7 +15,7 @@ final class OrderedTimestampKeyTest extends AnyWordSpec with Checkers with TkRnd
   }
 
   "digit timestamp has has the lexicographic ordering as usual timestamp ordering" in check {
-    times: List[ZonedDateTime] =>
+    (times: List[ZonedDateTime]) =>
       val sortedTs = times.sorted
 
       val negates       = sortedTs.map(ReversedTimestampKey(_).asString)

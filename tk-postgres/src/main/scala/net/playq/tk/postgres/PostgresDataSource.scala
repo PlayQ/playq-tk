@@ -1,8 +1,8 @@
 package net.playq.tk.postgres
 
 import com.zaxxer.hikari.HikariDataSource
-import izumi.distage.framework.model.IntegrationCheck
 import izumi.distage.model.definition.Lifecycle
+import izumi.distage.model.provisioning.IntegrationCheck
 import izumi.functional.bio.{F, IO2}
 import izumi.fundamentals.platform.integration.{PortCheck, ResourceCheck}
 import izumi.logstage.api.IzLogger

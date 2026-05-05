@@ -1,26 +1,26 @@
 package net.playq.tk.aws.sqs
 
-import izumi.distage.framework.model.IntegrationCheck
 import izumi.distage.model.definition.Lifecycle
-import izumi.functional.bio.{BlockingIO2, F, IO2}
+import izumi.distage.model.provisioning.IntegrationCheck
+import izumi.functional.bio.{Async2, BlockingIO2, F}
 import izumi.fundamentals.platform.integration.{PortCheck, ResourceCheck}
-import net.playq.tk.metrics.Metrics
-import net.playq.tk.aws.config.LocalTestCredentials
+import net.playq.tk.aws.config.AwsCredentialsConfig
 import net.playq.tk.aws.sqs.config.SQSConfig
+import net.playq.tk.metrics.Metrics
 
 import java.net.URI
 
 trait SQSComponentFactory[F[+_, +_]] {
-  def mkClient(region: Option[String]): Lifecycle[F[Throwable, _], SQSComponent[F]]
+  def mkComponent(region: Option[String]): Lifecycle[F[Throwable, _], SQSComponent[F]]
 }
 
 object SQSComponentFactory {
 
-  final class Impl[F[+_, +_]: IO2: BlockingIO2](
+  final class Impl[F[+_, +_]: Async2: BlockingIO2](
     metrics: Metrics[F],
     sqsConfig: SQSConfig,
     portCheck: PortCheck,
-    localCredentials: LocalTestCredentials,
+    credentialsConfig: AwsCredentialsConfig,
   ) extends SQSComponentFactory[F]
     with IntegrationCheck[F[Throwable, _]] {
 
@@ -30,9 +30,9 @@ object SQSComponentFactory {
       )(url => portCheck.checkUrl(URI.create(url).toURL, "SQS Client"))
     }
 
-    override def mkClient(region: Option[String]): Lifecycle[F[Throwable, _], SQSComponent[F]] = {
-      val configuredRegion = region.orElse(sqsConfig.getRegion)
-      SQSComponent.resource(metrics, sqsConfig, configuredRegion, localCredentials)
+    override def mkComponent(region: Option[String]): Lifecycle[F[Throwable, _], SQSComponent[F]] = {
+      val configuredRegion = region.orElse(credentialsConfig.region)
+      SQSComponent.resource(metrics, sqsConfig, configuredRegion, credentialsConfig)
     }
   }
 

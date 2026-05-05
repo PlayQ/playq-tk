@@ -1,40 +1,38 @@
 package net.playq.tk.postgres.ddl
 
+import distage.{ClassConstructor, Functoid, ModuleDef, Tag}
 import doobie.hikari.HikariTransactor
 import doobie.syntax.connectionio.*
 import doobie.util.fragment.Fragment
-import izumi.distage.model.definition.Lifecycle
-import izumi.functional.bio.{Applicative2, F}
+import izumi.functional.bio.Applicative2
+import izumi.reflect.TagKK
 import logstage.LogIO2
-import net.playq.tk.quantified.BracketThrowable
+import net.playq.tk.quantified.MonadCancelThrowable
 
 trait DDLComponent {
   def ddl: (String, Fragment)
 }
 
 object DDLComponent {
-
-  final class DDLUpComponent[F[+_, +_]: Applicative2: BracketThrowable](
-    transactor: HikariTransactor[F[Throwable, _]],
-    ddls: Set[DDLComponent],
-    log: LogIO2[F],
-  ) extends Lifecycle.Self[F[Throwable, _], DDLUpComponent[F]] {
-
-    override def acquire: F[Throwable, Unit] = {
-      ddlUp *> log.info(s"DDL Up successful!")
+  def make[F[+_, +_]: TagKK, T <: DDLComponent: Tag: ClassConstructor](implicit mutCtx: ModuleDef#MutationContext): Unit = new mutCtx.dsl {
+    this.make[T].fromEffect {
+      Functoid.identity[DDLUpComponent[F]].map2(ClassConstructor[T]) {
+        (u, c) =>
+          u.executeDDL(c)
+      }
     }
+    many[DDLComponent]
+      .weak[T]
+  }.discard()
 
-    override def release: F[Throwable, Unit] = F.unit
-
-    private[this] def ddlUp: F[Throwable, Unit] = {
-      val numDDLs = ddls.size
-      log.info(s"Executing Postgres DDL Up! $numDDLs") *>
-      F.traverse_(ddls.toList)(_.ddl match {
-        case (ddlName, ddlSql) =>
-          log.info(s"Executing DDL for ${ddlName -> "ddl"}") *>
-          ddlSql.update.run.transact(transactor).void
-      })
+  final class DDLUpComponent[F[+_, +_]: Applicative2: MonadCancelThrowable](
+    transactor: HikariTransactor[F[Throwable, _]],
+    log: LogIO2[F],
+  ) {
+    def executeDDL[T <: DDLComponent](ddl: T): F[Throwable, T] = {
+      val (ddlName, ddlSql) = ddl.ddl
+      log.info(s"Executing DDL for ${ddlName -> "ddl"}") *>
+      ddlSql.update.run.transact(transactor).as(ddl)
     }
   }
-
 }

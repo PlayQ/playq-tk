@@ -1,30 +1,49 @@
 package net.playq.tk.util.await
 
-import izumi.functional.bio.{Entropy2, F, Monad2, Temporal2}
+import izumi.functional.bio.{Entropy2, F, Monad2, Primitives2, Temporal2}
 import logstage.LogIO2
+import logstage.LogIO2.log
 
-import scala.concurrent.duration.{DurationInt, DurationLong, FiniteDuration}
+import scala.concurrent.duration.FiniteDuration
 
 trait TkWaiter[F[_, _]] {
-  final def sleep(waitMin: Int, waitMax: Int): F[Nothing, Unit] = sleep(waitMin.seconds, waitMax.seconds)
-  def sleep(waitMin: FiniteDuration, waitMax: FiniteDuration): F[Nothing, Unit]
+  def sleep(pollInterval: PollInterval): F[Nothing, Unit]
 }
 
 object TkWaiter {
-  final class RandomSleep[F[+_, +_]: Monad2: Temporal2](
-    log: LogIO2[F],
-    entropy: Entropy2[F],
-  ) extends TkWaiter[F] {
-    override def sleep(waitMin: FiniteDuration, waitMax: FiniteDuration): F[Nothing, Unit] = {
-      for {
-        prewaitTime <- Some(waitMax.toSeconds - waitMin.toSeconds)
-          .filter(_ > 0L)
-          .fold(F.pure(0L))(entropy.nextLong)
-          .map(offset => waitMin.plus(offset.seconds))
 
-        _ <- log.info(s"Lock cycle: sleeping for $prewaitTime seconds from range $waitMin-$waitMax")
-        _ <- F.sleep(prewaitTime)
+  final class RandomSleep[F[+_, +_]: Monad2: Temporal2: LogIO2: Entropy2] extends TkWaiter[F] {
+    override def sleep(pollInterval: PollInterval): F[Nothing, Unit] = {
+      for {
+        prewaitTime <- pollInterval.getAwaitTime[F]
+        _           <- log.info(s"Lock cycle: sleeping for $prewaitTime seconds from range ${pollInterval.minAwait}-${pollInterval.maxAwait}")
+        _           <- F.sleep(prewaitTime)
       } yield ()
     }
   }
+
+  final class TestFactory[F[+_, +_]: Monad2: Temporal2: LogIO2: Primitives2] {
+
+    def constantSleep(constant: FiniteDuration): TkWaiter[F] = {
+      _ =>
+        log.info(s"TEST MODE: Sleeping for $constant time") *>
+        F.sleep(constant)
+    }
+
+    def waitingForSignal: F[Nothing, (F[Nothing, Unit], TkWaiter[F])] = {
+      for {
+        initLatch    <- F.mkLatch
+        currentLatch <- F.mkRef(initLatch)
+
+        signalWakeUp  = currentLatch.get.flatMap(_.succeed(()).void)
+        waitForSignal = for {
+          _        <- currentLatch.get.flatMap(_.await)
+          newLatch <- F.mkLatch
+          _        <- currentLatch.set(newLatch)
+        } yield ()
+      } yield (signalWakeUp, (_: PollInterval) => waitForSignal)
+    }
+
+  }
+
 }

@@ -2,7 +2,7 @@ package d4s.codecs.circe
 
 import cats.implicits.*
 import d4s.codecs.D4SDecoder
-import d4s.models.DynamoException.DecoderException
+import d4s.exceptions.DynamoException.DecoderException
 import io.circe.{Decoder, Json}
 import software.amazon.awssdk.core.util.{DefaultSdkAutoConstructList, DefaultSdkAutoConstructMap}
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
@@ -12,8 +12,8 @@ import scala.jdk.CollectionConverters.*
 object D4SCirceDecoder {
 
   def derived[T: Decoder]: D4SDecoder[T] = new D4SDecoder[T] {
-    override def decodeObject(v: Map[String, AttributeValue]): Either[DecoderException, T] = decodeImpl(v, attributeMapToJson(v))
-    override def decode(v: AttributeValue): Either[DecoderException, T]                    = decodeImpl(v, attributeToJson(v))
+    override def decodeObject(v: Map[String, AttributeValue]): Either[DecoderException, T]             = decodeImpl(v, attributeMapToJson(v))
+    override def decode(v: AttributeValue): Either[DecoderException, T]                                = decodeImpl(v, attributeToJson(v))
     @inline private[this] def decodeImpl(v: Any, maybeJson: Option[Json]): Either[DecoderException, T] = {
       maybeJson
         .toRight(DecoderException(s"Couldn't decode dynamo item=${v.toString} as Json. A case wasn't handled in DynamoDecoder.attributeToJson", None))

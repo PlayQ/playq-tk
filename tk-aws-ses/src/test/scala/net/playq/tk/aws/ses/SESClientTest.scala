@@ -3,13 +3,12 @@ package net.playq.tk.aws.ses
 import distage.TagKK
 import izumi.distage.modules.DefaultModule2
 import izumi.functional.bio.Applicative2
-import SESClientTest.Ctx
+import net.playq.tk.aws.ses.SESClientTest.Ctx
 import net.playq.tk.aws.ses.test.SESTestEnv
 import net.playq.tk.test.{TkTestBaseCtx, WithProduction}
-import net.playq.tk.test.rnd.TkRndGeneric
 import zio.IO
 
-final class SESClientTest extends SESClientTestBase[IO] with WithProduction with SESTestEnv
+final class SESClientTest extends SESClientTestBase[IO] with WithProduction with SESTestEnv[IO]
 
 object SESClientTest {
   final case class Ctx[F[+_, +_]](
@@ -17,10 +16,10 @@ object SESClientTest {
   )
 }
 
-abstract class SESClientTestBase[F[+_, +_]: Applicative2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] with TkRndGeneric {
+abstract class SESClientTestBase[F[+_, +_]: Applicative2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] {
 
   "SES client" should {
-    "Send email to end user" in scopeIO {
+    "Send email to end user" in bound {
       ctx =>
         import ctx.*
         val emailBody = """<h1>Category Theory for Kittens</h1>

@@ -1,10 +1,10 @@
 package net.playq.tk.aws.ses
 
-import izumi.distage.framework.model.IntegrationCheck
 import izumi.distage.model.definition.Lifecycle
+import izumi.distage.model.provisioning.IntegrationCheck
 import izumi.functional.bio.{BlockingIO2, F, IO2}
 import izumi.fundamentals.platform.integration.{PortCheck, ResourceCheck}
-import net.playq.tk.aws.config.LocalTestCredentials
+import net.playq.tk.aws.config.AwsCredentialsConfig
 import net.playq.tk.aws.ses.config.SESConfig
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.ses.SesClient
@@ -16,7 +16,7 @@ import scala.util.chaining.*
 final class SESResource[F[+_, +_]: IO2: BlockingIO2](
   sesConfig: SESConfig,
   portCheck: PortCheck,
-  localCredentials: LocalTestCredentials,
+  credentialsConfig: AwsCredentialsConfig,
 ) extends Lifecycle.OfInner[F[Throwable, _], SESComponent[F]]
   with IntegrationCheck[F[Throwable, _]] {
 
@@ -32,8 +32,9 @@ final class SESResource[F[+_, +_]: IO2: BlockingIO2](
 
   private[this] def makeClient: Lifecycle[F[Throwable, _], SesClient] = Lifecycle.fromAutoCloseable(F.syncThrowable {
     SesClient.builder
-      .pipe(builder => sesConfig.getRegion.fold(builder)(builder region Region.of(_)))
-      .pipe(builder => sesConfig.getEndpoint.fold(builder)(builder endpointOverride URI.create(_) credentialsProvider localCredentials.get))
+      .pipe(builder => credentialsConfig.region.fold(builder)(builder `region` Region.of(_)))
+      .pipe(builder => credentialsConfig.provider.fold(builder)(builder.credentialsProvider))
+      .pipe(builder => sesConfig.getEndpoint.fold(builder)(builder `endpointOverride` URI.create(_)))
       .build()
   })
 

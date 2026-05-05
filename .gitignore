@@ -12,6 +12,8 @@ buildinfo.sh
 .secrets
 .DS_Store
 .bsp
+.scala-build
+.direnv
 .gradle
 node_modules
 dist
@@ -48,7 +50,9 @@ target/
 lib_managed/
 src_managed/
 project/boot/
+project/.boot/
 project/plugins/project/
+vuepress/docs/.vuepress/.temp/
 .history
 .cache
 .lib/

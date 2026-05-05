@@ -3,7 +3,7 @@ package d4s.codecs
 import java.util.UUID
 
 import cats.syntax.either.*
-import d4s.models.DynamoException.DecoderException
+import d4s.exceptions.DynamoException.DecoderException
 
 import scala.util.Try
 
@@ -24,5 +24,5 @@ object D4SKeyDecoder {
   implicit val uuidKeyDecoder: D4SKeyDecoder[UUID]     = tryKeyDecoder("UUID")(UUID.fromString)
 
   def tryKeyDecoder[A](name: String)(f: String => A): D4SKeyDecoder[A] =
-    item => Either.fromTry(Try(f(item))).leftMap(err => DecoderException(s"Cannot decode key $item as $name", Some(err)))
+    item => Try(f(item)).toEither.leftMap(err => DecoderException(s"Cannot decode key $item as $name", Some(err)))
 }

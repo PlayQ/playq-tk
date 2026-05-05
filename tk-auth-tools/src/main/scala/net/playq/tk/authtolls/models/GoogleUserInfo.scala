@@ -1,9 +1,9 @@
 package net.playq.tk.authtolls.models
 
 import io.circe.Decoder
+import net.playq.tk.quantified.ConcurrentThrowable
 import org.http4s.EntityDecoder
 import org.http4s.circe.jsonOf
-import net.playq.tk.quantified.SyncThrowable
 
 final case class GoogleUserInfo(userId: Option[String], name: Option[String], email: String, emailVerified: Boolean, locale: Option[String])
 
@@ -13,7 +13,7 @@ object GoogleUserInfo {
       GoogleUserInfo.apply
     }
 
-  implicit def entityEncoder[F[+_, +_]: SyncThrowable]: EntityDecoder[F[Throwable, _], GoogleUserInfo] = {
+  implicit def entityEncoder[F[+_, +_]: ConcurrentThrowable]: EntityDecoder[F[Throwable, _], GoogleUserInfo] = {
     jsonOf[F[Throwable, _], GoogleUserInfo]
   }
 }

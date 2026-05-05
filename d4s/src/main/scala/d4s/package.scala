@@ -1,6 +1,3 @@
-import zio.Has
-
 package object d4s {
-  type DynamoConnector3[F[-_, +_, +_]]   = DynamoConnector[F[Any, +_, +_]]
-  type HasDynamoConnector[F[-_, +_, +_]] = Has[DynamoConnector[F[Any, +_, +_]]]
+  type Dynamo3[F[-_, +_, +_]] = Dynamo[F[Any, +_, +_]]
 }

@@ -2,15 +2,12 @@ package net.playq.tk.aws.cost
 
 import distage.TagKK
 import izumi.distage.modules.DefaultModule2
-import izumi.functional.bio.IO2
+import izumi.functional.bio.{Clock1, IO2}
 import izumi.fundamentals.platform.strings.IzString.*
-import CostClientTest.Ctx
+import net.playq.tk.aws.cost.CostClientTest.Ctx
 import net.playq.tk.test.{TkTestBaseCtx, WithProduction}
-import net.playq.tk.test.rnd.TkRndGeneric
 import org.scalatest.Assertion
 import zio.IO
-
-import java.time.LocalDate
 
 final class CostClientTest extends CostClientTestBase[IO] with WithProduction
 
@@ -20,7 +17,7 @@ object CostClientTest {
   )
 }
 
-abstract class CostClientTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] with TkRndGeneric {
+abstract class CostClientTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] {
 
   private[this] def skip(): Assertion = {
     val awsCostTestsEnabled = System.getProperty("aws.cost.tests.enable").asBoolean().getOrElse(false)
@@ -28,13 +25,13 @@ abstract class CostClientTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends
   }
 
   "Cost client" should {
-    "Get cost" in scopeIO {
+    "Get cost" in bound {
       ctx =>
         import ctx.*
         skip()
         val request = CostRequest(
-          LocalDate.now().minusDays(7),
-          LocalDate.now(),
+          Clock1.Standard.nowZoned().toLocalDate.minusDays(7),
+          Clock1.Standard.nowZoned().toLocalDate,
           Seq(
             "BlendedCost",
             "UnblendedCost",

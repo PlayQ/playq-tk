@@ -1,32 +1,29 @@
 package net.playq.tk.kafka
 
-import net.playq.tk.fs2kafka.{stringProducerF, _}
 import io.circe.Encoder
 import io.circe.syntax.*
 import izumi.distage.model.definition.Lifecycle
-import izumi.functional.bio.catz.*
-import izumi.functional.bio.{Async2, Temporal2}
-import KafkaJsonProducerComponent.KafkaJsonProducer
-import net.playq.tk.kafka.config.KafkaPropsConfig
-import org.apache.kafka.clients.producer.{Producer, ProducerConfig, ProducerRecord}
+import izumi.functional.bio.Temporal2
+import net.playq.tk.kafka.KafkaJsonProducerComponent.KafkaJsonProducer
+import net.playq.tk.kafka.clients.{KafkaClients, TkKafkaProducer}
+import org.apache.kafka.clients.producer.{ProducerConfig, ProducerRecord}
 
 import scala.concurrent.TimeoutException
 import scala.concurrent.duration.FiniteDuration
 
-abstract class KafkaJsonProducerComponent[F[+_, +_]: Async2: Temporal2, In: Encoder, +A](
-  kafkaPropsCfg: KafkaPropsConfig,
+abstract class KafkaJsonProducerComponent[F[+_, +_]: Temporal2, In: Encoder, +A](
+  kafkaClients: KafkaClients[F],
   timeout: FiniteDuration,
   clientId: Option[String] = None,
 )(ctor: KafkaJsonProducer[F, In] => A
 ) extends Lifecycle.Of(for {
-    producer <- Lifecycle.fromAutoCloseable {
-      val idProps = clientId.map(ProducerConfig.CLIENT_ID_CONFIG -> _).toMap
-      stringProducerF(props = kafkaPropsCfg.getProducerProps ++ idProps)
-    }
-  } yield ctor(new KafkaJsonProducer(producer, timeout)))
+    producer <- kafkaClients.allocateProducer(
+      propsOverride = clientId.map(ProducerConfig.CLIENT_ID_CONFIG -> _).toMap
+    )
+  } yield ctor(new KafkaJsonProducer[F, In](producer, timeout)))
 
 object KafkaJsonProducerComponent {
-  final class KafkaJsonProducer[F[+_, +_]: Async2: Temporal2, In: Encoder](producer: Producer[String, String], timeout: FiniteDuration) {
+  final class KafkaJsonProducer[F[+_, +_]: Temporal2, In: Encoder](producer: TkKafkaProducer[F, String, String], timeout: FiniteDuration) {
     def send(topic: String, item: In): F[Throwable, Unit] = {
       producer
         .sendWait(new ProducerRecord(topic, item.asJson.noSpaces))

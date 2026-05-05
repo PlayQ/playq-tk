@@ -1,11 +1,11 @@
 package d4s.keys
 
-import java.util.UUID
-
-import izumi.fundamentals.platform.uuid.UUIDGen
+import izumi.functional.bio.Entropy1
 import org.scalacheck.Prop.AnyOperators
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.Checkers
+
+import java.util.UUID
 
 final class ReversedUUIDKeyTest extends AnyWordSpec with Checkers {
 
@@ -14,8 +14,8 @@ final class ReversedUUIDKeyTest extends AnyWordSpec with Checkers {
     generatorDrivenConfig.copy(minSuccessful = 10000)
   }
 
-  "ReservedUUIDKey has the opposite lexicographic ordering as the UUID's usual ordering" in check {
-    uuids: List[UUID] =>
+  "ReversedUUIDKey has the opposite lexicographic ordering as the UUID's usual ordering" in check {
+    (uuids: List[UUID]) =>
       val sortedUUIDs = uuids.sorted
 
       val strings       = sortedUUIDs.map(ReversedUUIDKey(_).asString)
@@ -24,9 +24,17 @@ final class ReversedUUIDKeyTest extends AnyWordSpec with Checkers {
       sortedStrings ?= strings.reverse
   }
 
+  "ReversedUUIDKey preserves values" in check {
+    (uuids: List[UUID]) =>
+      val orderedStrs = uuids.map(ReversedUUIDKey(_))
+      val parsedUuids = orderedStrs.map(ReversedUUIDKey.parse)
+
+      uuids ?= parsedUuids
+  }
+
   "TimeUUID ordering" in check {
-    _: Unit =>
-      val uuids = List.fill(20)(UUIDGen.getTimeUUID()).sorted
+    (_: Unit) =>
+      val uuids = List.fill(20)(Entropy1.Standard.nextTimeUUID()).sorted
       val strs  = uuids.map(ReversedUUIDKey(_).asString)
 
       val sortedUUID = uuids.map(ReversedUUIDKey(_).asString)

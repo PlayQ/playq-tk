@@ -1,8 +1,8 @@
 package net.playq.tk.metrics.base
 
-import izumi.fundamentals.platform.language.unused
 import net.playq.tk.metrics.base.LowPriorityInstances.{_Decoder, _Encoder}
 
+import scala.annotation.unused
 import scala.util.Try
 import scala.util.matching.Regex
 
@@ -111,7 +111,7 @@ private[metrics] sealed trait LowPriorityInstances {
             .flatMap(_.headOption)
             .toRight(io.circe.DecodingFailure("No type name found in JSON, expected JSON of form { \"type_name\": { ...fields } }", cursor.history))
         for (fname <- maybeContent; value = cursor.downField(fname);
-          result <- fname match {
+          result   <- fname match {
             case "counter" =>
               parserC(value).map { case (r, l, i) => MetricDef.MetricCounter(r, l, i) }
             case "timer" =>

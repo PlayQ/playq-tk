@@ -1,9 +1,13 @@
 {
-  "devDependencies": {
-    "vuepress": "^1.4.1"
-  },
   "scripts": {
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"
+  },
+  "devDependencies": {
+    "@vuepress/bundler-webpack": "^2.0.0-rc.18",
+    "@vuepress/theme-default": "^2.0.0-rc.58",
+    "sass": "^1.80.6",
+    "sass-loader": "^16.0.3",
+    "vuepress": "^2.0.0-rc.18"
   }
 }

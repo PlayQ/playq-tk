@@ -21,7 +21,7 @@ object CacheTest {
 abstract class CacheTestBase[F[+_, +_]: IO2: TagKK: DefaultModule2] extends TkTestBaseCtx[F, Ctx[F]] {
 
   "Cache" should {
-    "perform base crud" in scopeIO {
+    "perform base crud" in bound {
       ctx =>
         import ctx.*
 

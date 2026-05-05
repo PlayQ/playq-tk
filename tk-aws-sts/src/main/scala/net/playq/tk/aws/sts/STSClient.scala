@@ -46,12 +46,12 @@ object STSClient {
       saveTimer: MacroMetricSTSTimer[metric.type],
     ): F[E, A] = {
       F.shiftBlocking {
-        metrics.withTimer(metric) {
+        metrics.timerAnd(metric) {
           f(client).catchAll {
             failure =>
-              metrics.mark(metric)(saveCounter) *> F.fail(failure)
+              metrics.mark(metric)(using saveCounter) *> F.fail(failure)
           }
-        }(saveTimer)
+        }(using saveTimer)
       }
     }
 

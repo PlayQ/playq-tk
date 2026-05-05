@@ -16,7 +16,7 @@ final class MetricsExtractor(rolesInfo: RolesInfo, logger: IzLogger) {
 
   final val allRoles = s"${rolesInfo.requiredRoleBindings.map(_.descriptor.id).mkString(";")}${MacroMetricSaver.defaultMetricRole}"
 
-  def collectMetrics: Set[MetricDef] = collectMetrics(identity)
+  def collectMetrics: Set[MetricDef] = collectMetrics(identity[String])
 
   def collectMetrics(tweakRole: String => String): Set[MetricDef] = {
     val scan         = new ClassGraph().scan()

@@ -4,21 +4,22 @@ import izumi.distage.model.definition.Lifecycle
 import izumi.functional.bio.{F, IO2}
 import logstage.LogIO2
 import net.playq.tk.aws.common.ServiceName
-import LambdaClient.LambdaFunctionConfig
-import net.playq.tk.aws.tagging.AwsNameSpace
-import net.playq.tk.util.ManagedFile
+import net.playq.tk.aws.lambda.LambdaClient.LambdaFunctionConfig
 import net.playq.tk.aws.lambda.config.LambdaConfig
+import net.playq.tk.aws.tagging.AwsNameSpace
+import net.playq.tk.util.{ClosableFile, process}
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.lambda.model.{CreateFunctionRequest, DeleteFunctionRequest, FunctionCode, InvokeRequest, ResourceNotFoundException, Runtime}
 
+import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 trait LambdaClient[F[_, _]] {
-  def createPublish(deploymentPackageZip: ManagedFile, config: LambdaFunctionConfig): F[Throwable, String]
+  def createPublish(deploymentPackageZip: File, config: LambdaFunctionConfig): F[Throwable, String]
   def delete(name: String): F[Throwable, Unit]
   def invoke(name: String, body: String): F[Throwable, String]
-  def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, _], ManagedFile]
+  def createCSharpDeploymentPackage(directory: File): Lifecycle[F[Throwable, _], ClosableFile]
 }
 
 object LambdaClient {
@@ -31,11 +32,11 @@ object LambdaClient {
   )
 
   final class Dummy[F[+_, +_]: IO2] extends LambdaClient[F] {
-    override def createPublish(deploymentPackageZip: ManagedFile, config: LambdaFunctionConfig): F[Throwable, String] = F.pure("arn")
-    override def delete(name: String): F[Throwable, Unit]                                                             = F.unit
-    override def invoke(name: String, body: String): F[Throwable, String]                                             = F.pure(body)
-    override def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, _], ManagedFile] = {
-      ManagedFile.managedFile()
+    override def createPublish(deploymentPackageZip: File, config: LambdaFunctionConfig): F[Throwable, String] = F.pure("arn")
+    override def delete(name: String): F[Throwable, Unit]                                                      = F.unit
+    override def invoke(name: String, body: String): F[Throwable, String]                                      = F.pure(body)
+    override def createCSharpDeploymentPackage(directory: File): Lifecycle[F[Throwable, _], ClosableFile]      = {
+      ClosableFile.resourceTempFile()
     }
   }
 
@@ -47,13 +48,15 @@ object LambdaClient {
     service: ServiceName,
   ) extends LambdaClient[F] {
 
-    override def createCSharpDeploymentPackage(directory: ManagedFile): Lifecycle[F[Throwable, _], ManagedFile] = {
-      import sys.process.*
-      ManagedFile.managedFile("lambda", ".zip").evalTap {
-        packageFolder =>
+    override def createCSharpDeploymentPackage(packageFolder: File): Lifecycle[F[Throwable, _], ClosableFile] = {
+      ClosableFile.resourceTempFile("lambda", ".zip").evalTap {
+        zip =>
           for {
-            res <- F.syncThrowable(Process(s"dotnet lambda package ${packageFolder.absolutePath} -pl ${directory.absolutePath}").!)
-            _   <- F.when(res != 0)(F.fail(new RuntimeException(s"Deployment package creation was failed with code $res")))
+            res <- F.sync(process.exec(s"dotnet lambda package ${zip.absolutePath} -pl ${packageFolder.toPath.toAbsolutePath}"))
+            _   <- logger.info(s"Lambda Package build result: ${res.output -> "execution"}")
+            _   <- F.when(res.exitCode != 0) {
+              F.fail(new RuntimeException(s"Deployment package creation was failed with code ${res.exitCode}. Error: ${res.err}. Output: \n${res.output}"))
+            }
           } yield ()
       }
     }
@@ -76,11 +79,11 @@ object LambdaClient {
       }
     }
 
-    override def createPublish(deploymentPackageZip: ManagedFile, config: LambdaFunctionConfig): F[Throwable, String] = {
+    override def createPublish(deploymentPackageZip: File, config: LambdaFunctionConfig): F[Throwable, String] = {
       import config.*
-      val actualName = environmentalName(name)
+      val actualName                 = environmentalName(name)
       val req: CreateFunctionRequest = CreateFunctionRequest.builder
-        .code(FunctionCode.builder.zipFile(SdkBytes.fromInputStream(Files.newInputStream(deploymentPackageZip.file.toPath))).build)
+        .code(FunctionCode.builder.zipFile(SdkBytes.fromInputStream(Files.newInputStream(deploymentPackageZip.toPath))).build)
         .functionName(actualName)
         .handler(handlerName)
         .memorySize(memorySize)
@@ -96,10 +99,8 @@ object LambdaClient {
       }
     }
 
-    @inline private def environmentalName(name: String): String = {
-      namespace.namespace.fold(s"${service.serviceName}-$name") {
-        namespace => s"$namespace-${service.serviceName}-$name"
-      }
+    private def environmentalName(name: String): String = {
+      List(namespace.namespace, service.toOption, Some(name)).flatten.mkString("-")
     }
   }
 }
